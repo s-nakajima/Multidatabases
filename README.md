@@ -1,2 +1,3 @@
 # Multidatabases
 Multidatabases for NetCommons3
+NetCommons3 汎用データベースプラグイン
