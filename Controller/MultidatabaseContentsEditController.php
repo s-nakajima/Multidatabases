@@ -1,6 +1,6 @@
 <?php
 /**
- * MultidatabasesAppModel Model
+ * MultidatabaseContentsEditController Controller
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Tomoyuki OHNO (Ricksoft, Inc) <ohno.tomoyuki@ricksoft.jp>
@@ -9,14 +9,14 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('AppModel', 'Model');
+App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
 
 /**
- * MultidatabasesAppModel Model
+ * MultidatabaseContentsEditController Controller
  *
  * @author Tomoyuki OHNO (Ricksoft, Inc) <ohno.tomoyuki@ricksoft.jp>
- * @package NetCommons\Multidatabases\Model
+ * @package NetCommons\Multidatabases\Controller
  */
-class MultidatabasesAppModel extends AppModel {
-
+class MultidatabaseContentsEditController extends MultidatabasesAppController {
+    //put your code here
 }

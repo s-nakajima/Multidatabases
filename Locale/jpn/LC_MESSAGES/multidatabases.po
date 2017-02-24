@@ -1,0 +1,128 @@
+msgid "Show contents per page"
+msgstr "1ページ毎の表示件数"
+
+msgid "Move"
+msgstr "移動"
+
+msgid "Add content"
+msgstr "データを追加する"
+
+msgid "All status"
+msgstr "全てのステータス"
+
+msgid "All categories"
+msgstr "全てのカテゴリ"
+
+msgid "%d-%d (%s)"
+msgstr "%d年%d月 (%s)"
+
+msgid "posted : %s"
+msgstr "投稿日時 : %s"
+
+msgid "Move list"
+msgstr "一覧へ"
+
+msgid "tag"
+msgstr "タグ"
+
+msgid "Write body2"
+msgstr "続きを書く"
+
+msgid "Add tag"
+msgstr "タグ追加"
+
+msgid "require title"
+msgstr "タイトルを入力してください。"
+
+msgid "Title"
+msgstr "タイトル"
+
+msgid "Category"
+msgstr "カテゴリ"
+
+msgid "Multidatabase"
+msgstr "データベース"
+
+msgid "MultidatabaseContent"
+msgstr "コンテンツ"
+
+msgid "Multidatabase content"
+msgstr "コンテンツ"
+
+msgid "Multidatabase name"
+msgstr "データベース名"
+
+msgid "%d-%d Blog Entry List"
+msgstr "%d年%d月の記事一覧"
+
+msgid "Archive"
+msgstr "アーカイブ"
+
+msgid "All Entries"
+msgstr "全ての記事"
+
+msgid "%d-%d"
+msgstr "%d年%d月"
+
+msgid "Read more"
+msgstr "続きを読む"
+
+msgid "Close"
+msgstr "閉じる"
+
+msgid "Title"
+msgstr "タイトル"
+
+msgid "Body1"
+msgstr "本文"
+
+msgid "Body2"
+msgstr "続き"
+
+msgid "Published datetime"
+msgstr "公開日時"
+
+msgid "%s articles"
+msgstr "%s 件"
+
+msgid "%s article"
+msgstr "%s 件"
+
+msgid "Use comment"
+msgstr "コメントを付けられる"
+
+msgid "Use sns"
+msgstr "SNSボタンを使用する"
+
+msgid "Blog"
+msgstr "ブログ"
+
+msgid "MailSetting.mail_fixed_phrase_body.popover"
+msgstr "{X-SITE_NAME} : サイト名<br />{X-PLUGIN_NAME} : プラグイン名<br />{X-ROOM} : ルーム名<br />{X-BLOCK_NAME} : キャビネット名<br />{X-SUBJECT} : ファイル名<br />{X-USER} : 投稿者<br />{X-TO_DATE} : 投稿日時<br />{X-TAGS} : タグ<br />{X-BODY} : 投稿内容<br />{X-URL} : 投稿内容のURL"
+
+msgid "Section 1"
+msgstr "1段目"
+
+msgid "Section 2"
+msgstr "2段目"
+
+msgid "Section 2 (Left)"
+msgstr "2段目(左)"
+
+msgid "Section 2 (Right)"
+msgstr "2段目(右)"
+
+msgid "Section 3"
+msgstr "3段目"
+
+msgid "Go to Up"
+msgstr "上に移動"
+
+msgid "Go to Down"
+msgstr "下に移動"
+
+msgid "Go to %s"
+msgstr "%sに移動"
+
+msgid "Metadata Settings"
+msgstr "メタデータ設定"
