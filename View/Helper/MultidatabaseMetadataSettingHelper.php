@@ -21,7 +21,8 @@ App::uses('AppHelper', 'View/Helper');
  * @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabase\View\Helper
  */
-class MultidatabaseMetadataSettingHelper extends AppHelper {
+class MultidatabaseMetadataSettingHelper extends AppHelper
+{
 
 /**
  * 使用するHelpsers
@@ -32,11 +33,11 @@ class MultidatabaseMetadataSettingHelper extends AppHelper {
  *
  * @var array
  */
-	public $helpers = array(
+	public $helpers = [
 		'NetCommons.Button',
 		'NetCommons.NetCommonsHtml',
 		'NetCommons.NetCommonsForm'
-	);
+	];
 
 /**
  * CSS Style Sheetを読み込む
@@ -50,19 +51,21 @@ class MultidatabaseMetadataSettingHelper extends AppHelper {
 	}
 
 /**
- * 汎用データベースメタデータレイアウトのHTMLを出力する(列)
+ * 汎用データベースメタデータレイアウト グループのHTMLを出力する(列)
  *
- * @param string $elementFile elementファイル名
- * @param array $metadata multidatabaseMetadataデータ配列
+ * @param integer $position グループ
+ * @param integer $colSize 段の列数
  * @return string HTML
  */
-	public function renderGroup($position,$colSize = 1) {
+	public function renderGroup($position, $colSize = 1) {
 
 		switch ($colSize) {
 			case 2:
+				// 2列レイアウト
 				$element = 'MultidatabaseBlocks/metadatas/edit_metadata_group_c2';
 				break;
 			default:
+				// 1列レイアウト
 				$element = 'MultidatabaseBlocks/metadatas/edit_metadata_group_c1';
 		}
 
@@ -81,6 +84,12 @@ class MultidatabaseMetadataSettingHelper extends AppHelper {
 		}
 	}
 
+/**
+ * 汎用データベースメタデータレイアウト アイテムのHTMLを出力する
+ *
+ * @param integer $position グループ
+ * @return string HTML
+ */
 	public function renderGroupItems($position) {
 		switch ($position) {
 			case 0:
@@ -113,104 +122,4 @@ class MultidatabaseMetadataSettingHelper extends AppHelper {
 		];
 
 	}
-
-
-	/**
-	 * 項目の移動HTMLを出力する
-	 *
-	 * @param array $layout userAttributeLayoutデータ配列
-	 * @param array $userAttribute userAttributeデータ配列
-	 * @return string HTML
-	 */
-	public function moveSetting($currentMetadata) {
-
-		$output = '';
-
-		$output .= '<button type="button" ' .
-			'class="btn btn-xs btn-default dropdown-toggle" ' .
-			'data-toggle="dropdown" ' .
-			'aria-haspopup="true" ' .
-			'aria-expanded="false" ' .
-			'ng-disabled="sending">' .
-			__d('multidatabases', 'Move') .
-			' <span class="caret"></span>' .
-			'</button>';
-
-		$output .= '<ul class="dropdown-menu">';
-		$output .= $this->moveSettingTopMenu($currentMetadata);
-		$output .= $this->moveSettingBottomMenu($currentMetadata);
-
-		//区切り線
-		$output .= '<li class="divider"></li>';
-
-		$output .= $this->moveSettingPosMenu($currentMetadata);
-
-		$output .= '</ul>';
-
-		return $output;
-	}
-
-
-	/**
-	 * 項目の移動メニューHTMLを出力する(上へ)
-	 *
-	 * @param array $layout userAttributeLayoutデータ配列
-	 * @param array $userAttribute userAttributeデータ配列
-	 * @return string HTML
-	 */
-	public function moveSettingTopMenu() {
-		$output = '<li class="move-field-up"><a href=""><span class="glyphicon glyphicon-arrow-up">' . __d('multidatabases', 'Go to Up') . '</a></li>';
-		return $output;
-	}
-
-	/**
-	 * 項目の移動メニューHTMLを出力する(下へ)
-	 *
-	 * @param array $layout userAttributeLayoutデータ配列
-	 * @param array $userAttribute userAttributeデータ配列
-	 * @return string HTML
-	 */
-	public function moveSettingBottomMenu() {
-		$output = '<li class="move-field-down"><a href=""><span class="glyphicon glyphicon-arrow-down">' . __d('multidatabases', 'Go to Down') . '</a></li>';
-		return $output;
-	}
-
-	/**
-	 * 項目の移動メニューHTMLを出力する(○段へ)
-	 *
-	 * @param array $layout userAttributeLayoutデータ配列
-	 * @param array $userAttribute userAttributeデータ配列
-	 * @return string HTML
-	 */
-	public function moveSettingPosMenu($currentMetadata) {
-		$output = '';
-
-		//データを変数にセット
-		$id = $currentMetadata['id'];
-
-		for ($i = 0; $i <= 3; $i++) {
-			$posName = '';
-			switch ($i) {
-				case 0:
-					$posName = 'Section 1';
-					break;
-				case 1:
-					$posName = 'Section 2 (Left)';
-					break;
-				case 2:
-					$posName = 'Section 2 (Right)';
-					break;
-				case 3:
-					$posName = 'Section 3';
-					break;
-			}
-			$output .= '<li class="move-field-group-' . $i .'"><a href=""><span>' . sprintf(__d('multidatabases', 'Go to %s'), __d('multidatabases', $posName)) . '</a></li>';
-
-		}
-
-		return $output;
-
-	}
-
-
 }

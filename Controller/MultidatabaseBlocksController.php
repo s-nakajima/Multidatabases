@@ -79,6 +79,7 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
     public function beforeFilter() {
         parent::beforeFilter();
 		$this->Security->unlockedActions = array('add');
+		$this->Security->unlockedActions = array('edit');
     }
 
 /**
@@ -107,36 +108,26 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
     public function add() {
         $this->view = 'edit';
 
-		if ($this->request->is('put')  || $this->request->is('post')) {
-			var_dump($this->data);
-			exit;
+		if ($this->request->is('put') || $this->request->is('post')) {
 			if ($this->Multidatabase->saveMultidatabase($this->data)) {
 				return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
 			}
 			return;
 		}
 
-		$multidatabaseMetadatas['data'] = $this->MultidatabaseMetadata->getInitMetadatas();
-		$multidatabaseMetadatas['count'] = $this->MultidatabaseMetadata->countMetadatas($multidatabaseMetadatas['data']);
-		$multidatabases['data'] = $this->Multidatabase->createMultidatabase();
+		$multidatabases = $this->Multidatabase->createMultidatabase();
+		$multidatabases['MultidatabaseMetadata'] = $this->MultidatabaseMetadata->getInitMetadatas();
 
-		$this->request->data = $multidatabases['data'];
-
+		$this->request->data = $multidatabases;
 		$this->request->data = Hash::merge(
-			$this->request->data, $this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true)
+			$this->request->data,
+			$this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true)
 		);
 
-		// 表示データをSessionへ格納
-		$this->set('multidatabases', $multidatabases);
-		$this->set('multidatabaseMetadatas', $multidatabaseMetadatas);
+		$this->set('multidatabaseMetadatas', $multidatabases['MultidatabaseMetadata']);
 		$this->request->data['Frame'] = Current::read('Frame');
 
-
     }
-
-    public function add_field($position) {
-
-	}
 
 
 
@@ -147,22 +138,32 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
  */
     public function edit() {
         if ($this->request->is('put')) {
-            //登録処理
             if ($this->Multidatabase->saveMultidatabase($this->data)) {
                 return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
             }
-            $this->NetCommons->handleValidationError($this->Multidatabase->validationErrors);
-        } else {
-            //表示処理(初期データセット)
-            if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
-                return $this->throwBadRequest();
-            }
-            $this->request->data = Hash::merge($this->request->data, $multidatabase);
-            $this->request->data = Hash::merge(
-                    $this->request->data, $this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true)
-            );
-            $this->request->data['Frame'] = Current::read('Frame');
+            return;
         }
+
+		$multidatabases = $this->Multidatabase->getMultidatabase();
+
+        if (! $multidatabases) {
+			return $this->throwBadRequest();
+		}
+
+        $multidatabases['MultidatabaseMetadata'] = $this->MultidatabaseMetadata->getEditMetadatas($multidatabases['Multidatabase']['id']);
+
+		if (! $multidatabases['MultidatabaseMetadata']) {
+			return $this->throwBadRequest($multidatabases['MultidatabaseMetadata']);
+		}
+
+		$this->request->data = $multidatabases;
+		$this->request->data = Hash::merge(
+			$this->request->data,
+			$this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true)
+		);
+
+		$this->set('multidatabaseMetadatas', $multidatabases['MultidatabaseMetadata']);
+		$this->request->data['Frame'] = Current::read('Frame');
     }
 
 /**

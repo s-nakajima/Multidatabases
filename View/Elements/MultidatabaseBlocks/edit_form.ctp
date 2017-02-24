@@ -36,6 +36,6 @@ echo $this->NetCommonsHtml->css('/multidatabases/css/style.css');
 
 <?php echo $this->Like->setting('MultidatabaseSetting.use_like', 'MultidatabaseSetting.use_unlike'); ?>
 
-<?php echo $this->element('MultidatabaseBlocks/edit_form_metadata'); ?>
+<?php echo $this->element('MultidatabaseBlocks/metadatas/edit_metadata'); ?>
 
 

@@ -33,6 +33,29 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  */
 	public $useTable = 'multidatabase_metadatas';
 
+	public $dataType = [
+		'id' => 'numeric',
+		'key' => 'string',
+		'name' => 'string',
+		'multidatabase_id' => 'numeric',
+		'language_id' => 'numeric',
+		'position' => 'numeric',
+		'rank' => 'numeric',
+		'col_no' => 'numeric',
+		'type' => 'string',
+		'selections' => 'string',
+		'is_require' => 'boolean',
+		'is_searchable' => 'boolean',
+		'is_sortable' => 'boolean',
+		'is_file_dl_require_auth' => 'boolean',
+		'is_visible_list' => 'boolean',
+		'is_visible_detail' => 'boolean',
+		'created' => 'datetime',
+		'created_user' => 'numeric',
+		'modified' => 'numeric',
+		'modified_user' => 'numeric',
+	];
+
 /**
  * Validation rules
  *
@@ -217,124 +240,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 	/**
-	 * メタデータ→二次元（セクション、順序）の配列にする
-	 * @param $data
-	 * @return mixed
-	 */
-	public function makeMetadatasToGroups($metadatas) {
-
-		foreach ($metadatas as $metadata) {
-			$tmp = $metadata['MultidatabaseMetadata'];
-
-			$result[(int)$tmp['position']][(int)$tmp['rank']] = $tmp;
-			unset($result[(int)$tmp['position']][(int)$tmp['rank']]['position']);
-			unset($result[(int)$tmp['position']][(int)$tmp['rank']]['rank']);
-		}
-
-		foreach ($result as $position => $rankValues) {
-			ksort($result[$position]);
-		}
-
-
-		return $result;
-	}
-
-
-	/**
-	 * 二次元（セクション、順序）→メタデータの配列にする
-	 * @param $data
-	 * @return mixed
-	 */
-	public function makeGroupsToMetadatas($metadataGroups) {
-
-		if (empty($metadataGroups) || !is_array($metadataGroups)) {
-			return false;
-		}
-
-		$result = array();
-		foreach ($metadataGroups as $metadataPositionNo => $metadataGroup) {
-			foreach ($metadataGroup as $metadataRankNo => $metadata) {
-				$result[]['MultidatabaseMetadata'] = array_merge(
-					$metadata,
-					array('position' => $metadataPositionNo),
-					array('rank' => $metadataRankNo)
-				);
-			}
-		}
-
-		return $result;
-
-	}
-
-
-	/**
-	 * 指定されたメタデータの段を入れ替える
-	 * @param $metadataGroups
-	 * @param $myMetadata
-	 * @return mixed
-	 */
-	public function swapMetadataPosition($metadataGroups,$currentMetadata,$updateValues) {
-		$result = $metadataGroups;
-
-		$currentPosition = (int)$currentMetadata['MultidatabaseMetadata']['position'];
-		$currentRank = (int)$currentMetadata['MultidatabaseMetadata']['rank'];
-		$newPosition = (int)$updateValues['MultidatabaseMetadata']['position'];
-
-		unset ($result[$currentPosition][$currentRank]);
-		$result[$newPosition][] = $metadataGroups[$currentPosition][$currentRank];
-
-		return $result;
-
-	}
-
-	/**
-	 * 指定されたメタデータの行を入れ替える
-	 * @param $metadataGroups
-	 * @param $myMetadata
-	 * @param $newRank
-	 * @return mixed
-	 */
-	public function swapMetadataRank($metadataGroups,$currentMetadata,$updateValues) {
-		$result = $metadataGroups;
-
-		$currentPosition = (int)$currentMetadata['MultidatabaseMetadata']['position'];
-		$currentRank = (int)$currentMetadata['MultidatabaseMetadata']['rank'];
-		$newRank = (int)$updateValues['MultidatabaseMetadata']['rank'];
-
-		unset($result[$currentPosition]);
-		$moveMetadata = $metadataGroups[$currentPosition][$currentRank];
-
-
-
-		$tmp = array();
-		foreach ($metadataGroups[$currentPosition] as $myRank => $myMetadata) {
-			$myRank = (int)$myRank;
-
-			if ($currentRank !== $myRank) {
-				if ($myRank === $newRank) {
-					if ($currentRank < $newRank) {
-						$tmp[] = $myMetadata;
-						$tmp[] = $moveMetadata;
-					} else {
-						$tmp[] = $moveMetadata;
-						$tmp[] = $myMetadata;
-					}
-				} else {
-					$tmp[] = $myMetadata;
-				}
-			}
-		}
-
-		$result[$currentPosition] = $tmp;
-
-		ksort($result);
-
-		return $result;
-
-	}
-
-
-	/**
 	 * メタデータを1件取得する
 	 * @param array $metadatas
 	 * @param null $myMetadataId
@@ -376,32 +281,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 	/**
-	 * セッションのメタデータの順序を入れ替える
-	 */
-	public function swapMetadatas($metadataId, $updateValues) {
-
-		$multidatabaseMetadatas = $this->getMetadatas();
-		$currentMetadata = $this->getMetadata($metadataId);
-		$metadataGroups = $this->makeMetadatasToGroups($multidatabaseMetadatas);
-
-
-		// 順序を入れ替える
-		if ($updateValues['MultidatabaseMetadataSetting']['mode'] === 'moveRank') {
-			$resultGroups = $this->swapMetadataRank($metadataGroups,$currentMetadata,$updateValues);
-		}
-
-		// 段を入れ替える
-		if ($updateValues['MultidatabaseMetadataSetting']['mode'] === 'movePosition') {
-			$resultGroups = $this->swapMetadataPosition($metadataGroups,$currentMetadata,$updateValues);
-		}
-
-		$result = $this->makeGroupsToMetadatas($resultGroups);
-
-		return $result;
-	}
-
-
-	/**
 	 * 変更内容の保存
 	 * @param $metadatas
 	 * @return bool
@@ -426,18 +305,17 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 
-	/**
-	 * DBよりメタデータを取得する
-	 * @return array|boolean
-	 */
-	public function getMetadatas() {
-		$multidatabase = $this->multidatabase->getMultidatabase();
+/**
+ * DBよりメタデータを取得する
+ * @return array
+ */
+	public function getMetadatas($multidatabase_id = null) {
 
-		if (! $multidatabase) {
-			return $multidatabase;
+		if (! $multidatabase_id) {
+			return false;
 		}
 
-		$conditions['multidatabase_id'] = $multidatabase['Multidatabase']['id'];
+		$conditions['multidatabase_id'] = $multidatabase_id;
 
 		$orders = array(
 			'MultidatabaseMetadata.position ASC',
@@ -452,8 +330,72 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 
 
 		return $multidatabaseMetadatas;
+	}
+
+/**
+ * メタデータの型を調整する
+ * @param array $metadatas
+ */
+	public function normalizeEditMetadatasType($metadatas = array()) {
+		if (empty($metadatas)) {
+			return false;
+		}
+
+		foreach ($metadatas as $key => $metadata) {
+			switch ($this->dataType[$key]) {
+				case 'numeric':
+				case 'integer':
+					$result[$key] = (int)$metadata;
+					break;
+				case 'boolean':
+					$result[$key] = 0;
+					if ($metadata) {
+						$result[$key] = 1;
+					}
+					break;
+				case 'string':
+				case 'text':
+					$result[$key] = (string)$metadata;
+					break;
+				default:
+					$result[$key] = $metadata;
+					break;
+			}
+
+		}
+
+		return $result;
+
 
 	}
+
+/**
+ * 編集用のメタデータを取得する
+ * @param null $multidatabase_id
+ * @return bool
+ */
+	public function getEditMetadatas($multidatabase_id = null) {
+
+		$multidatabaseMetadatas = $this->getMetadatas($multidatabase_id);
+
+		if (! $multidatabaseMetadatas) {
+			return false;
+		}
+
+		foreach ($multidatabaseMetadatas as $key => $metadata) {
+			if (!isset($metadata['MultidatabaseMetadata'])) {
+				return false;
+			}
+			$tmp = $metadata['MultidatabaseMetadata'];
+			$result[$key] = $this->normalizeEditMetadatasType($tmp);
+		}
+
+
+
+		return $result;
+
+	}
+
 
 	/**
 	 * 件数カウント
@@ -489,40 +431,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 
-	public function getAddInitMetadata() {
-		return array (
-			'id' => '',
-			'key' => '',
-			'name' => '名称未設定',
-			'language_id' => Current::read('Language.id'),
-			'position' => 0,
-			'rank' => 0,
-			'col_no' => 0,
-			'type' => 1,
-			'selections' => '',
-			'is_require' => 1,
-			'is_searchable' => 1,
-			'is_sortable' => 1,
-			'is_file_dl_require_auth' => 0,
-			'is_visible_list' => 1,
-			'is_visible_detail' => 1,
-		);
-	}
-
-
-
-	public function makeTmpMetadatas($metadatas, $is_new = false) {
-		$cnt = 0;
-		foreach ($metadatas as $metadata) {
-			$result[]['MultidatabaseMetadata'] = array_merge(array('tmp_id' => $cnt),$metadata['MultidatabaseMetadata']);
-			$cnt++;
-		}
-
-		return $result;
-
-	}
-
-
 	public function getEmptyMetadata() {
 		return array(
 			'MultidatabaseMetadata' => array (
@@ -533,7 +441,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'position' => 0,
 				'rank' => 0,
 				'col_no' => 0,
-				'type' => 1,
+				'type' => 'text',
 				'selections' => '',
 				'is_require' => 0,
 				'is_searchable' => 0,
@@ -757,9 +665,5 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'is_visible_detail' => 1,
 			)
 		);
-
-
 	}
-
-
 }
