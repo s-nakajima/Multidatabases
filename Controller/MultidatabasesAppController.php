@@ -87,10 +87,15 @@ class MultidatabasesAppController extends AppController {
 			return $this->throwBadRequest();
 		}
 
+		if(! $multidatabaseMetadataGroups = $this->MultidatabaseMetadata->getMetadataGroups($multidatabase['Multidatabase']['id'])) {
+			return $this->throwBadRequest();
+		}
+
+
 		$this->_multidatabaseTitle = $multidatabase['Multidatabase']['name'];
 		$this->set('multidatabase', $multidatabase);
 		$this->set('multidatabaseMetadatas', $multidatabaseMetadatas);
-
+		$this->set('multidatabaseMetadataGroups', $multidatabaseMetadataGroups);
 
 		if (! $multidatabaseSetting = $this->MultidatabaseSetting->getMultidatabaseSetting()) {
 			$multidatabaseSetting = $this->MultidatabaseSetting->createBlockSetting();

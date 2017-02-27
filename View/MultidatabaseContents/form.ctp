@@ -1,7 +1,7 @@
 <?php echo $this->NetCommonsHtml->script([
 	'/multidatabases/js/edit_multi_database_contents.js',
 ]); ?>
-<div class="multidatabaseContents form" ng-controller="MultidatabaseContent" ng-init="initialize(<?php echo h(json_encode(['multidatabaseMetadatas' => $multidatabaseMetadatas])); ?>)">
+<div class="multidatabaseContents form">
 	<article>
 		<h1><?php echo h($multidatabase['Multidatabase']['name']) ?></h1>
 		<div class="panel panel-default">

@@ -239,6 +239,8 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		]);
 	}
 
+
+
 	/**
 	 * メタデータを1件取得する
 	 * @param array $metadatas
@@ -331,6 +333,26 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 
 		return $multidatabaseMetadatas;
 	}
+
+	public function getMetadataGroups($multidatabase_id) {
+		if (empty($multidatabase_id)) {
+			return false;
+		}
+
+		$metadatas = $this->getEditMetadatas($multidatabase_id);
+
+		if (! $metadatas) {
+			return false;
+		}
+
+		foreach ($metadatas as  $metadata) {
+			$result[$metadata['position']][$metadata['rank']] = $metadata;
+		}
+
+		return $result;
+
+	}
+
 
 /**
  * メタデータの型を調整する

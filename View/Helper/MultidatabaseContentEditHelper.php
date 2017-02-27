@@ -58,7 +58,7 @@ class MultidatabaseContentEditHelper extends AppHelper
 	 * @param integer $colSize 段の列数
 	 * @return string HTML
 	 */
-	public function renderGroup($position, $colSize = 1)
+	public function renderGroup($metadataGroups, $position, $colSize = 1)
 	{
 
 		switch ($colSize) {
@@ -92,16 +92,23 @@ class MultidatabaseContentEditHelper extends AppHelper
 	 * @param integer $position グループ
 	 * @return string HTML
 	 */
-	public function renderGroupItems($position)
+	public function renderGroupItems($metadataGroups, $position)
 	{
 		switch ($position) {
 			case 0:
 			case 1:
 			case 2:
 			case 3:
+				if (!isset($metadataGroups[$position])) {
+					return false;
+				}
+
 				return $this->_View->Element(
 					'MultidatabaseContents/edit/edit_content_group_items',
-					['gPos' => $position]
+					[
+						'gPos' => $position,
+						'metadatas' => $metadataGroups[$position]
+					]
 				);
 			default:
 				return false;
