@@ -1,7 +1,17 @@
-<div ng-repeat="g<?php echo $gPos; ?> in metadataGroup<?php echo $gPos; ?> track by $index">
-	<ul class="multidatabase-metadata-edit multidatabase-metadata-item">
-		<li class="list-group-item clearfix list-group-item-success">
-			<div class="pull-left multidatabase-metadata-move">
+<uib-accordion close-others="true">
+	<div ng-repeat="g<?php echo $gPos; ?> in metadataGroup<?php echo $gPos; ?> track by $index"
+		 class="panel-default form-horizontal"
+		 is-open="metadata.isOpen"
+		 uib-accordion-group>
+		<div uib-accordion-heading>
+			<div class="pull-right">
+				<button class="btn btn-xs btn-danger" type="button"
+						ng-disabled="metadataGroup<?php echo $gPos; ?>.length < 2"
+						ng-click="delete(<?php echo $gPos; ?>, $index, '<?php echo __d('multidatabases', 'Do you want to delete this question ?'); ?>')">
+					<span class="glyphicon glyphicon-remove"> </span>
+				</button>
+			</div>
+			<div class="pull-left">
 				<div class="btn-group">
 					<button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="sending">
 						<?php echo __d('multidatabases', 'Move'); ?><span class="caret"></span>
@@ -17,17 +27,12 @@
 					</ul>
 				</div>
 			</div>
-			<div class="pull-left">
 				<span class="multidatabase-metadata-item-caption">{{g<?php echo $gPos; ?>.name}}</span>
-			</div>
-			<div class="pull-right">
-				<button type="button" class="btn btn-primary nc-btn-style btn-xs btn-multidatabase-metadata-item-edit" ng-click="edit(g<?php echo $gPos; ?>.position,g<?php echo $gPos; ?>.rank)">
-					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> <span class="hidden-xs">編集</span>
-				</button>
-			</div>
-			 <?php foreach ($this->MultidatabaseMetadataSetting->fieldList() as $field): ?>
-				<input name="data[MultidatabaseMetadatas][{{$index}}][<?php echo $field; ?>]" type="text" class="hidden" value="{{g<?php echo $gPos; ?>.<?php echo $field; ?>}}">
-			<?php endforeach; ?>
-		</li>
-	</ul>
-</div>
+			<div class="clearfix"></div>
+		</div>
+		<div>
+			<?php echo $this->MultidatabaseMetadataSetting->renderGroupItemProperty($gPos); ?>
+		</div>
+	</div>
+</uib-accordion>
+

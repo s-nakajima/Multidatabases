@@ -26,22 +26,8 @@ NetCommonsApp.controller('MultidatabaseMetadatas', ['$scope', function($scope) {
 		}
 	}
 
-	// 編集画面フィールドの初期化
-	function editInit() {
-		$scope.metadataEdit.name = null;
-		$scope.metadataEdit.type = null;
-		$scope.metadataEdit.selection = [];
-		$scope.metadataEdit.is_file_dl_require_auth = null;
-		$scope.metadataEdit.is_require = null;
-		$scope.metadataEdit.is_searchable = null;
-		$scope.metadataEdit.is_sortable = null;
-		$scope.metadataEdit.is_visible_detail = null;
-		$scope.metadataEdit.is_visible_list = null;
-	}
 
 	$scope.initialize = function(data) {
-		editInit();
-		console.log(data.multidatabaseMetadatas);
 		angular.forEach(data.multidatabaseMetadatas, function(value) {
 			switch (value.position) {
 				case 0:
@@ -61,60 +47,9 @@ NetCommonsApp.controller('MultidatabaseMetadatas', ['$scope', function($scope) {
 					$scope.metadataGroup3.push(value);
 					break;
 			}
-
-			console.log($scope.metadataGroup0);
 		});
 	}
 
-	// 編集画面表示
-	$scope.edit = function(positionNo,rank) {
-		$('#multidatabaseMetadataSettingEdit').modal('show');
-		editInit();
-
-		currentMetadatas = getGroup(positionNo);
-
-		editPositionNo = positionNo;
-		editRank = rank;
-
-		if (angular.isUndefined(currentMetadatas[rank])) {
-			return false;
-		}
-
-
-		$scope.metadataEdit.name = currentMetadatas[rank].name;
-		$scope.metadataEdit.type = currentMetadatas[rank].type;
-		$scope.metadataEdit.selection = currentMetadatas[rank].selection;
-		$scope.metadataEdit.is_file_dl_require_auth = currentMetadatas[rank].is_file_dl_require_auth;
-		$scope.metadataEdit.is_require = currentMetadatas[rank].is_require;
-		$scope.metadataEdit.is_searchable = currentMetadatas[rank].is_searchable;
-		$scope.metadataEdit.is_sortable = currentMetadatas[rank].is_sortable;
-		$scope.metadataEdit.is_visible_detail = currentMetadatas[rank].is_visible_detail;
-		$scope.metadataEdit.is_visible_list = currentMetadatas[rank].is_visible_list;
-	}
-
-	// 編集画面キャンセル
-	$scope.editCancel = function() {
-		editPositionNo = null;
-		editRank = null;
-		editInit();
-		$('#multidatabaseMetadataSettingEdit').modal('hide');
-	}
-
-
-	// 編集内容反映
-	$scope.editCommit = function() {
-
-		currentMetadatas = getGroup(editPositionNo);
-
-		currentMetadatas[editRank].name = $scope.metadataEdit.name;
-		currentMetadatas[editRank].is_require = $scope.metadataEdit.is_require;
-		currentMetadatas[editRank].is_searchable = $scope.metadataEdit.is_searchable;
-		currentMetadatas[editRank].is_sortable = $scope.metadataEdit.is_sortable;
-		currentMetadatas[editRank].is_visible_list = $scope.metadataEdit.is_visible_list;
-		currentMetadatas[editRank].is_visible_detail = $scope.metadataEdit.is_visible_detail;
-
-		$('#multidatabaseMetadataSettingEdit').modal('hide');
-	}
 
 	// 行追加
 	$scope.add = function(positionNo,last) {
@@ -142,8 +77,14 @@ NetCommonsApp.controller('MultidatabaseMetadatas', ['$scope', function($scope) {
 
 
 	// 行削除
-	$scope.delete = function(positionNo, index) {
-		$scope.multidatabaseMetadatas.splice(index,1);
+	$scope.delete = function(positionNo, index, message) {
+		if (! confirm(message)) {
+			return false;
+		}
+
+		currentMetadatas = getGroup(positionNo);
+		currentMetadatas.splice(index,1);
+
 	}
 
 	// 行移動

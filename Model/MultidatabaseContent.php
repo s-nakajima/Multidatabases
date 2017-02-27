@@ -135,4 +135,16 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			'order' => ''
 		)
 	);
+
+
+	public function getNew() {
+		$new = $this->_getNew();
+		$netCommonsTime = new NetCommonsTime();
+		$new['MultidatabaseContent']['publish_start'] = $netCommonsTime->getNowDatetime();
+		return $new;
+	}
+
+
+
+
 }

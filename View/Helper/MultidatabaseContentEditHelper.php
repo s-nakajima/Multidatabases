@@ -1,6 +1,6 @@
 <?php
 /**
- * Multidatabase Helper
+ * MultidatabaseContentEdit Helper
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
@@ -12,7 +12,7 @@
 App::uses('AppHelper', 'View/Helper');
 
 /**
- * 汎用データベースメタデータのレイアウトで使用するHelper
+ * 汎用データベースコンテンツのレイアウトで使用するHelper
  *
  * このHelperを使う場合、
  * [Multidatabases.multidatabaseMetadataComponent](./multidatabaseMetadataComponent.html)
@@ -21,7 +21,7 @@ App::uses('AppHelper', 'View/Helper');
  * @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabase\View\Helper
  */
-class MultidatabaseMetadataSettingHelper extends AppHelper
+class MultidatabaseContentEditHelper extends AppHelper
 {
 
 	/**
@@ -64,11 +64,11 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 		switch ($colSize) {
 			case 2:
 				// 2列レイアウト
-				$element = 'MultidatabaseBlocks/metadatas/edit_metadata_group_c2';
+				$element = 'MultidatabaseContents/edit/edit_content_group_c2';
 				break;
 			default:
 				// 1列レイアウト
-				$element = 'MultidatabaseBlocks/metadatas/edit_metadata_group_c1';
+				$element = 'MultidatabaseContents/edit/edit_content_group_c1';
 		}
 
 
@@ -100,7 +100,7 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 			case 2:
 			case 3:
 				return $this->_View->Element(
-					'MultidatabaseBlocks/metadatas/edit_metadata_group_items',
+					'MultidatabaseContents/edit/edit_content_group_items',
 					['gPos' => $position]
 				);
 			default:
@@ -108,61 +108,4 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 		}
 	}
 
-	/**
-	 * 汎用データベースメタデータレイアウト アイテムプロパティのHTMLを出力する
-	 *
-	 * @param integer $position グループ
-	 * @return string HTML
-	 */
-	public function renderGroupItemProperty($position)
-	{
-		switch ($position) {
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-				return $this->_View->Element(
-					'MultidatabaseBlocks/metadatas/edit_metadata_item_property',
-					['gPos' => $position]
-				);
-			default:
-				return false;
-		}
-	}
-
-	public function fieldTypeList() {
-		return [
-			'text' => __d('multidatabases','Text'),
-			'textarea' => __d('multidatabases','Text area'),
-			'link' => __d('multidatabases','Link'),
-			'select' => __d('multidatabases','Select'),
-			'checkbox' => __d('multidatabases','Check box'),
-			'wysiwyg' => __d('multidatabases','Wysiwyg'),
-			'file' => __d('multidatabases','File'),
-			'image' => __d('multidatabases','Image'),
-			'autonumber' => __d('multidatabases','Auto number'),
-			'mail' => __d('multidatabases','E-mail Address'),
-			'date' => __d('multidatabases','Date'),
-			'created' => __d('multidatabases','Create date'),
-			'updated' => __d('multidatabases','Update date'),
-		];
-	}
-
-	public function fieldList() {
-		return [
-			'key',
-			'name',
-			'position',
-			'rank',
-			'type',
-			'selections',
-			'is_require',
-			'is_searchable',
-			'is_sortable',
-			'is_file_dl_require_auth',
-			'is_visible_list',
-			'is_visible_detail'
-		];
-
-	}
 }

@@ -34,3 +34,8 @@ div.multidatabase-metadata-label {
 .multidatabase-metadata-edit button.multidatabases-display-btn {
 	min-width: 64px;
 }
+
+.multidatabase-metadata-item-caption {
+	line-height: 2em;
+	padding-left: 0.5em;
+}

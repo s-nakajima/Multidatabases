@@ -3,9 +3,6 @@ echo $this->NetCommonsHtml->script([
 	'/multidatabases/js/edit_multi_database_metadatas.js'
 ]);
 ?>
-
-
-
 <div id="multidatabase-metadata-fields" ng-controller="MultidatabaseMetadatas" ng-init="initialize(<?php echo h(json_encode(['multidatabaseMetadatas' => $multidatabaseMetadatas])); ?>)">
 	<div class="panel panel-default">
 		<div class="panel-heading clearfix">
@@ -44,5 +41,4 @@ echo $this->NetCommonsHtml->script([
 			<?php echo $this->MultidatabaseMetadataSetting->renderGroup(3,1); ?>
 		</div>
 	</div>
-	<?php echo $this->element('MultidatabaseBlocks/metadatas/edit_metadata_item_property'); ?>
 </div>

@@ -19,24 +19,93 @@ App::uses('AppController', 'Controller');
  */
 class MultidatabasesAppController extends AppController {
 
-    /**
-     * 使用するComponent
-     *
-     * @var array
-     */
+/**
+ * 使用するComponent
+ *
+ * @var array
+ */
     public $components = array(
         'Pages.PageLayout',
         'Security',
     );
 
-    /**
-     * @var array use model
-     */
+/**
+ * @var array use model
+ */
     public $uses = array(
-        'Multidatabases.Multidatabase',
+		'Multidatabases.Multidatabase',
+		'Multidatabases.MultidatabaseMetadata',
         'Multidatabases.MultidatabaseSetting',
         'Multidatabases.MultidatabaseFrameSetting'
     );
+
+/**
+ * @var array 汎用DBタイトル
+ */
+	protected $_multidatabaseTitle;
+
+/**
+ * @var array フレーム設定
+ */
+	protected $_frameSetting;
+
+/**
+ * @var array 汎用DB設定
+ */
+	protected $_multidatabaseSetting;
+
+
+	protected function _prepare() {
+		$this->_setupMultidatabaseTitle();
+		$this->_initMultidatabase(['multidatabaseSetting']);
+		$this->_loadFrameSetting();
+	}
+
+	protected function _loadFrameSetting() {
+		$this->_frameSetting = $this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting();
+	}
+
+/**
+ * ブロック名を汎用DBタイトルとしてセットする
+ *
+ * @return void
+ */
+	protected function _setupMultidatabaseTitle() {
+		$this->loadModel('Blocks.Block');
+		$block = $this->Block->findById(Current::read('Block.id'));
+		$this->_multidatabaseTitle = $block['Block']['name'];
+	}
+
+	protected function _initMultidatabase($contains = []) {
+		// 汎用DBを取得
+		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
+			return $this->throwBadRequest();
+		}
+
+		// メタデータを取得
+		if(! $multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+			return $this->throwBadRequest();
+		}
+
+		$this->_multidatabaseTitle = $multidatabase['Multidatabase']['name'];
+		$this->set('multidatabase', $multidatabase);
+		$this->set('multidatabaseMetadatas', $multidatabaseMetadatas);
+
+
+		if (! $multidatabaseSetting = $this->MultidatabaseSetting->getMultidatabaseSetting()) {
+			$multidatabaseSetting = $this->MultidatabaseSetting->createBlockSetting();
+			$multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'] = null;
+		} else {
+			$multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'] = $multidatabase['Multidatabase']['key'];
+		}
+
+		$this->_multidatabaseSetting = $multidatabaseSetting;
+		$this->set('multidatabaseSetting',$multidatabaseSetting['MultidatabaseSetting']);
+		$this->set('userId', (int)$this->Auth->user('id'));
+
+		return true;
+
+	}
 
 
 }

@@ -1,124 +1,101 @@
-<div class="modal" id="multidatabaseMetadataSettingEdit" data-backdrop="static">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				{{metadataEdit.name}}
-			</div>
-			<div class="modal-body">
-				<div class="form-group">
-					<label for="multidatabaseMetadataSettingEditName" class="control-label">
-						<?php echo __d('multidatabases', 'Field name'); ?>
-					</label>
-					<input type="text" class="form-control" id="multidatabaseMetadataSettingEditName"
-						   ng-model="metadataEdit.name">
-				</div>
-				<div class="form-select-outer">
-					<label><?php echo __d('multidatabases', 'Field type'); ?></label>
-					<strong class="text-danger h4">*</strong><br>
-					<?php echo $this->NetCommonsForm->select('MultidatabaseMetadataSettingEdit.type', array(
-						'text' => 'テキスト',
-						'textarea' => 'テキストエリア',
-						'link' => 'リンク',
-						'select' => '選択式（択一）',
-						'checkbox' => '選択式（複数）',
-						'wysiwyg' => 'WYSIWYGテキスト',
-						'file' => 'ファイル',
-						'image' => '画像',
-						'autonumber' => '自動採番',
-						'mail' => 'メール',
-						'date' => '日付',
-						'created' => '登録日時',
-						'updated' => '更新日時',
-					)); ?>
-				</div>
-				<div class="form-group">
-					<div class="checkbox">
-						<label class="control-label" for="MultidatabaseMetadataSettingEditIsRequire">
-							<input type="checkbox"
-								   id="MultidatabaseMetadataSettingEditIsRequire"
-								   ng-true-value="1"
-								   ng-false-value=""
-								   ng-model="metadataEdit.is_require">Require
-						</label>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="checkbox">
-						<label class="control-label" for="MultidatabaseMetadataSettingEditIsSearchable">
-							<input type="checkbox"
-								   id="MultidatabaseMetadataSettingEditIsSearchable"
-								   ng-true-value="1"
-								   ng-false-value=""
-								   ng-model="metadataEdit.is_searchable">Searchable
-						</label>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="checkbox">
-						<label class="control-label" for="MultidatabaseMetadataSettingEditIsSortable">
-							<input type="checkbox"
-								   id="MultidatabaseMetadataSettingEditIsSortable"
-								   ng-true-value="1"
-								   ng-false-value=""
-								   ng-model="metadataEdit.is_sortable">Sortable
-						</label>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="checkbox">
-						<label class="control-label" for="MultidatabaseMetadataSettingEditIsVisibleList">
-							<input type="checkbox"
-								   id="MultidatabaseMetadataSettingEditIsVisibleList"
-								   ng-true-value="1"
-								   ng-false-value=""
-								   ng-model="metadataEdit.is_visible_list">Visible List
-						</label>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="checkbox">
-						<label class="control-label" for="MultidatabaseMetadataSettingEditIsVisibleDetail">
-							<input type="checkbox"
-								   id="MultidatabaseMetadataSettingEditIsVisibleDetail"
-								   ng-true-value="1"
-								   ng-false-value=""
-								   ng-model="metadataEdit.is_visible_detail">Visible Detail
-						</label>
-					</div>
-				</div>
+<?php foreach ($this->MultidatabaseMetadataSetting->fieldList() as $field): ?>
 
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default btn-workflow" ng-click="editCancel()">
-					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>キャンセル
-				</button>
-				<button type="button" class="btn btn-primary btn-workflow" ng-click="editCommit()">
-					決定
-				</button>
+<?php endforeach; ?>
 
-				<div aria-hidden="false" role="tabpanel" class="panel-collapse in collapse" uib-collapse="!isOpen"
-					 aria-expanded="true">
-					<div class="nc-danger-zone" ng-init="dangerZone=false;" style="margin-top:20px;">
-						<uib-accordion close-others="false">
-							<div uib-accordion-group is-open="dangerZone" class="panel-danger">
-								<uib-accordion-heading class="clearfix">
-									<span style="cursor: pointer">削除処理</span>
-									<span class="pull-right glyphicon"
-										  ng-class="{'glyphicon-chevron-down': dangerZone, 'glyphicon-chevron-right': ! dangerZone}"></span>
-								</uib-accordion-heading>
-								<div class="inline-block">
-									このメタデータ項目を削除します。
-								</div>
-								<button type="button" class="btn btn-danger pull-right"
-										id="btnMultidatabaseMetadataSettingDelete"
-										onclick="return confirm('メタデータ項目を削除します。本当によろしいですか。')">
-									<span class="glyphicon glyphicon-trash"> </span> 削除
-								</button>
-							</div>
-						</uib-accordion>
-					</div>
-				</div>
-			</div>
+<input name="data[MultidatabaseMetadatas][{{$index}}][key]" type="text" class="hidden" value="{{g<?php echo $gPos; ?>.key}}">
+<input name="data[MultidatabaseMetadatas][{{$index}}][rank]" type="text" class="hidden" value="{{g<?php echo $gPos; ?>.rank}}">
+<input name="data[MultidatabaseMetadatas][{{$index}}][position]" type="text" class="hidden" value="{{g<?php echo $gPos; ?>.position}}">
+<div class="row form-group">
+	<div class="col-xs-12">
+		<label for="multidatabaseMetadataSettingEditName<?php echo$gPos; ?>-{{$index}}" class="control-label">
+			<?php echo __d('multidatabases', 'Field name'); ?>
+			<strong class="text-danger h4">*</strong>
+		</label>
+		<input type="text"
+			   class="form-control"
+			   id="multidatabaseMetadataSettingEditName<?php echo$gPos; ?>-{{$index}}"
+			   name="data[MultidatabaseMetadatas][{{$index}}][name]"
+			   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['name']">
+	</div>
+</div>
+<div class="row form-group">
+	<div class="col-xs-12">
+		<label>
+			<?php echo __d('multidatabases', 'Field type'); ?>
+			<strong class="text-danger h4">*</strong>
+		</label>
+		<select name="data[MultidatabaseMetadatas][{{$index}}][type]"
+				id="multidatabaseMetadataSettingEditType<?php echo$gPos; ?>-{{$index}}"
+				class="form-control"
+				ng-model="metadataGroup<?php echo $gPos; ?>[$index]['type']">
+				<?php foreach ($this->MultidatabaseMetadataSetting->fieldTypeList() as $key => $fieldName): ?>
+					<option value="<?php echo $key; ?>"><?php echo $fieldName; ?></option>
+				<?php endforeach; ?>
+		</select>
+	</div>
+</div>
+<div class="row form-group">
+	<div class="col-xs-12">
+		<div class="checkbox">
+			<label class="control-label" for="MultidatabaseMetadataSettingEditIsRequire<?php echo$gPos; ?>-{{$index}}">
+				<input type="checkbox"
+					   name="data[MultidatabaseMetadatas][{{$index}}][is_require]"
+					   id="MultidatabaseMetadataSettingEditIsRequire<?php echo$gPos; ?>-{{$index}}"
+					   ng-true-value="1"
+					   ng-false-value=""
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_require']">Require
+			</label>
+		</div>
+		<div class="checkbox">
+			<label class="control-label" for="MultidatabaseMetadataSettingEditIsSearchable<?php echo$gPos; ?>-{{$index}}">
+				<input type="checkbox"
+					   name="data[MultidatabaseMetadatas][{{$index}}][is_searchable]"
+					   id="MultidatabaseMetadataSettingEditIsSearchable<?php echo$gPos; ?>-{{$index}}"
+					   ng-true-value="1"
+					   ng-false-value=""
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_searchable']">Searchable
+			</label>
+		</div>
+		<div class="checkbox">
+			<label class="control-label" for="MultidatabaseMetadataSettingEditIsSortable<?php echo$gPos; ?>-{{$index}}">
+				<input type="checkbox"
+					   name="data[MultidatabaseMetadatas][{{$index}}][is_sortable]"
+					   id="MultidatabaseMetadataSettingEditIsSortable<?php echo$gPos; ?>-{{$index}}"
+					   ng-true-value="1"
+					   ng-false-value=""
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_sortable']">Sortable
+			</label>
+		</div>
+		<div class="checkbox">
+			<label class="control-label" for="MultidatabaseMetadataSettingEditIsFileDlRequireAuth<?php echo$gPos; ?>-{{$index}}">
+				<input type="checkbox"
+					   id="MultidatabaseMetadataSettingEditIsFileDlRequireAuth<?php echo$gPos; ?>-{{$index}}"
+					   name="data[MultidatabaseMetadatas][{{$index}}][is_file_dl_require_auth]"
+					   ng-true-value="1"
+					   ng-false-value=""
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_list']">Require auth if one file download
+			</label>
+		</div>
+		<div class="checkbox">
+			<label class="control-label" for="MultidatabaseMetadataSettingEditIsVisibleList<?php echo$gPos; ?>-{{$index}}">
+				<input type="checkbox"
+					   id="MultidatabaseMetadataSettingEditIsVisibleList<?php echo$gPos; ?>-{{$index}}"
+					   name="data[MultidatabaseMetadatas][{{$index}}][is_visible_list]"
+					   ng-true-value="1"
+					   ng-false-value=""
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_list']">Visible List
+			</label>
+		</div>
+		<div class="checkbox">
+			<label class="control-label" for="MultidatabaseMetadataSettingEditIsVisibleDetail<?php echo$gPos; ?>-{{$index}}">
+				<input type="checkbox"
+					   name="data[MultidatabaseMetadatas][{{$index}}][is_visible_detail]"
+					   id="MultidatabaseMetadataSettingEditIsVisibleDetail<?php echo$gPos; ?>-{{$index}}"
+					   ng-true-value="1"
+					   ng-false-value=""
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_detail']">Visible Detail
+			</label>
 		</div>
 	</div>
 </div>
+
