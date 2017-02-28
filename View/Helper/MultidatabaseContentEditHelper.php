@@ -130,60 +130,64 @@ class MultidatabaseContentEditHelper extends AppHelper
 		$name = 'metadata' . $metadata['col_no'];
 		$options['label'] = $metadata['name'];
 		$elementType = $metadata['type'];
+
+		$result = '';
 		switch ($elementType) {
 			case 'text':
-				return $this->renderFormElementText($name, $options);
+				$result .= $this->renderFormElementText($name, $options);
 				break;
 			case 'textarea':
-				return $this->renderFormElementTextArea($name, $options);
+				$result .= $this->renderFormElementTextArea($name, $options);
 				break;
 			case 'link':
-				return $this->renderFormElementText($name, $options);
+				$result .= $this->renderFormElementText($name, $options);
 				break;
 			case 'radio':
 				$options['options'] = explode('||',$metadata['selections']);
-				return $this->renderFormElementRadio($name, $options);
+				$result .= $this->renderFormElementRadio($name, $options);
 				break;
 			case 'select':
 				$options['options'] = explode('||',$metadata['selections']);
-				return $this->renderFormElementSelect($name, $options);
+				$result .= $this->renderFormElementSelect($name, $options);
 				break;
 			case 'checkbox':
 				$options['options'] = explode('||',$metadata['selections']);
-				return $this->renderFormElementCheckBox($name, $options);
+				$result .= $this->renderFormElementCheckBox($name, $options);
 				break;
 			case 'wysiwyg':
 				$options['rows'] = 12;
-				return $this->renderFormElementWysiwyg($name, $options);
+				$result .= $this->renderFormElementWysiwyg($name, $options);
 				break;
 			case 'file':
-				return $this->renderFormElementFile($name, $options);
+				$result .= $this->renderFormElementFile($name, $options);
 				break;
 			case 'image':
-				return $this->renderFormElementImage($name, $options);
+				$result .= $this->renderFormElementImage($name, $options);
 				break;
 			case 'autonumber':
-				return $this->renderFormElementReadOnly($name, $options);
+				$result .= $this->renderFormElementReadOnly($name, $options);
 				break;
 			case 'mail':
-				return $this->renderFormElementText($name, $options);
+				$result .= $this->renderFormElementText($name, $options);
 				break;
 			case 'date':
-				return $this->renderFormElementDate($name, $options);
+				$result .= $this->renderFormElementDate($name, $options);
 				break;
 			case 'created':
-				return $this->renderFormElementReadOnly($name, $options);
+				$result .= $this->renderFormElementReadOnly($name, $options);
 				break;
 			case 'updated':
-				return $this->renderFormElementReadOnly($name, $options);
+				$result .= $this->renderFormElementReadOnly($name, $options);
 				break;
 			case 'hidden':
-				return $this->renderFormElementHidden($name, $options);
+				$result .= $this->renderFormElementHidden($name, $options);
 				break;
 			default:
-				return $this->renderFormElementReadOnly($name, $options);
+				$result .= $this->renderFormElementReadOnly($name, $options);
 				break;
 		}
+
+		return $result;
 	}
 
 	public function renderFormElementReadOnly($name,  $options = []) {
