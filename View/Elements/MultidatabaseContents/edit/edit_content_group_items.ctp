@@ -1,9 +1,6 @@
-<div class="panel-default form-horizontal">
 	<?php foreach($metadatas as $metadata): ?>
 		<div>
-		<?php echo $metadata['name']; ?>
+			<?php echo $this->MultidatabaseContentEdit->renderFormElement($metadata);
+			?>
 		</div>
 	<?php endforeach; ?>
-</div>
-</uib-accordion>
-
