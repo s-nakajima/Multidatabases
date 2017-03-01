@@ -1,6 +1,12 @@
 <?php echo $this->NetCommonsHtml->script([
 	'/multidatabases/js/edit_multi_database_contents.js',
 ]); ?>
+<?php echo $this->NetCommonsForm->hidden('key'); ?>
+<?php echo $this->NetCommonsForm->hidden('Frame.id', ['value' => Current::read('Frame.id')]); ?>
+<?php echo $this->NetCommonsForm->hidden('Block.id', ['value' => Current::read('Block.id')]); ?>
+<?php echo $this->NetCommonsForm->hidden('Multidatabase.id', ['value' => $multidatabase['Multidatabase']['id']]); ?>
+<?php echo $this->NetCommonsForm->hidden('Multidatabase.key', ['value' => $multidatabase['Multidatabase']['key']]); ?>
+
 <div class="multidatabaseContents form" ng-controller="MultidatabaseContentEdit" ng-init=""Initialize(<?php echo h(json_encode(['multidatabaseMetadatas' => $multidatabaseMetadatas])); ?>)>
 	<article>
 		<h1><?php echo h($multidatabase['Multidatabase']['name']) ?></h1>
@@ -18,21 +24,12 @@
 				)
 			);
 			?>
-			<?php echo $this->NetCommonsForm->hidden('key'); ?>
-			<?php echo $this->NetCommonsForm->hidden('Frame.id', [
-						'value' => Current::read('Frame.id'),
-					]); ?>
-			<?php echo $this->NetCommonsForm->hidden('Block.id', [
-				'value' => Current::read('Block.id'),
-			]); ?>
-
 			<div class="panel-body">
 				<fieldset>
 				<?php echo $this->element('MultidatabaseContents/edit/edit_content'); ?>
 				</fieldset>
 				<hr/>
 				<?php echo $this->Workflow->inputComment('MultidatabaseContent.status'); ?>
-
 			</div>
 
 			<?php echo $this->Workflow->buttons('MultidatabaseContent.status'); ?>
@@ -42,15 +39,25 @@
 			<?php if ($isEdit && $isDeletable) : ?>
 				<div  class="panel-footer" style="text-align: right;">
 					<?php echo $this->NetCommonsForm->create('MultidatabaseContent',
-						array(
+						[
 							'type' => 'delete',
 							'url' => NetCommonsUrl::blockUrl(
-								array('controller' => 'multidatabase_contents', 'action' => 'delete', 'frame_id' => Current::read('Frame.id')))
-						)
+								[
+									'controller' => 'multidatabase_contents',
+									'action' => 'delete',
+									'frame_id' => Current::read('Frame.id')
+								]
+							)
+						]
 					) ?>
 					<?php echo $this->NetCommonsForm->input('key', array('type' => 'hidden')); ?>
 
-					<?php echo $this->Button->delete('', __d('net_commons', 'Deleting the %s. Are you sure to proceed?', __d('multidatabases', 'MultidatabaseContent')));?>
+					<?php echo $this->Button->delete(
+						'',
+						__d('net_commons', 'Deleting the %s. Are you sure to proceed?',
+						__d('multidatabases', 'MultidatabaseContent')
+						)
+					);?>
 
 					</span>
 					<?php echo $this->NetCommonsForm->end() ?>

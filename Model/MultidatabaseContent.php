@@ -14,6 +14,8 @@
  */
 
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
+App::uses('MultidatabaseModel', 'Multidatabase.Model');
+App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
 
 /**
  * Summary for MultidatabaseContent Model
@@ -32,80 +34,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  *
  * @var array
  */
-	public $validate = array(
-		'key' => array(
-			'notBlank' => array(
-				'rule' => array('notBlank'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'multidatabase_id' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'language_id' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'block_id' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'status' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'is_active' => array(
-			'boolean' => array(
-				'rule' => array('boolean'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'is_latest' => array(
-			'boolean' => array(
-				'rule' => array('boolean'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-	);
-
-	//The Associations below have been created with all possible keys, those that are not needed can be removed
+	public $validate = [];
 
 /**
  * belongsTo associations
@@ -144,6 +73,48 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		return $new;
 	}
 
+/**
+ * バリデーションルールの作成
+ *
+ * @return bool
+ */
+	public function makeValidation() {
+		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
+			return false;
+		}
+
+		if(! $multidatabaseMetadatas = $this->Multidatabase->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+			return false;
+		}
+
+		foreach ($multidatabaseMetadatas as $metadata) {
+
+			$tmp = [];
+			if ($metadata['is_require']) {
+				switch ($metadata['type']) {
+					case 'checkbox':
+						$tmp['rule'] = [
+							'multiple',
+							[
+								'min' => 1
+							]
+						];
+						break;
+					default:
+						$tmp['rule'][] = 'notBlank';
+						$tmp['allowEmpty'] = false;
+						break;
+				}
+				$tmp['required'] = true;
+				$result['metadata' . $metadata['id']] =  $tmp;
+			}
+
+
+		}
+		$this->validate = $result;
+
+
+	}
 
 
 

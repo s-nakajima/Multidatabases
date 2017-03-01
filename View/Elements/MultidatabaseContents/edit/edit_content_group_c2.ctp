@@ -1,1 +1,1 @@
-<?php echo $this->MultidatabaseContentEdit->renderGroupItems($multidatabaseMetadataGroups,$gPos); ?>
+<?php echo $this->MultidatabaseContentEdit->renderGroupItems($gMetadatas); ?>

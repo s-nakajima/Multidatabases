@@ -36,7 +36,8 @@ class MultidatabaseContentEditHelper extends AppHelper
 	public $helpers = [
 		'NetCommons.Button',
 		'NetCommons.NetCommonsHtml',
-		'NetCommons.NetCommonsForm'
+		'NetCommons.NetCommonsForm',
+		'Form'
 	];
 
 	/**
@@ -79,7 +80,10 @@ class MultidatabaseContentEditHelper extends AppHelper
 			case 3:
 				return $this->_View->Element(
 					$element,
-					['gPos' => $position]
+					[
+						'gMetadatas' => $metadataGroups[$position],
+						'gPos' => $position
+					]
 				);
 			default:
 				return false;
@@ -92,27 +96,22 @@ class MultidatabaseContentEditHelper extends AppHelper
 	 * @param integer $position グループ
 	 * @return string HTML
 	 */
-	public function renderGroupItems($metadataGroups, $position)
+	public function renderGroupItems($metadatas)
 	{
-		switch ($position) {
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-				if (!isset($metadataGroups[$position])) {
-					return false;
-				}
+		return $this->_View->Element(
+			'MultidatabaseContents/edit/edit_content_group_items',
+			[
+				'metadatas' => $metadatas
+			]
+		);
+	}
 
-				return $this->_View->Element(
-					'MultidatabaseContents/edit/edit_content_group_items',
-					[
-						'gPos' => $position,
-						'metadatas' => $metadataGroups[$position]
-					]
-				);
-			default:
-				return false;
+	public function convertSelectionsToArray($selections) {
+		foreach (explode('||',$selections) as $selection) {
+			$result[md5($selection)] = $selection;
 		}
+
+		return $result;
 	}
 
 /**
@@ -127,7 +126,8 @@ class MultidatabaseContentEditHelper extends AppHelper
 		}
 
 
-		$name = 'metadata' . $metadata['col_no'];
+		$name = 'metadata' . $metadata['id'];
+		$options['id'] = $name;
 		$options['label'] = $metadata['name'];
 		$elementType = $metadata['type'];
 
@@ -143,16 +143,17 @@ class MultidatabaseContentEditHelper extends AppHelper
 				$result .= $this->renderFormElementText($name, $options);
 				break;
 			case 'radio':
-				$options['options'] = explode('||',$metadata['selections']);
+				$options['options'] = $this->convertSelectionsToArray($metadata['selections']);
 				$result .= $this->renderFormElementRadio($name, $options);
 				break;
 			case 'select':
-				$options['options'] = explode('||',$metadata['selections']);
+				$options['options'] = $this->convertSelectionsToArray($metadata['selections']);
 				$result .= $this->renderFormElementSelect($name, $options);
 				break;
 			case 'checkbox':
-				$options['options'] = explode('||',$metadata['selections']);
+				$options['options'] = $this->convertSelectionsToArray($metadata['selections']);
 				$result .= $this->renderFormElementCheckBox($name, $options);
+
 				break;
 			case 'wysiwyg':
 				$options['rows'] = 12;
@@ -187,6 +188,7 @@ class MultidatabaseContentEditHelper extends AppHelper
 				break;
 		}
 
+
 		return $result;
 	}
 
@@ -212,12 +214,19 @@ class MultidatabaseContentEditHelper extends AppHelper
 	}
 
 	public function renderFormElementCheckBox($name,  $options = []) {
-		$options['type'] = 'checkbox';
+		$options += [
+			'type' => 'select',
+			'multiple' => 'checkbox',
+			'options' => $options,
+			'class' => 'checkbox-inline nc-checkbox'
+		];
+
 		return $this->NetCommonsForm->input($name,$options);
 	}
 
 	public function renderFormElementRadio($name,  $options = []) {
 		$options['type'] = 'radio';
+		$options['inline'] = true;
 		return $this->NetCommonsForm->input($name,$options);
 	}
 
