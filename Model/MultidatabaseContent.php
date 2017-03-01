@@ -112,6 +112,76 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 		}
 		$this->validate = $result;
+	}
+
+	public function saveContent($data) {
+
+		$this->makeValidation();
+		$this->set($data);
+
+		if (!$this->validates()) {
+			return false;
+		}
+
+		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
+			return false;
+		}
+
+		if(! $multidatabaseMetadatas = $this->Multidatabase->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+			return false;
+		}
+
+		foreach ($multidatabaseMetadatas as $metadata) {
+			if (isset($data['MultidatabaseContent']['metadata' . $metadata['id']])) {
+				$tmpDat = $data['MultidatabaseContent']['metadata' . $metadata['id']];
+
+				switch ($metadata['type']) {
+					case 'checkbox':
+						$tmpSelections = [];
+						foreach (explode('||',$metadata['selections']) as $val) {
+							if(in_array(md5($val),$tmpDat)) {
+								$tmpSelections[] = $val;
+							}
+						}
+						if (!empty($tmpSelections)) {
+							$contentDat['value' . $metadata['col_no']] = implode('||',$tmpSelections);
+						}
+						break;
+					default:
+						$contentDat['value' . $metadata['col_no']] = $tmpDat;
+						break;
+				}
+			} else {
+				$contentDat['value' . $metadata['col_no']] = '';
+			}
+		}
+
+		$contentDat['status'] = $data['MultidatabaseContent']['status'];
+		$contentDat['block_id'] = $data['MultidatabaseContent']['block_id'];
+		$contentDat['language_id'] = $data['MultidatabaseContent']['language_id'];
+
+		unset($data['MultidatabaseContent']);
+		$data['MultidatabaseContent'] = $contentDat;
+
+
+		var_dump($data);
+
+
+		
+		$this->begin();
+		try {
+
+
+
+
+			if (($savedData = $this->save($data,false)) === false) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		} catch (Exception $e) {
+			$this->rollback($e);
+		}
+
+		return $savedData;
 
 
 	}
