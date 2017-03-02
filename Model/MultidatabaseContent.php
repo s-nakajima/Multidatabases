@@ -65,13 +65,60 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		)
 	);
 
+	public $actsAs = [
+		'NetCommons.Trackable',
+		'NetCommons.OriginalKey',
+//		'Workflow.Workflow',
+		'Likes.Like',
+//		'Workflow.WorkflowComment',
+		'ContentComments.ContentComment',
+/*
+		'Topics.Topics' => array(
+			'fields' => array(
+				'title' => 'title',
+				'summary' => 'body1',
+				'path' => '/:plugin_key/multidatabase_contents/view/:block_id/:content_key',
+			),
+			'search_contents' => array('body2')
+		),
+		'Mails.MailQueue' => array(
+			'embedTags' => array(
+				'X-SUBJECT' => 'BlogEntry.title',
+				'X-BODY' => 'BlogEntry.body1',
+				'X-URL' => [
+					'controller' => 'blog_entries'
+				]
+			),
+		),
+		'Wysiwyg.Wysiwyg' => array(
+			'fields' => array('body1', 'body2'),
+		),
+*/
 
-	public function getNew() {
-		$new = $this->_getNew();
-		$netCommonsTime = new NetCommonsTime();
-		$new['MultidatabaseContent']['publish_start'] = $netCommonsTime->getNowDatetime();
-		return $new;
+	];
+
+
+	public function beforeValidate($options = []) {
+		$this->validate = $this->makeValidation();
+		return parent::beforeValidate($options);
 	}
+
+
+	public function getMultidatabaseContents() {
+		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
+			return false;
+		}
+
+		$multidatabaseContents = $this->find('all', array(
+			'recursive' => -1,
+			'conditions' => [
+				'multidatabase_key' => $multidatabase['Multidatabase']['key'],
+			]
+		));
+
+		return $multidatabaseContents;
+	}
+
 
 /**
  * バリデーションルールの作成
@@ -106,22 +153,16 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 						break;
 				}
 				$tmp['required'] = true;
-				$result['metadata' . $metadata['id']] =  $tmp;
+				$result['value' . $metadata['col_no']] =  $tmp;
 			}
 
 
 		}
-		$this->validate = $result;
+
+		return Hash::merge($this->validate,$result);
 	}
 
 	public function saveContent($data) {
-
-		$this->makeValidation();
-		$this->set($data);
-
-		if (!$this->validates()) {
-			return false;
-		}
 
 		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
@@ -131,52 +172,31 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			return false;
 		}
 
-		foreach ($multidatabaseMetadatas as $metadata) {
-			if (isset($data['MultidatabaseContent']['metadata' . $metadata['id']])) {
-				$tmpDat = $data['MultidatabaseContent']['metadata' . $metadata['id']];
-
-				switch ($metadata['type']) {
-					case 'checkbox':
-						$tmpSelections = [];
-						foreach (explode('||',$metadata['selections']) as $val) {
-							if(in_array(md5($val),$tmpDat)) {
-								$tmpSelections[] = $val;
-							}
-						}
-						if (!empty($tmpSelections)) {
-							$contentDat['value' . $metadata['col_no']] = implode('||',$tmpSelections);
-						}
-						break;
-					default:
-						$contentDat['value' . $metadata['col_no']] = $tmpDat;
-						break;
-				}
-			} else {
-				$contentDat['value' . $metadata['col_no']] = '';
-			}
-		}
-
-		$contentDat['status'] = $data['MultidatabaseContent']['status'];
-		$contentDat['block_id'] = $data['MultidatabaseContent']['block_id'];
-		$contentDat['language_id'] = $data['MultidatabaseContent']['language_id'];
-
-		unset($data['MultidatabaseContent']);
-		$data['MultidatabaseContent'] = $contentDat;
-
-
-		var_dump($data);
-
-
-		
 		$this->begin();
 		try {
+			$this->create();
+			$this->set($data);
 
+			if (!$this->validates()) {
+				$this->rollback();
+				return false;
+			}
 
+			$multidatabaseContent = $data['MultidatabaseContent'];
+			foreach ($multidatabaseContent as $key => $val) {
+				if (
+					isset($data['MultidatabaseContent'][$key]) &&
+					is_array($data['MultidatabaseContent'][$key])
+				) {
+					$data['MultidatabaseContent'][$key] = implode('||',$val);
+				}
+			}
 
 
 			if (($savedData = $this->save($data,false)) === false) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
+			$this->commit();
 		} catch (Exception $e) {
 			$this->rollback($e);
 		}

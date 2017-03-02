@@ -119,32 +119,41 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		// ゲストアクセスOKのアクションを設定
 		$this->Auth->allow('index', 'view', 'tag', 'year_month');
 		//$this->Categories->initCategories();
+
+		$this->_prepare();
 	}
 
 
     	public function index() {
 
-			if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
-				$this->setAction('throwBadRequest');
-				return false;
-			}
-			$this->set('multidatabase', $multidatabase['Multidatabase']);
 
-			$multidatabaseContents = false;
+			if (! $multidatabaseContents = $this->MultidatabaseContent->getMultidatabaseContents()) {
+				//$this->setAction('throwBadRequest');
+				//return false;
+			}
+
+			$this->set('multidatabase', $this->_multidatabase['Multidatabase']);
+			$this->set('multidatabaseMetadatas', $this->_multidatabaseMetadatas);
 			$this->set('multidatabaseContents', $multidatabaseContents);
 
 
 	}
 
-	public function detail() {
+	public function detail($id = null) {
+
+		if (! $multidatabaseContents = $this->MultidatabaseContent->getMultidatabaseContents()) {
+			$this->setAction('throwBadRequest');
+			return false;
+		}
+
+		$this->set('multidatabase', $this->_Multidatabase);
+		$this->set('multidatabaseMetadatas', $this->_MultidatabaseMetadatas);
+		$this->set('multidatabaseContents', $multidatabaseContents);
 
 	}
 
 
 	public function add() {
-		$this->set('isEdit', false);
-		$this->_prepare();
-
 
 		$this->MultidatabaseContent->makeValidation();
 		if ($this->request->is('post')) {
@@ -155,21 +164,24 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			} else {
 				$this->MultidatabaseContent->create();
 
-				$this->request->data['MultidatabaseSetting']['key'] = $this->_multidatabaseSetting['MultidatabaseSetting']['key'];
+				$this->request->data['MultidatabaseSetting']['multidatabase_key'] = $this->_multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'];
+
 				$status = $this->Workflow->parseStatus();
+				$this->request->data['BlogEntry']['status'] = $status;
 
 				$this->request->data['MultidatabaseContent']['status'] = $status;
+				$this->request->data['MultidatabaseContent']['multidatabase_id'] = $this->_multidatabase['Multidatabase']['id'];
+				$this->request->data['MultidatabaseContent']['multidatabase_key'] = $this->_multidatabase['Multidatabase']['key'];
 				$this->request->data['MultidatabaseContent']['block_id'] = Current::read('Block.id');
-				$this->request->data['MultidatabaseContent']['Language_id'] = Current::read('Language.id');
+				$this->request->data['MultidatabaseContent']['language_id'] = Current::read('Language.id');
 
 				if ($result = $this->MultidatabaseContent->saveContent($this->request->data)) {
 					$url = NetCommonsUrl::actionUrl(
 						[
-							'controller' => 'multidatabase_contents',
-							'action' => 'detail',
+							'controller' => 'multidatabases',
+							'action' => 'index',
 							'block_id' => Current::read('Block.id'),
 							'frame_id' => Current::read('Frame.id'),
-							'key' => $result['MultidatabaseContent']['key']
 						]
 					);
 					return $this->redirect($url);

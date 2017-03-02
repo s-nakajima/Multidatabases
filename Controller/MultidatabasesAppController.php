@@ -53,6 +53,8 @@ class MultidatabasesAppController extends AppController {
  * @var array 汎用DB設定
  */
 	protected $_multidatabaseSetting;
+	protected $_multidatabase;
+	protected $_multidatabaseMetadatas;
 
 
 	protected function _prepare() {
@@ -104,6 +106,8 @@ class MultidatabasesAppController extends AppController {
 			$multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'] = $multidatabase['Multidatabase']['key'];
 		}
 
+		$this->_multidatabase =$multidatabase;
+		$this->_multidatabaseMetadatas =$multidatabaseMetadatas;
 		$this->_multidatabaseSetting = $multidatabaseSetting;
 		$this->set('multidatabaseSetting',$multidatabaseSetting['MultidatabaseSetting']);
 		$this->set('userId', (int)$this->Auth->user('id'));

@@ -9,7 +9,17 @@ echo $this->NetCommonsHtml->script([
 ]);
 ?>
 
-<article class="multidatbaseContents">
+<article class="multidatabaseContents">
+	<style>
+		.multidatabaseContents td,th {
+			padding:5px;
+		}
+
+		.multidatabaseContents th {
+			text-align:center;
+			background-color:#F5F5F5;
+		}
+	</style>
 	<?php echo $this->NetCommonsHtml->blockTitle($multidatabase['name']); ?>
 	<header class="clearfix">
 		<div class="pull-left">
@@ -55,16 +65,20 @@ echo $this->NetCommonsHtml->script([
 	</header>
 
 	<?php if ($multidatabaseContents) : ?>
-		<div class="nc-content-list">
-			<?php foreach ($multidatabaseContents as $multidatabaseContent) : ?>
-				<?php echo $this->element('MultidatabaseContents/index_multidatabase_content', array(
-					'multidatabaseContent' => $multidatabaseContent
-				)); ?>
-			<?php endforeach; ?>
-
-			<?php echo $this->element('NetCommons.paginator'); ?>
-		</div>
-
+	<div>
+		<?php foreach ($multidatabaseContents as $multidatabaseContent) : ?>
+			<table>
+			<?php echo $this->element(
+				'MultidatabaseContents/view/view_content',
+				[
+					'multidatabaseContent' => $multidatabaseContent,
+					'multidatabaseMetadatas' => $multidatabaseMetadatas
+				]
+			); ?>
+			</table>
+		<?php endforeach; ?>
+		<?php echo $this->element('NetCommons.paginator'); ?>
+	</div>
 	<?php else : ?>
 		<article class="nc-not-found">
 			<?php echo __d('multidatabases', 'No contents found.') ?>
