@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendors/autoload.php">
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".ctp">app/Plugin/Multidatabases</directory>
+            <directory suffix=".php">app/Plugin/Multidatabases</directory>
+            <exclude>
+                <directory suffix=".php">app/Plugin/Multidatabases/Config/Migration</directory>
+                <directory suffix=".php">app/Plugin/Multidatabases/Config/Schema</directory>
+                <directory suffix=".php">app/Plugin/Multidatabases/Test/Case</directory>
+                <directory suffix=".php">app/Plugin/Multidatabases/Test/Fixture</directory>
+                <directory suffix=".php">app/Plugin/Multidatabases/TestSuite</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+    <logging>
+        <log type="coverage-clover" target="build/logs/clover.xml"/>
+        <log type="coverage-html" target="build/logs/clover"/>
+    </logging>
+</phpunit>

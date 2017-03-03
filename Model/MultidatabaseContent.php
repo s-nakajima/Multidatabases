@@ -76,7 +76,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Topics.Topics' => array(
 			'fields' => array(
 				'title' => 'title',
-				'summary' => 'body1',
+				'summary' => 'body1',　→なし
 				'path' => '/:plugin_key/multidatabase_contents/view/:block_id/:content_key',
 			),
 			'search_contents' => array('body2')
