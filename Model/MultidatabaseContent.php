@@ -69,7 +69,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Topics.Topics' => array(
 			'fields' => array(
 				'title' => 'title',
-				'summary' => 'body1',　→なし
+				'summary' => 'body1',
 				'path' => '/:plugin_key/multidatabase_contents/view/:block_id/:content_key',
 			),
 			'search_contents' => array('body2')
@@ -106,7 +106,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		}
 
 		$multidatabaseContents = $this->find('all', array(
-			'recursive' => -1,
+			'recursive' => 0,
 			'conditions' => [
 				'multidatabase_key' => $multidatabase['Multidatabase']['key'],
 			]
