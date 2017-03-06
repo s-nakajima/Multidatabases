@@ -3,10 +3,10 @@ echo $this->NetCommonsHtml->css([
 	'/multidatabases/css/multidatabases.css',
 	'/likes/css/style.css',
 ]);
-echo $this->NetCommonsHtml->script([
-	'/multidatabases/js/multidatabases.js',
-	'/likes/js/likes.js',
-]);
+//echo $this->NetCommonsHtml->script([
+//	'/multidatabases/js/multidatabases.js',
+//	'/likes/js/likes.js',
+//]);
 ?>
 
 <article class="multidatabaseContents">
