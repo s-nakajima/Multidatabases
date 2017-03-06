@@ -154,40 +154,32 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 
 	public function add() {
-
-		$this->MultidatabaseContent->makeValidation();
 		if ($this->request->is('post')) {
-			$this->MultidatabaseContent->set($this->request->data);
+			$data = $this->request->data;
 
-			if (! $this->MultidatabaseContent->validates()) {
-				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
-			} else {
-				$this->MultidatabaseContent->create();
+			$status = $this->Workflow->parseStatus();
 
-				$this->request->data['MultidatabaseSetting']['multidatabase_key'] = $this->_multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'];
+			$data['MultidatabaseContent']['status'] = $status;
+			$data['MultidatabaseContent']['multidatabase_id'] = $this->_multidatabase['Multidatabase']['id'];
+			$data['MultidatabaseContent']['multidatabase_key'] = $this->_multidatabase['Multidatabase']['key'];
+			$data['MultidatabaseContent']['block_id'] = Current::read('Block.id');
+			$data['MultidatabaseContent']['language_id'] = Current::read('Language.id');
 
-				$status = $this->Workflow->parseStatus();
-				$this->request->data['BlogEntry']['status'] = $status;
+			$data['MultidatabaseContent'] = Hash::remove($data['MultidatabaseContent'], 'id');
 
-				$this->request->data['MultidatabaseContent']['status'] = $status;
-				$this->request->data['MultidatabaseContent']['multidatabase_id'] = $this->_multidatabase['Multidatabase']['id'];
-				$this->request->data['MultidatabaseContent']['multidatabase_key'] = $this->_multidatabase['Multidatabase']['key'];
-				$this->request->data['MultidatabaseContent']['block_id'] = Current::read('Block.id');
-				$this->request->data['MultidatabaseContent']['language_id'] = Current::read('Language.id');
-
-				if ($result = $this->MultidatabaseContent->saveContent($this->request->data)) {
-					$url = NetCommonsUrl::actionUrl(
-						[
-							'controller' => 'multidatabase_contents',
-							'action' => 'index',
-							'block_id' => Current::read('Block.id'),
-							'frame_id' => Current::read('Frame.id'),
-						]
-					);
-					return $this->redirect($url);
-				}
+			if ($result = $this->MultidatabaseContent->saveContent($data)) {
+				//後で詳細にリダイレクトするように修正すること(怒)
+				$url = NetCommonsUrl::actionUrl(
+					[
+						'controller' => 'multidatabase_contents',
+						'action' => 'index',
+						'block_id' => Current::read('Block.id'),
+						'frame_id' => Current::read('Frame.id'),
+					]
+				);
+				return $this->redirect($url);
 			}
-
+			$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
 		}
 
 		$this->render('form');

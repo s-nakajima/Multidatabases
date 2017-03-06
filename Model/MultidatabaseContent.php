@@ -61,9 +61,9 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	public $actsAs = [
 		'NetCommons.Trackable',
 		'NetCommons.OriginalKey',
-//		'Workflow.Workflow',
+		'Workflow.Workflow',
 		'Likes.Like',
-//		'Workflow.WorkflowComment',
+		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
 /*
 		'Topics.Topics' => array(
