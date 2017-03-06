@@ -49,13 +49,19 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 //			'fields' => '',
 //			'order' => ''
 //		),
-//		'Block' => array(
-//			'className' => 'Blocks.Block',
-//			'foreignKey' => 'block_id',
-//			'conditions' => '',
-//			'fields' => '',
-//			'order' => ''
-//		)
+		'Block' => array(
+			'className' => 'Blocks.Block',
+			'foreignKey' => 'block_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'counterCache' => array(
+				'content_count' => array(
+					//'MultidatabaseContent.is_origin' => true,
+					'MultidatabaseContent.is_latest' => true
+				),
+			),
+		)
 	);
 
 	public $actsAs = [
