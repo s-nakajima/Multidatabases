@@ -196,16 +196,32 @@ class Multidatabase extends MultidatabasesAppModel {
 			}
 		}
 
-		// メタデータ初期データ登録
-		$multidatabaseMetadatas = $this->MultidatabaseMetadata->getInitMetadatas();
-		foreach ($multidatabaseMetadatas as $key => $metadata) {
-			$multidatabaseMetadatas[$key]['multidatabase_id'] = $this->data['Multidatabase']['id'];
-			$multidatabaseMetadatas[$key]['key'] = $this->data['Multidatabase']['key'];
-		}
-
-		if (! $this->MultidatabaseMetadata->saveAll($multidatabaseMetadatas)) {
+		if (! isset($this->MultidatabaseMetadata->data['MultidatabaseMetadata'])) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
+
+		$metadatas = $this->MultidatabaseMetadata->data['MultidatabaseMetadata'];
+
+		// 削除ID,カラムの確認
+		$delMetadataIds = $this->MultidatabaseMetadata->getDeleteMetadatas($this->data['Multidatabase']['id'],$metadatas,'id');
+		$delMetadataColNos = $this->MultidatabaseMetadata->getDeleteMetadatas($this->data['Multidatabase']['id'],$metadatas,'col_no');
+
+		// MultidatabaseMetadata登録
+		$metadatas = $this->MultidatabaseMetadata->makeSaveData(
+			$this->data,
+			$metadatas
+		);
+		$this->MultidatabaseMetadata->saveMetadatas($metadatas);
+
+
+		// MultidatabaseMetadata削除
+		if (!empty($delMetadataIds)) {
+			$this->MultidatabaseMetadata->deleteMetadatas($delMetadataIds);
+		}
+
+
+
+		// MultidatabaseContentの削除
 
 
 		parent::afterSave($created, $options);
@@ -262,25 +278,26 @@ class Multidatabase extends MultidatabasesAppModel {
  * @return bool True on success, false on validation errors
  * @throws InternalErrorException
  */
-        public function saveMultidatabase($data) {
+	public function saveMultidatabase($data) {
 		//トランザクションBegin
 		$this->begin();
 
 		//バリデーション
 			$this->set($data);
 
-
 		if (! $this->validates()) {
+				$this->rollback();
 			return false;
 		}
 
 		try {
 			//登録処理
-			if (! $this->save(null, false)) {
-//			$result = $this->saveAll();
-//			if (! $result) {
+			$result = $this->save($data, false);
+
+			if (! $result) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
+
 			//トランザクションCommit
 			$this->commit();
 		} catch (Exception $ex) {
