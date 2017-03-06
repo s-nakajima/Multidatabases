@@ -25,13 +25,6 @@ App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
 class Multidatabase extends MultidatabasesAppModel {
 
 /**
- * use tables
- *
- * @var string
- */
-	public $useTable = 'multidatabases';
-
-/**
  * Validation rules
  *
  * @var array
@@ -68,6 +61,42 @@ class Multidatabase extends MultidatabasesAppModel {
 			'order' => ''
 		),
 	);
+
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
+
+	public $hasMany = array(
+		'MultidatabaseContent' => array(
+			'className' => 'Multidatabases.MultidatabaseContent',
+			'foreignKey' => 'multidatabase_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		),
+		'MultidatabaseMetadata' => array(
+			'className' => 'Multidatabases.MultidatabaseMetadata',
+			'foreignKey' => 'multidatabase_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		)
+	);
+
 
 /**
  * Constructor. Binds the model's database table to the object.
@@ -148,47 +177,7 @@ class Multidatabase extends MultidatabasesAppModel {
 		}
 
 		return parent::beforeValidate($options);
-
-
-        }
-
-
-
-/**
- * hasMany associations
- *
- * @var array
- */
-
-	public $hasMany = array(
-		'MultidatabaseContent' => array(
-			'className' => 'MultidatabaseContent',
-			'foreignKey' => 'multidatabase_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		),
-		'MultidatabaseMetadata' => array(
-			'className' => 'MultidatabaseMetadata',
-			'foreignKey' => 'multidatabase_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		)
-	);
-
+	}
 
 /**
  * Called after each successful save operation.

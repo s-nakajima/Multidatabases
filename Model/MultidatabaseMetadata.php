@@ -674,7 +674,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'col_no' => 9,
 				'type' => 'image',
 				'selections' => '',
-				'is_require' => 1,
+				'is_require' => 0,
 				'is_searchable' => 0,
 				'is_sortable' => 0,
 				'is_file_dl_require_auth' => 0,

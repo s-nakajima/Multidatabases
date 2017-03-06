@@ -35,27 +35,27 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Multidatabase' => array(
-			'className' => 'Multidatabases.Multidatabase',
-			'foreignKey' => 'multidatabase_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'Language' => array(
-			'className' => 'M17.Language',
-			'foreignKey' => 'language_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'Block' => array(
-			'className' => 'Blocks.Block',
-			'foreignKey' => 'block_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		)
+//		'Multidatabase' => array(
+//			'className' => 'Multidatabases.Multidatabase',
+//			'foreignKey' => 'multidatabase_id',
+//			'conditions' => '',
+//			'fields' => '',
+//			'order' => ''
+//		),
+//		'Language' => array(
+//			'className' => 'M17.Language',
+//			'foreignKey' => 'language_id',
+//			'conditions' => '',
+//			'fields' => '',
+//			'order' => ''
+//		),
+//		'Block' => array(
+//			'className' => 'Blocks.Block',
+//			'foreignKey' => 'block_id',
+//			'conditions' => '',
+//			'fields' => '',
+//			'order' => ''
+//		)
 	);
 
 	public $actsAs = [
@@ -98,6 +98,9 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 
 	public function getMultidatabaseContents() {
+		$this->loadModels([
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+		]);
 		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
@@ -119,11 +122,16 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @return bool
  */
 	public function makeValidation() {
+		$this->loadModels([
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+		]);
+
 		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
 
-		if(! $multidatabaseMetadatas = $this->Multidatabase->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+		if(! $multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
 			return false;
 		}
 
@@ -156,12 +164,16 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 	public function saveContent($data) {
+		$this->loadModels([
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+		]);
 
 		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
 
-		if(! $multidatabaseMetadatas = $this->Multidatabase->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+		if(! $multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
 			return false;
 		}
 
