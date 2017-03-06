@@ -77,14 +77,15 @@ NetCommonsApp.controller('MultidatabaseMetadatas', ['$scope', function($scope) {
 
 
 	// 行削除
-	$scope.delete = function(positionNo, index, message) {
-		if (! confirm(message)) {
+	$scope.delete = function($event, positionNo, index, message) {
+        $scope.eventStop($event);
+
+        if (! confirm(message)) {
 			return false;
 		}
 
 		currentMetadatas = getGroup(positionNo);
 		currentMetadatas.splice(index,1);
-
 	}
 
 	// 行移動
@@ -125,6 +126,16 @@ NetCommonsApp.controller('MultidatabaseMetadatas', ['$scope', function($scope) {
 		currentMetadatas[rank].position = destPositionNo;
 		currentMetadatas[rank].rank = currentMetadatas[rank].length;
 
+	}
+
+  /**
+   * イベントストップ
+   *
+   * @return {void}
+   */
+	$scope.eventStop = function($event) {
+      $event.preventDefault();
+      $event.stopPropagation();
 	}
 
 }]);
