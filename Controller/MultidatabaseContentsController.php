@@ -178,7 +178,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 				if ($result = $this->MultidatabaseContent->saveContent($this->request->data)) {
 					$url = NetCommonsUrl::actionUrl(
 						[
-							'controller' => 'multidatabases',
+							'controller' => 'multidatabase_contents',
 							'action' => 'index',
 							'block_id' => Current::read('Block.id'),
 							'frame_id' => Current::read('Frame.id'),
