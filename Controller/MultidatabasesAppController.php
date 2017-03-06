@@ -44,6 +44,7 @@ class MultidatabasesAppController extends AppController {
  */
 	protected $_multidatabaseTitle;
 
+
 /**
  * @var array フレーム設定
  */
@@ -54,7 +55,7 @@ class MultidatabasesAppController extends AppController {
  */
 	protected $_multidatabaseSetting;
 	protected $_multidatabase;
-	protected $_multidatabaseMetadatas;
+	protected $_multidatabaseMetadata;
 
 
 	protected function _prepare() {
@@ -85,7 +86,7 @@ class MultidatabasesAppController extends AppController {
 		}
 
 		// メタデータを取得
-		if(! $multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+		if(! $multidatabaseMetadata = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
 			return $this->throwBadRequest();
 		}
 
@@ -96,7 +97,7 @@ class MultidatabasesAppController extends AppController {
 
 		$this->_multidatabaseTitle = $multidatabase['Multidatabase']['name'];
 		$this->set('multidatabase', $multidatabase);
-		$this->set('multidatabaseMetadatas', $multidatabaseMetadatas);
+		$this->set('multidatabaseMetadata', $multidatabaseMetadata);
 		$this->set('multidatabaseMetadataGroups', $multidatabaseMetadataGroups);
 
 		if (! $multidatabaseSetting = $this->MultidatabaseSetting->getMultidatabaseSetting()) {
@@ -107,7 +108,7 @@ class MultidatabasesAppController extends AppController {
 		}
 
 		$this->_multidatabase =$multidatabase;
-		$this->_multidatabaseMetadatas =$multidatabaseMetadatas;
+		$this->_multidatabaseMetadata =$multidatabaseMetadata;
 		$this->_multidatabaseSetting = $multidatabaseSetting;
 		$this->set('multidatabaseSetting',$multidatabaseSetting['MultidatabaseSetting']);
 		$this->set('userId', (int)$this->Auth->user('id'));

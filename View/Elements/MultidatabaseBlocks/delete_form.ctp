@@ -19,8 +19,8 @@
 <?php echo $this->Form->hidden('Block.key', array(
 	'value' => isset($block['key']) ? $block['key'] : null,
 )); ?>
-<?php echo $this->Form->hidden('Blog.key', array(
-	'value' => isset($blog['key']) ? $blog['key'] : null,
+<?php echo $this->Form->hidden('Multidatabase.key', array(
+	'value' => isset($multidatabase['key']) ? $multidatabase['key'] : null,
 )); ?>
 <?php echo $this->Form->button('<span class="glyphicon glyphicon-trash"> </span> ' . __d('net_commons', 'Delete'), array(
 	'name' => 'delete',

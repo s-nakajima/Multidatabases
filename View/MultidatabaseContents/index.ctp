@@ -67,7 +67,6 @@ echo $this->NetCommonsHtml->script([
 	<?php if ($multidatabaseContents) : ?>
 	<div>
 		<?php foreach ($multidatabaseContents as $multidatabaseContent) : ?>
-			<table>
 			<?php echo $this->element(
 				'MultidatabaseContents/view/view_content',
 				[
@@ -75,7 +74,6 @@ echo $this->NetCommonsHtml->script([
 					'multidatabaseMetadatas' => $multidatabaseMetadatas
 				]
 			); ?>
-			</table>
 		<?php endforeach; ?>
 		<?php echo $this->element('NetCommons.paginator'); ?>
 	</div>

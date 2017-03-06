@@ -3,7 +3,7 @@ echo $this->NetCommonsHtml->script([
 	'/multidatabases/js/edit_multi_database_metadatas.js'
 ]);
 ?>
-<div id="multidatabase-metadata-fields" ng-controller="MultidatabaseMetadatas" ng-init="initialize(<?php echo h(json_encode(['multidatabaseMetadatas' => $multidatabaseMetadatas])); ?>)">
+<div id="multidatabase-metadata-fields" ng-controller="MultidatabaseMetadata" ng-init="initialize(<?php echo h(json_encode(['multidatabaseMetadata' => $multidatabaseMetadata])); ?>)">
 	<div class="panel panel-default">
 		<div class="panel-heading clearfix">
 			<div class="pull-left">

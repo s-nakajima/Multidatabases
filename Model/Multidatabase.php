@@ -99,35 +99,11 @@ class Multidatabase extends MultidatabasesAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$this->validate = Hash::merge($this->validate, array(
-			//'block_id' => array(
-			//	'numeric' => array(
-			//		'rule' => array('numeric'),
-			//		'message' => __d('net_commons', 'Invalid request.'),
-			//		//'allowEmpty' => false,
-			//		//'required' => true,
-			//	)
-			//),
-			'key' => array(
-				'notBlank' => array(
-					'rule' => array('notBlank'),
-					'message' => __d('net_commons', 'Invalid request.'),
-					'allowEmpty' => false,
-					'required' => true,
-					'on' => 'update', // Limit validation to 'create' or 'update' operations
-				),
-			),
 
-			'name' => array(
-				'notBlank' => array(
-					'rule' => array('notBlank'),
-					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('multidatabases', 'Multidatabase name')),
-					'required' => true
-				),
-			),
-		));
-
-		if (isset($this->data['MulitadatabaseSetting'])) {
+		$this->MultidatabaseSetting->set($this->data['MultidatabaseSetting']);
+		$this->MultidatabaseFrameSetting->set($this->data['MultidatabaseFrameSetting']);
+/*
+		if (isset($this->data['MultidatabaseSetting'])) {
 			$this->MultidatabaseSetting->set($this->data['MultidatabaseSetting']);
 			if (! $this->MultidatabaseSetting->validates()) {
 				$this->validationErrors = Hash::merge(
@@ -137,7 +113,7 @@ class Multidatabase extends MultidatabasesAppModel {
 			}
 		}
 
-		if (isset($this->data['MulitadatabaseFrameSetting']) && ! $this->data['MultidatabaseFrameSetting']['id']) {
+		if (isset($this->data['MultidatabaseFrameSetting']) && ! $this->data['MultidatabaseFrameSetting']['id']) {
 			$this->MultidatabaseFrameSetting->set($this->data['MultidatabaseFrameSetting']);
 			if (! $this->MultidatabaseFrameSetting->validates()) {
 				$this->validationErrors = Hash::merge(
@@ -146,11 +122,27 @@ class Multidatabase extends MultidatabasesAppModel {
 				return false;
 			}
 		}
+*/
+		if (isset($this->data['MultidatabaseMetadata'])) {
+			$metadatas = $this->data['MultidatabaseMetadata'];
+			$metadatas = $this->MultidatabaseMetadata->mergeGroupToMetadatas($metadatas);
+
+			$this->MultidatabaseMetadata->set($metadatas);
+
+			if (! $this->MultidatabaseMetadata->validates()) {
+				$this->validationErrors = Hash::merge(
+					$this->validationErrors, $this->MultidatabaseMetadata->validationErrors
+				);
+				return false;
+			}
+		}
+
+
 
 		return parent::beforeValidate($options);
 
 
-        }
+	}
 
 
 
@@ -216,19 +208,70 @@ class Multidatabase extends MultidatabasesAppModel {
 			}
 		}
 
-		// メタデータ初期データ登録
-		$multidatabaseMetadatas = $this->MultidatabaseMetadata->getInitMetadatas();
-		foreach ($multidatabaseMetadatas as $key => $metadata) {
-			$multidatabaseMetadatas[$key]['multidatabase_id'] = $this->data['Multidatabase']['id'];
-			$multidatabaseMetadatas[$key]['key'] = $this->data['Multidatabase']['key'];
-		}
-
-		if (! $this->MultidatabaseMetadata->saveAll($multidatabaseMetadatas)) {
+		if (! isset($this->MultidatabaseMetadata->data['MultidatabaseMetadata'])) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
+		$metadatas = $this->MultidatabaseMetadata->data['MultidatabaseMetadata'];
+
+		// 削除ID,カラムの確認
+		$delMetadataIds = $this->MultidatabaseMetadata->getDeleteMetadatas($this->data['Multidatabase']['id'],$metadatas,'id');
+		$delMetadataColNos = $this->MultidatabaseMetadata->getDeleteMetadatas($this->data['Multidatabase']['id'],$metadatas,'col_no');
+
+		// MultidatabaseMetadata登録
+		$metadatas = $this->MultidatabaseMetadata->makeSaveData(
+			$this->data,
+			$metadatas
+		);
+		$this->MultidatabaseMetadata->saveMetadatas($metadatas);
+
+
+		// MultidatabaseMetadata削除
+		if (!empty($delMetadataIds)) {
+			$this->MultidatabaseMetadata->deleteMetadatas($delMetadataIds);
+		}
+
+
+
+		// MultidatabaseContentの削除
+
 
 		parent::afterSave($created, $options);
+	}
+
+
+
+/**
+ * バリデーションルールの作成
+ *
+ * @return
+ */
+	public function makeValidation($multidatabaseMetadatas = []) {
+		$result = [];
+/*
+		foreach ($multidatabaseMetadatas as $metadata) {
+			if ($metadata['is_require']) {
+				$tmp = [];
+				switch ($metadata['type']) {
+					case 'checkbox':
+						$tmp['rule'] = [
+							'multiple',
+							[
+								'min' => 1
+							]
+						];
+						break;
+					default:
+						$tmp['rule'][] = 'notBlank';
+						$tmp['allowEmpty'] = false;
+						break;
+				}
+				$tmp['required'] = true;
+				$result['value' . $metadata['col_no']] =  $tmp;
+			}
+		}
+*/
+		$this->validate = Hash::merge($this->validate,$result);
 	}
 
 /**
@@ -275,6 +318,8 @@ class Multidatabase extends MultidatabasesAppModel {
 
 
 
+
+
 /**
  * Save Multidatabases
  *
@@ -283,25 +328,36 @@ class Multidatabase extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
         public function saveMultidatabase($data) {
+			$this->loadModels([
+				'MultidatabaseSetting' => 'Multidatabases.MultidatabaseSetting',
+				'MultidatabaseFrameSetting' => 'Multidatabases.MultidatabaseFrameSetting',
+				'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+			]);
+
+
 		//トランザクションBegin
 		$this->begin();
 
-		//バリデーション
+		try {
+
+			// メタデータ登録
+
+			//バリデーション
 			$this->set($data);
 
+			if (! $this->validates()) {
+				$this->rollback();
+				return false;
+			}
 
-		if (! $this->validates()) {
-			return false;
-		}
 
-		try {
 			//登録処理
-//			if (! $this->save(null, false)) {
-			$result = $this->saveAll();
+			$result = $this->save($data, false);
+
 			if (! $result) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-			//トランザクションCommit
+
 			$this->commit();
 		} catch (Exception $ex) {
 			//トランザクションRollback
@@ -319,6 +375,11 @@ class Multidatabase extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
 	public function deleteMultidatabase($data) {
+		$this->loadModels([
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+			'MultidatabaseContent' => 'Multidatabases.MultidatabaseContent',
+		]);
+
 		//トランザクションBegin
 		$this->begin();
 

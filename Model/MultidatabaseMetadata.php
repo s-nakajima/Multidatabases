@@ -26,6 +26,8 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  */
 	public $useDbConfig = 'master';
 
+	public $metadatas = [];
+
 /**
  * Use table
  *
@@ -61,6 +63,8 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  *
  * @var array
  */
+	public $validate = [];
+	/*
 	public $validate = array(
 		'key' => array(
 			'notBlank' => array(
@@ -195,7 +199,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	);
 
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
-
+*/
 
 
 /**
@@ -284,29 +288,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 
 	}
 
-	/**
-	 * 変更内容の保存
-	 * @param $metadatas
-	 * @return bool
-	 */
-	public function updateMetadata($metadatas) {
 
-		//トランザクションBegin
-		$this->begin();
-		try {
-			//登録処理
-			if (! $this->saveAll($metadatas)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-			//トランザクションCommit
-			$this->commit();
-
-		} catch (Exception $ex) {
-			//トランザクションRollback
-			$this->rollback($ex);
-		}
-		return true;
-	}
 
 
 /**
@@ -393,14 +375,256 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 
 	}
 
+
+
+	public function mergeGroupToMetadatas($data) {
+
+		$result['MultidatabaseMetadata'] =  array_merge($data[0], $data[1],$data[2],$data[3]);
+
+		return $result;
+
+
+	}
+
+/**
+ * スキップ対象のカラムNoを取得
+ *
+ * @param array $metadatas
+ * @return array
+ */
+	public function getSkipColNos($metadatas = []) {
+
+		if (empty($metadatas)) {
+			return [];
+		}
+
+		$result = [];
+
+		foreach ($metadatas as $metadata) {
+			if (isset($metadata['col_no'])) {
+				$result[] = $metadata['col_no'];
+			}
+		}
+
+		return $result;
+
+	}
+
+/**
+ * 空きカラムNoを取得
+ * @param $metadatas
+ * @param $col_no
+ * @param $col_no_t
+ * @return array|bool
+ */
+	public function getFreeColNo($metadatas, $colNos) {
+
+		if (empty($metadatas) || empty($colNos)) {
+			return false;
+		}
+		$skipColNos = $this->getSkipColNos($metadatas);
+
+
+		if (empty($skipColNos)) {
+			return $colNos;
+		}
+
+		$result = $colNos;
+
+		$chkSkipColNo = false;
+
+		while (!$chkSkipColNo) {
+			if (in_array($result['col_no'], $skipColNos)) {
+				if ($result['col_no'] >= 1 && $result['col_no'] <= 79) {
+					$result['col_no']++;
+				} else {
+					echo "aaa";
+					return false;
+				}
+			} else {
+				$chkSkipColNo = true;
+			}
+		}
+
+		$chkSkipColNo = false;
+
+		while (!$chkSkipColNo) {
+			if(in_array($result['col_no_t'],$skipColNos)) {
+				if ($result['col_no_t'] >= 80 && $result['col_no_t'] <= 100) {
+					$result['col_no_t']++;
+				} else {
+					return false;
+				}
+			} else {
+				$chkSkipColNo = true;
+			}
+		}
+
+		return $result;
+
+	}
+
+
+/**
+ * 保存データを作成
+ * @param array $metadatas
+ * @return array
+ */
+	public function makeSaveData($multidatabase, $metadatas = []) {
+
+		if (empty($metadatas)) {
+			return [];
+		}
+
+		// カラムNo初期値
+		$colNos['col_no'] = 1;
+		$colNos['col_no_t'] = 80;
+
+		$result = [];
+
+		foreach ($metadatas as $metadata) {
+
+			// カラムNoが未設定の場合は、カラムNoを付与する
+			if (! isset($metadata['col_no']) || empty($metadata['col_no'])) {
+				// 空きカラムNoの取得
+				$colNos = $this->getFreeColNo($metadatas, $colNos);
+
+				switch ($metadata['type']) {
+					case 'textarea':
+					case 'wysiwyg':
+					case 'select':
+					case 'checkbox':
+						$currentColNo = $colNos['col_no_t'];
+						$colNos['col_no_t']++;
+						break;
+					default:
+						$currentColNo = $colNos['col_no'];
+						$colNos['col_no']++;
+						break;
+				}
+
+			} else {
+				$currentColNo = $metadata['col_no'];
+			}
+
+			$result[] = array_merge(
+				$metadata,
+				['language_id' => Current::read('Language.id')],
+				['multidatabase_id' => $multidatabase['Multidatabase']['id']],
+				['key' => $multidatabase['Multidatabase']['key']],
+				['col_no' => $currentColNo]
+			);
+		}
+
+		return $result;
+
+	}
+
+/**
+ * メタデータを削除する
+ *
+ * @param null $metadata_id
+ * @return void
+ */
+	public function deleteMetadatas($metadataIds = []) {
+		if (empty($metadataIds)) {
+			return false;
+		}
+
+		foreach ($metadataIds as $metadataId) {
+			if (! $this->delete($metadataId)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		}
+	}
+
+/**
+ * メタデータを保存する（新規・更新）
+ *
+ * @param $metadatas
+ * @return void
+ */
+	public function saveMetadatas($metadatas) {
+		if (! $this->saveAll($metadatas)) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+	}
+
+/**
+ * 削除対象のカラムNoを取得する
+ *
+ * @param null $multidatabase_id
+ * @param array $currentMetadatas
+ * @return array|bool
+ */
+	public function getDeleteMetadatas($multidatabaseId = null, $currentMetadatas = [], $type = 'all') {
+
+		if (
+			is_null($multidatabaseId)
+			|| empty($currentMetadatas)
+		) {
+			return false;
+		}
+
+		if(! $beforeSaveMetadatas = $this->getEditMetadatas($multidatabaseId)) {
+			return false;
+		}
+
+		$result = [];
+
+		foreach ($currentMetadatas as $currentMetadata) {
+			if(isset($currentMetadata['col_no'])) {
+				$currentColNos[] = $currentMetadata['col_no'];
+			}
+		}
+
+		if (empty($currentColNos)) {
+			return false;
+		}
+
+		foreach ($beforeSaveMetadatas as $beforeSaveMetadata) {
+			if (isset($beforeSaveMetadata['col_no'])) {
+				if (! in_array($beforeSaveMetadata['col_no'],$currentColNos)) {
+					switch ($type) {
+						case 'id':
+							$result[] = $beforeSaveMetadata['id'];
+							break;
+						case 'col_no':
+							$result[] = $beforeSaveMetadata['col_no'];
+							break;
+						default:
+							$result[]['id'] = $beforeSaveMetadata['id'];
+							$result[]['col_no'] = $beforeSaveMetadata['col_no'];
+							break;
+					}
+				}
+			}
+		}
+
+
+		if (empty($result)) {
+			return false;
+		}
+
+		return $result;
+
+	}
+
+
+
+
 /**
  * 編集用のメタデータを取得する
- * @param null $multidatabase_id
+ * @param null $multidatabaseId
  * @return bool
  */
-	public function getEditMetadatas($multidatabase_id = null) {
+	public function getEditMetadatas($multidatabaseId = null) {
 
-		$multidatabaseMetadatas = $this->getMetadatas($multidatabase_id);
+		if (is_null($multidatabaseId)) {
+			return false;
+		}
+
+		$multidatabaseMetadatas = $this->getMetadatas($multidatabaseId);
 
 		if (! $multidatabaseMetadatas) {
 			return false;

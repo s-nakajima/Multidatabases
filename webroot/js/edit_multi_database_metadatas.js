@@ -1,14 +1,10 @@
-NetCommonsApp.controller('MultidatabaseMetadatas', ['$scope', function($scope) {
+NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 
 	$scope.metadataGroup0 = [];
 	$scope.metadataGroup1 = [];
 	$scope.metadataGroup2 = [];
 	$scope.metadataGroup3 = [];
 	$scope.metadataEdit = {};
-
-	var editPositionNo = null;
-	var editRank = null;
-
 
 	// グループのオブジェクトを返す
 	function getGroup(positionNo) {
@@ -28,7 +24,9 @@ NetCommonsApp.controller('MultidatabaseMetadatas', ['$scope', function($scope) {
 
 
 	$scope.initialize = function(data) {
-		angular.forEach(data.multidatabaseMetadatas, function(value) {
+
+
+		angular.forEach(data.multidatabaseMetadata, function(value) {
 			switch (value.position) {
 				case 0:
 					value.rank = $scope.metadataGroup0.length;
@@ -48,6 +46,9 @@ NetCommonsApp.controller('MultidatabaseMetadatas', ['$scope', function($scope) {
 					break;
 			}
 		});
+
+
+
 	}
 
 
@@ -113,7 +114,11 @@ NetCommonsApp.controller('MultidatabaseMetadatas', ['$scope', function($scope) {
 		currentMetadatas = getGroup(currentPositionNo);
 		destMetadatas = getGroup(destPositionNo);
 
-		if (angular.isUndefined(currentMetadatas[currentPositionNo])) {
+		if (currentMetadatas == false) {
+			return false;
+		}
+
+		if (destMetadatas == false) {
 			return false;
 		}
 
@@ -122,8 +127,10 @@ NetCommonsApp.controller('MultidatabaseMetadatas', ['$scope', function($scope) {
 		destMetadatas.push(targetMetadata);
 		currentMetadatas.splice(rank, 1);
 
-		currentMetadatas[rank].position = destPositionNo;
-		currentMetadatas[rank].rank = currentMetadatas[rank].length;
+		targetMetadata.position = destPositionNo;
+		targetMetadata.rank = destMetadatas.length - 1;
+
+
 
 	}
 

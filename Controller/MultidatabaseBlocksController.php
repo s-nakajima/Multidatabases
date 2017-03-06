@@ -68,7 +68,6 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
             ),
             'blockTabs' => array(
                 'block_settings' => array('url' => array('controller' => 'multidatabase_blocks')),
-				'metadata_settings' => array('url' => array('controller' => 'multidatabase_metadata_settings'), 'label' => ['multidatabases', 'Metadata Settings']),
                 'mail_settings' => array('url' => array('controller' => 'multidatabase_mail_settings')),
                 'role_permissions' => array('url' => array('controller' => 'multidatabase_block_role_permissions')),
             ),
@@ -78,8 +77,15 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 
     public function beforeFilter() {
         parent::beforeFilter();
-		$this->Security->unlockedActions = array('add');
-		$this->Security->unlockedActions = array('edit');
+
+		if (
+			$this->action === 'add' ||
+			$this->action === 'edit'
+		) {
+			// メタデータフォーム動的生成のため自動Validateしない
+			$this->Security->validatePost = false;
+		}
+
     }
 
 /**
@@ -88,14 +94,17 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
  * @return void
  */
     public function index() {
-        $this->Paginator->settings = array(
+        $this->Paginator->settings = [
             'Multidatabase' => $this->Multidatabase->getBlockIndexSettings()
-        );
+        ];
+
         $multidatabases = $this->Paginator->paginate('Multidatabase');
+
         if (!$multidatabases) {
             $this->view = 'Blocks.Blocks/not_found';
             return;
         }
+
         $this->set('multidatabases', $multidatabases);
         $this->request->data['Frame'] = Current::read('Frame');
     }
@@ -124,7 +133,7 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 			$this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true)
 		);
 
-		$this->set('multidatabaseMetadatas', $multidatabases['MultidatabaseMetadata']);
+		$this->set('multidatabaseMetadata', $multidatabases['MultidatabaseMetadata']);
 		$this->request->data['Frame'] = Current::read('Frame');
 
     }
@@ -137,12 +146,17 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
  * @return void
  */
     public function edit() {
+
+
+
         if ($this->request->is('put')) {
+
             if ($this->Multidatabase->saveMultidatabase($this->data)) {
                 return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
             }
             return;
         }
+
 
 		$multidatabases = $this->Multidatabase->getMultidatabase();
 
@@ -162,7 +176,7 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 			$this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true)
 		);
 
-		$this->set('multidatabaseMetadatas', $multidatabases['MultidatabaseMetadata']);
+		$this->set('multidatabaseMetadata', $multidatabases['MultidatabaseMetadata']);
 		$this->request->data['Frame'] = Current::read('Frame');
     }
 

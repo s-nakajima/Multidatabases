@@ -61,7 +61,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			'foreignKey' => 'block_id',
 			'conditions' => '',
 			'fields' => '',
-			'order' => ''
+			'order' => '',
+			'counterCache' => array(
+				'content_count' => array('MultidatabaseContent.is_latest' => 1),
+			),
 		)
 	);
 
@@ -76,7 +79,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Topics.Topics' => array(
 			'fields' => array(
 				'title' => 'title',
-				'summary' => 'body1',　→なし
+				'summary' => 'body1',
 				'path' => '/:plugin_key/multidatabase_contents/view/:block_id/:content_key',
 			),
 			'search_contents' => array('body2')
@@ -110,11 +113,12 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		}
 
 		$multidatabaseContents = $this->find('all', array(
-			'recursive' => -1,
+			'recursive' => 0,
 			'conditions' => [
 				'multidatabase_key' => $multidatabase['Multidatabase']['key'],
 			]
 		));
+
 
 		return $multidatabaseContents;
 	}
@@ -134,10 +138,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			return false;
 		}
 
+		$result = [];
 		foreach ($multidatabaseMetadatas as $metadata) {
-
-			$tmp = [];
 			if ($metadata['is_require']) {
+				$tmp = [];
 				switch ($metadata['type']) {
 					case 'checkbox':
 						$tmp['rule'] = [
@@ -155,12 +159,44 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				$tmp['required'] = true;
 				$result['value' . $metadata['col_no']] =  $tmp;
 			}
-
-
 		}
 
 		return Hash::merge($this->validate,$result);
 	}
+
+
+
+/**
+ * 削除対象カラムに存在する値をクリアする
+ *
+ * @param null $multidatabase_key
+ * @param array $colNos
+ * @return bool
+ */
+	public function clearValues($multidatabaseKey = null, $colNos = []) {
+
+		if (
+			is_null($multidatabaseKey)
+			|| empty($currentMetadatas)
+		) {
+			return false;
+		}
+
+		$conditions['multidatabase_key'] = $multidatabaseKey;
+
+		$data = [];
+		foreach ($colNos as $colNo) {
+			$data['value' . $colNo] = '';
+		}
+
+		if (! $this->updateAll($data,$conditions)) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		return true;
+
+	}
+
 
 	public function saveContent($data) {
 

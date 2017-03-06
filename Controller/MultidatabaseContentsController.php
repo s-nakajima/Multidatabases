@@ -39,7 +39,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		'Likes.Like',
 		'ContentComments.ContentComment' => array(
 			'viewVarsKey' => array(
-				'contentKey' => 'multidatabaseContent.MultidatabaseContent.key',
+				'contentKey' => 'multidatabaseContent.key',
 				'useComment' => 'multidatabaseSetting.use_comment',
 				'useCommentApproval' => 'multidatabaseSetting.use_comment_approval'
 			)
@@ -58,14 +58,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  */
 	public $components = array(
 		'Paginator',
-		//'NetCommons.NetCommonsWorkflow',
-		//'NetCommons.NetCommonsRoomRole' => array(
-		//	//コンテンツの権限設定
-		//	'allowedActions' => array(
-		//		'contentEditable' => array('edit', 'add'),
-		//		'contentCreatable' => array('edit', 'add'),
-		//	),
-		//),
 		'NetCommons.Permission' => array(
 			//アクセスの権限
 			'allow' => array(
@@ -106,8 +98,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 		$this->Security->validatePost = false;
-
-		//$this->Security->csrfCheck=false;
+		$this->Security->csrfCheck=false;
 		if (! Current::read('Block.id')) {
 			$this->setAction('emptyRender');
 			return false;
@@ -132,8 +123,10 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 				//return false;
 			}
 
+			$this->set('viewMode', 'view');
+			$this->set('multidatabaseSetting',$this->multidatabaseSetting);
 			$this->set('multidatabase', $this->_multidatabase['Multidatabase']);
-			$this->set('multidatabaseMetadatas', $this->_multidatabaseMetadatas);
+			$this->set('MultidatabaseMetadata', $this->_multidatabaseMetadata);
 			$this->set('multidatabaseContents', $multidatabaseContents);
 
 
@@ -146,8 +139,9 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			return false;
 		}
 
+		$this->set('viewMode', 'detail');
 		$this->set('multidatabase', $this->_Multidatabase);
-		$this->set('multidatabaseMetadatas', $this->_MultidatabaseMetadatas);
+		$this->set('MultidatabaseMetadata', $this->_MultidatabaseMetadata);
 		$this->set('multidatabaseContents', $multidatabaseContents);
 
 	}
