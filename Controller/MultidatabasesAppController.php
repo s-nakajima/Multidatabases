@@ -44,7 +44,6 @@ class MultidatabasesAppController extends AppController {
  */
 	protected $_multidatabaseTitle;
 
-
 /**
  * @var array フレーム設定
  */
@@ -75,8 +74,11 @@ class MultidatabasesAppController extends AppController {
  */
 	protected function _setupMultidatabaseTitle() {
 		$this->loadModel('Blocks.Block');
-		$block = $this->Block->findById(Current::read('Block.id'));
-		$this->_multidatabaseTitle = $block['Block']['name'];
+		$block = $this->Block->find('first', array(
+			'recursive' => 0,
+			'conditions' => array('Block.id' => Current::read('Block.id'))
+		));
+		$this->_multidatabaseTitle = $block['BlocksLanguage']['name'];
 	}
 
 	protected function _initMultidatabase($contains = []) {

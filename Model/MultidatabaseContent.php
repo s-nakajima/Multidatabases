@@ -23,13 +23,6 @@ App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
 class MultidatabaseContent extends MultidatabasesAppModel {
 
 /**
- * Use database config
- *
- * @var string
- */
-	public $useDbConfig = 'master';
-
-/**
  * Validation rules
  *
  * @var array
@@ -42,44 +35,41 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Multidatabase' => array(
-			'className' => 'Multidatabase',
-			'foreignKey' => 'multidatabase_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'Language' => array(
-			'className' => 'Language',
-			'foreignKey' => 'language_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'Block' => array(
-			'className' => 'Block',
-			'foreignKey' => 'block_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'counterCache' => array(
-				'content_count' => array('MultidatabaseContent.is_latest' => 1),
-			),
-		)
+//		'Multidatabase' => array(
+//			'className' => 'Multidatabases.Multidatabase',
+//			'foreignKey' => 'multidatabase_id',
+//			'conditions' => '',
+//			'fields' => '',
+//			'order' => ''
+//		),
+//		'Language' => array(
+//			'className' => 'M17.Language',
+//			'foreignKey' => 'language_id',
+//			'conditions' => '',
+//			'fields' => '',
+//			'order' => ''
+//		),
+//		'Block' => array(
+//			'className' => 'Blocks.Block',
+//			'foreignKey' => 'block_id',
+//			'conditions' => '',
+//			'fields' => '',
+//			'order' => ''
+//		)
 	);
 
 	public $actsAs = [
 		'NetCommons.Trackable',
 		'NetCommons.OriginalKey',
-//		'Workflow.Workflow',
+		'Workflow.Workflow',
 		'Likes.Like',
-//		'Workflow.WorkflowComment',
+		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
 /*
 		'Topics.Topics' => array(
 			'fields' => array(
 				'title' => 'title',
-				'summary' => 'body1',
+				'summary' => 'body1',　→なし
 				'path' => '/:plugin_key/multidatabase_contents/view/:block_id/:content_key',
 			),
 			'search_contents' => array('body2')
@@ -108,17 +98,19 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 
 	public function getMultidatabaseContents() {
+		$this->loadModels([
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+		]);
 		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
 
 		$multidatabaseContents = $this->find('all', array(
-			'recursive' => 0,
+			'recursive' => -1,
 			'conditions' => [
 				'multidatabase_key' => $multidatabase['Multidatabase']['key'],
 			]
 		));
-
 
 		return $multidatabaseContents;
 	}
@@ -130,11 +122,16 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @return bool
  */
 	public function makeValidation() {
+		$this->loadModels([
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+		]);
+
 		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
 
-		if(! $multidatabaseMetadatas = $this->Multidatabase->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+		if(! $multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
 			return false;
 		}
 
@@ -199,12 +196,16 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 
 	public function saveContent($data) {
+		$this->loadModels([
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+		]);
 
 		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
 
-		if(! $multidatabaseMetadatas = $this->Multidatabase->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+		if(! $multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
 			return false;
 		}
 

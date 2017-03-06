@@ -25,13 +25,6 @@ App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
 class Multidatabase extends MultidatabasesAppModel {
 
 /**
- * use tables
- *
- * @var string
- */
-	public $useTable = 'multidatabases';
-
-/**
  * Validation rules
  *
  * @var array
@@ -68,6 +61,42 @@ class Multidatabase extends MultidatabasesAppModel {
 			'order' => ''
 		),
 	);
+
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
+
+	public $hasMany = array(
+		'MultidatabaseContent' => array(
+			'className' => 'Multidatabases.MultidatabaseContent',
+			'foreignKey' => 'multidatabase_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		),
+		'MultidatabaseMetadata' => array(
+			'className' => 'Multidatabases.MultidatabaseMetadata',
+			'foreignKey' => 'multidatabase_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		)
+	);
+
 
 /**
  * Constructor. Binds the model's database table to the object.
@@ -124,6 +153,7 @@ class Multidatabase extends MultidatabasesAppModel {
 		}
 */
 		if (isset($this->data['MultidatabaseMetadata'])) {
+			//TODO:SecurityComponentを除外したため、ここにMetadataのチェックを記述する
 			$metadatas = $this->data['MultidatabaseMetadata'];
 			$metadatas = $this->MultidatabaseMetadata->mergeGroupToMetadatas($metadatas);
 
@@ -137,50 +167,8 @@ class Multidatabase extends MultidatabasesAppModel {
 			}
 		}
 
-
-
 		return parent::beforeValidate($options);
-
-
 	}
-
-
-
-/**
- * hasMany associations
- *
- * @var array
- */
-
-	public $hasMany = array(
-		'MultidatabaseContent' => array(
-			'className' => 'MultidatabaseContent',
-			'foreignKey' => 'multidatabase_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		),
-		'MultidatabaseMetadata' => array(
-			'className' => 'MultidatabaseMetadata',
-			'foreignKey' => 'multidatabase_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		)
-	);
-
 
 /**
  * Called after each successful save operation.
@@ -208,70 +196,19 @@ class Multidatabase extends MultidatabasesAppModel {
 			}
 		}
 
-		if (! isset($this->MultidatabaseMetadata->data['MultidatabaseMetadata'])) {
+		// メタデータ初期データ登録
+		$multidatabaseMetadatas = $this->MultidatabaseMetadata->getInitMetadatas();
+		foreach ($multidatabaseMetadatas as $key => $metadata) {
+			$multidatabaseMetadatas[$key]['multidatabase_id'] = $this->data['Multidatabase']['id'];
+			$multidatabaseMetadatas[$key]['key'] = $this->data['Multidatabase']['key'];
+		}
+
+		if (! $this->MultidatabaseMetadata->saveAll($multidatabaseMetadatas)) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		$metadatas = $this->MultidatabaseMetadata->data['MultidatabaseMetadata'];
-
-		// 削除ID,カラムの確認
-		$delMetadataIds = $this->MultidatabaseMetadata->getDeleteMetadatas($this->data['Multidatabase']['id'],$metadatas,'id');
-		$delMetadataColNos = $this->MultidatabaseMetadata->getDeleteMetadatas($this->data['Multidatabase']['id'],$metadatas,'col_no');
-
-		// MultidatabaseMetadata登録
-		$metadatas = $this->MultidatabaseMetadata->makeSaveData(
-			$this->data,
-			$metadatas
-		);
-		$this->MultidatabaseMetadata->saveMetadatas($metadatas);
-
-
-		// MultidatabaseMetadata削除
-		if (!empty($delMetadataIds)) {
-			$this->MultidatabaseMetadata->deleteMetadatas($delMetadataIds);
-		}
-
-
-
-		// MultidatabaseContentの削除
-
 
 		parent::afterSave($created, $options);
-	}
-
-
-
-/**
- * バリデーションルールの作成
- *
- * @return
- */
-	public function makeValidation($multidatabaseMetadatas = []) {
-		$result = [];
-/*
-		foreach ($multidatabaseMetadatas as $metadata) {
-			if ($metadata['is_require']) {
-				$tmp = [];
-				switch ($metadata['type']) {
-					case 'checkbox':
-						$tmp['rule'] = [
-							'multiple',
-							[
-								'min' => 1
-							]
-						];
-						break;
-					default:
-						$tmp['rule'][] = 'notBlank';
-						$tmp['allowEmpty'] = false;
-						break;
-				}
-				$tmp['required'] = true;
-				$result['value' . $metadata['col_no']] =  $tmp;
-			}
-		}
-*/
-		$this->validate = Hash::merge($this->validate,$result);
 	}
 
 /**
@@ -318,8 +255,6 @@ class Multidatabase extends MultidatabasesAppModel {
 
 
 
-
-
 /**
  * Save Multidatabases
  *
@@ -328,36 +263,25 @@ class Multidatabase extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
         public function saveMultidatabase($data) {
-			$this->loadModels([
-				'MultidatabaseSetting' => 'Multidatabases.MultidatabaseSetting',
-				'MultidatabaseFrameSetting' => 'Multidatabases.MultidatabaseFrameSetting',
-				'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
-			]);
-
-
 		//トランザクションBegin
 		$this->begin();
 
-		try {
-
-			// メタデータ登録
-
-			//バリデーション
+		//バリデーション
 			$this->set($data);
 
-			if (! $this->validates()) {
-				$this->rollback();
-				return false;
-			}
 
+		if (! $this->validates()) {
+			return false;
+		}
 
+		try {
 			//登録処理
-			$result = $this->save($data, false);
-
-			if (! $result) {
+			if (! $this->save(null, false)) {
+//			$result = $this->saveAll();
+//			if (! $result) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-
+			//トランザクションCommit
 			$this->commit();
 		} catch (Exception $ex) {
 			//トランザクションRollback
@@ -375,11 +299,6 @@ class Multidatabase extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
 	public function deleteMultidatabase($data) {
-		$this->loadModels([
-			'Multidatabase' => 'Multidatabases.Multidatabase',
-			'MultidatabaseContent' => 'Multidatabases.MultidatabaseContent',
-		]);
-
 		//トランザクションBegin
 		$this->begin();
 

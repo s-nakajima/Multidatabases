@@ -1,12 +1,12 @@
 <?php
 echo $this->NetCommonsHtml->css([
-	'/multidatabases/css/multidatabases.css',
+	'/multidatabases/css/style.css',
 	'/likes/css/style.css',
 ]);
-echo $this->NetCommonsHtml->script([
-	'/multidatabases/js/multidatabases.js',
-	'/likes/js/likes.js',
-]);
+//echo $this->NetCommonsHtml->script([
+//	'/multidatabases/js/multidatabases.js',
+//	'/likes/js/likes.js',
+//]);
 ?>
 
 <article class="multidatabaseContents">
@@ -65,18 +65,18 @@ echo $this->NetCommonsHtml->script([
 	</header>
 
 	<?php if ($multidatabaseContents) : ?>
-	<div>
-		<?php foreach ($multidatabaseContents as $multidatabaseContent) : ?>
-			<?php echo $this->element(
-				'MultidatabaseContents/view/view_content',
-				[
-					'multidatabaseContent' => $multidatabaseContent,
-					'multidatabaseMetadatas' => $multidatabaseMetadatas
-				]
-			); ?>
-		<?php endforeach; ?>
-		<?php echo $this->element('NetCommons.paginator'); ?>
-	</div>
+		<div>
+			<?php foreach ($multidatabaseContents as $multidatabaseContent) : ?>
+				<?php echo $this->element(
+					'MultidatabaseContents/view/view_content',
+					[
+						'multidatabaseContent' => $multidatabaseContent,
+						'multidatabaseMetadatas' => $multidatabaseMetadata
+					]
+				); ?>
+			<?php endforeach; ?>
+			<?php echo $this->element('NetCommons.paginator'); ?>
+		</div>
 	<?php else : ?>
 		<article class="nc-not-found">
 			<?php echo __d('multidatabases', 'No contents found.') ?>

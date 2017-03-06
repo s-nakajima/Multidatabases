@@ -24,8 +24,6 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 
 
 	$scope.initialize = function(data) {
-
-
 		angular.forEach(data.multidatabaseMetadata, function(value) {
 			switch (value.position) {
 				case 0:
@@ -46,9 +44,6 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 					break;
 			}
 		});
-
-
-
 	}
 
 
@@ -78,14 +73,15 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 
 
 	// 行削除
-	$scope.delete = function(positionNo, index, message) {
-		if (! confirm(message)) {
+	$scope.delete = function($event, positionNo, index, message) {
+        $scope.eventStop($event);
+
+        if (! confirm(message)) {
 			return false;
 		}
 
 		currentMetadatas = getGroup(positionNo);
 		currentMetadatas.splice(index,1);
-
 	}
 
 	// 行移動
@@ -129,9 +125,16 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 
 		targetMetadata.position = destPositionNo;
 		targetMetadata.rank = destMetadatas.length - 1;
+	}
 
-
-
+  /**
+   * イベントストップ
+   *
+   * @return {void}
+   */
+	$scope.eventStop = function($event) {
+      $event.preventDefault();
+      $event.stopPropagation();
 	}
 
 }]);

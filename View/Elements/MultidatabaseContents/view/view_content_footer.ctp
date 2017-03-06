@@ -7,9 +7,9 @@
 		</span>
 			<?php endif ?>
 		</div>
-<?php var_dump($multidatabaseSetting); ?>
+
 		<div class="pull-left">
-			<?php echo $this->Like->buttons('MultidatabaseContent', $multidatabaseSetting, $content, array('div' => true)); ?>
+			<?php echo $this->Like->buttons('MultidatabaseContent', $multidatabaseSetting, $content); ?>
 		</div>
 	</div>
 </div>

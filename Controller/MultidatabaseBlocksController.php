@@ -77,15 +77,6 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 
     public function beforeFilter() {
         parent::beforeFilter();
-
-		if (
-			$this->action === 'add' ||
-			$this->action === 'edit'
-		) {
-			// メタデータフォーム動的生成のため自動Validateしない
-			$this->Security->validatePost = false;
-		}
-
     }
 
 /**
@@ -146,17 +137,12 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
  * @return void
  */
     public function edit() {
-
-
-
         if ($this->request->is('put')) {
-
             if ($this->Multidatabase->saveMultidatabase($this->data)) {
                 return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
             }
             return;
         }
-
 
 		$multidatabases = $this->Multidatabase->getMultidatabase();
 
