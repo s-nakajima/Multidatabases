@@ -38,7 +38,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		'rank' => 'numeric',
 		'col_no' => 'numeric',
 		'type' => 'string',
-		'selections' => 'string',
+		'selections' => 'json',
 		'is_require' => 'boolean',
 		'is_searchable' => 'boolean',
 		'is_sortable' => 'boolean',
@@ -47,7 +47,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		'is_visible_detail' => 'boolean',
 		'created' => 'datetime',
 		'created_user' => 'numeric',
-		'modified' => 'numeric',
+		'modified' => 'datetime',
 		'modified_user' => 'numeric',
 	];
 
@@ -328,8 +328,11 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 
+
+
+
 /**
- * メタデータの型を調整する
+ * メタデータの型を調整する（JSのため）
  * @param array $metadatas
  */
 	public function normalizeEditMetadatasType($metadatas = array()) {
@@ -353,6 +356,14 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				case 'text':
 					$result[$key] = (string)$metadata;
 					break;
+				case 'json':
+					if (empty($metadata)) {
+						$result[$key] = [];
+					} else {
+						$result[$key] = json_decode($metadata,true);
+					}
+					break;
+
 				default:
 					$result[$key] = $metadata;
 					break;
@@ -473,6 +484,14 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		$result = [];
 
 		foreach ($metadatas as $metadata) {
+			$selections_json = [];
+
+			// チェックボックス、セレクトの場合の処理（JSON化）
+			if(!empty($metadata['selections']) && is_array($metadata['selections'])) {
+				$selections_json = json_encode($metadata['selections']);
+				$metadata['selections'] = $selections_json;
+			}
+
 
 			// カラムNoが未設定の場合は、カラムNoを付与する
 			if (! isset($metadata['col_no']) || empty($metadata['col_no'])) {
@@ -738,7 +757,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'rank' => 2,
 				'col_no' => 3,
 				'type' => 'select',
-				'selections' => implode('||',array('国語','算数','理科','社会','総合','音楽','図工','体育')),
+				'selections' => ['国語','算数','理科','社会','総合','音楽','図工','体育'],
 				'is_require' => 1,
 				'is_searchable' => 1,
 				'is_sortable' => 0,
@@ -823,7 +842,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'rank' => 3,
 				'col_no' => 6,
 				'type' => 'select',
-				'selections' => implode('||',array('小学校','中学校','高校')),
+				'selections' => ['小学校','中学校','高校'],
 				'is_require' => 0,
 				'is_searchable' => 1,
 				'is_sortable' => 0,

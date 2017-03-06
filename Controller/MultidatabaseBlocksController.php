@@ -80,7 +80,7 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
     }
 
 /**
- * index
+ * ブロック一覧
  *
  * @return void
  */
@@ -101,7 +101,7 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
     }
 
 /**
- * add
+ * ブロックの追加
  *
  * @return void
  */
@@ -130,9 +130,8 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
     }
 
 
-
 /**
- * edit
+ * ブロックの編集
  *
  * @return void
  */
@@ -167,7 +166,7 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
     }
 
 /**
- * delete
+ * ブロックの削除
  *
  * @return void
  */
@@ -180,8 +179,6 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 
         return $this->throwBadRequest();
     }
-
-
 
 
 }

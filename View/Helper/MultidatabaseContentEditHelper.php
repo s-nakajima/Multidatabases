@@ -107,6 +107,7 @@ class MultidatabaseContentEditHelper extends AppHelper
 	}
 
 	public function convertSelectionsToArray($selections) {
+		$result = array();
 		foreach (explode('||',$selections) as $selection) {
 			$result[md5($selection)] = $selection;
 		}
@@ -147,7 +148,8 @@ class MultidatabaseContentEditHelper extends AppHelper
 				$result .= $this->renderFormElementRadio($name, $options);
 				break;
 			case 'select':
-				$options['options'] = $this->convertSelectionsToArray($metadata['selections']);
+				//$options['options'] = $this->convertSelectionsToArray($metadata['selections']);
+				$options['options'] = $metadata['selections'];
 				$result .= $this->renderFormElementSelect($name, $options);
 				break;
 			case 'checkbox':
