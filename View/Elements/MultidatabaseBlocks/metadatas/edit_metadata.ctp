@@ -3,6 +3,9 @@ echo $this->NetCommonsHtml->script([
 	'/multidatabases/js/edit_multi_database_metadatas.js'
 ]);
 ?>
+
+<?php echo $this->NetCommonsForm->unlockField('MultidatabaseMetadatas'); ?>
+
 <div id="multidatabase-metadata-fields" ng-controller="MultidatabaseMetadatas" ng-init="initialize(<?php echo h(json_encode(['multidatabaseMetadatas' => $multidatabaseMetadatas])); ?>)">
 	<div class="panel panel-default">
 		<div class="panel-heading clearfix">
