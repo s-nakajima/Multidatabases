@@ -296,9 +296,9 @@ class Multidatabase extends MultidatabasesAppModel {
 
 		try {
 			//登録処理
-//			if (! $this->save(null, false)) {
-			$result = $this->saveAll();
-			if (! $result) {
+			if (! $this->save(null, false)) {
+//			$result = $this->saveAll();
+//			if (! $result) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			//トランザクションCommit
