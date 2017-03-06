@@ -82,14 +82,14 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 			$this->action === 'add' ||
 			$this->action === 'edit'
 		) {
-			// メタデータフォーム動的生成のため自動Validateしない
+			// add,editメソッドではメタデータフォーム動的生成のため自動Validateしない
 			$this->Security->validatePost = false;
 		}
 
     }
 
 /**
- * index
+ * ブロック一覧
  *
  * @return void
  */
@@ -110,7 +110,7 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
     }
 
 /**
- * add
+ * ブロックの追加
  *
  * @return void
  */
@@ -118,6 +118,8 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
         $this->view = 'edit';
 
 		if ($this->request->is('put') || $this->request->is('post')) {
+
+
 			if ($this->Multidatabase->saveMultidatabase($this->data)) {
 				return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
 			}
@@ -139,24 +141,19 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
     }
 
 
-
 /**
- * edit
+ * ブロックの編集
  *
  * @return void
  */
     public function edit() {
 
-
-
         if ($this->request->is('put')) {
-
             if ($this->Multidatabase->saveMultidatabase($this->data)) {
                 return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
             }
             return;
         }
-
 
 		$multidatabases = $this->Multidatabase->getMultidatabase();
 
@@ -180,8 +177,9 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 		$this->request->data['Frame'] = Current::read('Frame');
     }
 
+
 /**
- * delete
+ * ブロックの削除
  *
  * @return void
  */
@@ -194,8 +192,6 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 
         return $this->throwBadRequest();
     }
-
-
 
 
 }

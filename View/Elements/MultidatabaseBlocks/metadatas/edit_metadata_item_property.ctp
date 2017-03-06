@@ -32,6 +32,9 @@
 		</select>
 	</div>
 </div>
+<div ng-if="g<?php echo $gPos; ?>.type == 'select' || g<?php echo $gPos; ?>.type == 'checkbox'">
+	<?php echo $this->MultidatabaseMetadataSetting->renderGroupItemPropertySelections($gPos); ?>
+</div>
 <div class="row form-group">
 	<div class="col-xs-12">
 		<div class="checkbox">
@@ -44,7 +47,14 @@
 					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_require']">Require
 			</label>
 		</div>
-		<div class="checkbox">
+		<div class="checkbox" ng-if="
+				g<?php echo $gPos; ?>.type != 'file' &&
+				g<?php echo $gPos; ?>.type != 'image' &&
+				g<?php echo $gPos; ?>.type != 'autonumber' &&
+				g<?php echo $gPos; ?>.type != 'date' &&
+				g<?php echo $gPos; ?>.type != 'created' &&
+				g<?php echo $gPos; ?>.type != 'updated'
+		">
 			<label class="control-label" for="MultidatabaseMetadataSettingEditIsSearchable<?php echo$gPos; ?>-{{$index}}">
 				<input type="checkbox"
 					   name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_searchable]"
@@ -54,7 +64,13 @@
 					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_searchable']">Searchable
 			</label>
 		</div>
-		<div class="checkbox">
+		<div class="checkbox" ng-if="
+				g<?php echo $gPos; ?>.type != 'file' &&
+				g<?php echo $gPos; ?>.type != 'image' &&
+				g<?php echo $gPos; ?>.type != 'textarea' &&
+				g<?php echo $gPos; ?>.type != 'wysiwyg' &&
+				g<?php echo $gPos; ?>.type != 'checkbox'
+		">
 			<label class="control-label" for="MultidatabaseMetadataSettingEditIsSortable<?php echo$gPos; ?>-{{$index}}">
 				<input type="checkbox"
 					   name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_sortable]"
@@ -64,7 +80,7 @@
 					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_sortable']">Sortable
 			</label>
 		</div>
-		<div class="checkbox">
+		<div class="checkbox" ng-if="g<?php echo $gPos; ?>.type == 'file'">
 			<label class="control-label" for="MultidatabaseMetadataSettingEditIsFileDlRequireAuth<?php echo$gPos; ?>-{{$index}}">
 				<input type="checkbox"
 					   id="MultidatabaseMetadataSettingEditIsFileDlRequireAuth<?php echo$gPos; ?>-{{$index}}"

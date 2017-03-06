@@ -24,10 +24,10 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 
 
 	$scope.initialize = function(data) {
-
-
 		angular.forEach(data.multidatabaseMetadata, function(value) {
+			console.log(value.selections);
 			switch (value.position) {
+
 				case 0:
 					value.rank = $scope.metadataGroup0.length;
 					$scope.metadataGroup0.push(value);
@@ -46,11 +46,7 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 					break;
 			}
 		});
-
-
-
 	}
-
 
 	// 行追加
 	$scope.add = function(positionNo,last) {
@@ -72,7 +68,7 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 			selections: '',
 			type: 'text'
 		}
-		currentMetadatas = getGroup(positionNo);
+		var currentMetadatas = getGroup(positionNo);
 		currentMetadatas.push(value);
 	}
 
@@ -82,20 +78,16 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 		if (! confirm(message)) {
 			return false;
 		}
-
-		currentMetadatas = getGroup(positionNo);
+		var currentMetadatas = getGroup(positionNo);
 		currentMetadatas.splice(index,1);
-
 	}
 
 	// 行移動
 	$scope.moveRank = function(type, positionNo, rank) {
 		var dest = (type === 'up') ? rank - 1 : rank + 1;
 
-		currentMetadatas = getGroup(positionNo);
-		if (angular.isUndefined(currentMetadatas[dest])) {
-			return false;
-		}
+		var currentMetadatas = getGroup(positionNo);
+
 		var destMetadata = angular.copy(currentMetadatas[dest]);
 		var targetMetadata = angular.copy(currentMetadatas[rank]);
 		currentMetadatas[rank] = destMetadata;
@@ -111,8 +103,8 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 	// 段移動
 	$scope.movePosition = function(destPositionNo, currentPositionNo, rank) {
 
-		currentMetadatas = getGroup(currentPositionNo);
-		destMetadatas = getGroup(destPositionNo);
+		var currentMetadatas = getGroup(currentPositionNo);
+		var destMetadatas = getGroup(destPositionNo);
 
 		if (currentMetadatas == false) {
 			return false;
@@ -129,9 +121,44 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 
 		targetMetadata.position = destPositionNo;
 		targetMetadata.rank = destMetadatas.length - 1;
+	}
 
+	// 選択肢追加
+	$scope.addSelection = function(positionNo, parentIndex) {
+		var currentMetadatas = getGroup(positionNo);
+		var currentMetadata = currentMetadatas[parentIndex];
 
+		var selection = {
+			id: null,
+			value: ''
+		}
 
+		console.log(currentMetadata.selections);
+		currentMetadata.selections.push(selection);
+	}
+
+	// 選択肢削除
+	$scope.delSelection = function(positionNo, parentIndex, index) {
+		var currentMetadatas = getGroup(positionNo);
+		var currentMetadata = currentMetadatas[parentIndex];
+		currentMetadata.selections.splice(index,1);
+	}
+
+	// 選択肢移動
+	$scope.moveSelection = function(type, positionNo, parentIndex, index) {
+		var currentMetadatas = getGroup(positionNo);
+		var currentMetadata = currentMetadatas[parentIndex];
+
+		var dest = (type === 'up') ? index - 1 : index + 1;
+
+		if (angular.isUndefined(currentMetadata.selections[dest])) {
+			return false;
+		}
+
+		var destSelection = angular.copy(currentMetadata.selections[dest]);
+		var targetSelection = angular.copy(currentMetadata.selections[index]);
+		currentMetadata.selections[index] = destSelection;
+		currentMetadata.selections[dest] = targetSelection;
 	}
 
 }]);

@@ -39,25 +39,18 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 		'NetCommons.NetCommonsForm'
 	];
 
-	/**
-	 * CSS Style Sheetを読み込む
-	 *
-	 * @param string $viewFile viewファイル
-	 * @return void
-	 * @link http://book.cakephp.org/2.0/ja/views/helpers.html#Helper::beforeRender Helper::beforeRender
-	 */
 	public function beforeRender($viewFile)
 	{
 		parent::beforeRender($viewFile);
 	}
 
-	/**
-	 * 汎用データベースメタデータレイアウト グループのHTMLを出力する(列)
-	 *
-	 * @param integer $position グループ
-	 * @param integer $colSize 段の列数
-	 * @return string HTML
-	 */
+/**
+ * 汎用データベースメタデータレイアウト グループのHTMLを出力する(列)
+ *
+ * @param integer $position グループ
+ * @param integer $colSize 段の列数
+ * @return string HTML
+ */
 	public function renderGroup($position, $colSize = 1)
 	{
 
@@ -86,12 +79,12 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 		}
 	}
 
-	/**
-	 * 汎用データベースメタデータレイアウト アイテムのHTMLを出力する
-	 *
-	 * @param integer $position グループ
-	 * @return string HTML
-	 */
+/**
+ * 汎用データベースメタデータレイアウト アイテムのHTMLを出力する
+ *
+ * @param integer $position グループ
+ * @return string HTML
+ */
 	public function renderGroupItems($position)
 	{
 		switch ($position) {
@@ -108,12 +101,12 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 		}
 	}
 
-	/**
-	 * 汎用データベースメタデータレイアウト アイテムプロパティのHTMLを出力する
-	 *
-	 * @param integer $position グループ
-	 * @return string HTML
-	 */
+/**
+ * 汎用データベースメタデータレイアウト アイテムプロパティのHTMLを出力する
+ *
+ * @param integer $position グループ
+ * @return string HTML
+ */
 	public function renderGroupItemProperty($position)
 	{
 		switch ($position) {
@@ -130,6 +123,33 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 		}
 	}
 
+/**
+ * 汎用データベースメタデータレイアウト アイテムプロパティ 選択肢入力のHTMLを出力する
+ *
+ * @param integer $position グループ
+ * @return string HTML
+ */
+	public function renderGroupItemPropertySelections($position) {
+		switch ($position) {
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+				return $this->_View->Element(
+					'MultidatabaseBlocks/metadatas/edit_metadata_item_property_selections',
+					['gPos' => $position]
+				);
+			default:
+				return false;
+		}
+	}
+
+
+/**
+ * フィールド種別
+ *
+ * @return array
+ */
 	public function fieldTypeList() {
 		return [
 			'text' => __d('multidatabases','Text'),
@@ -148,6 +168,11 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 		];
 	}
 
+/**
+ * メタデータ設定項目一覧
+ *
+ * @return array
+ */
 	public function fieldList() {
 		return [
 			'key',

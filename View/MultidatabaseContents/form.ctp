@@ -7,7 +7,7 @@
 <?php echo $this->NetCommonsForm->hidden('Multidatabase.id', ['value' => $multidatabase['Multidatabase']['id']]); ?>
 <?php echo $this->NetCommonsForm->hidden('Multidatabase.key', ['value' => $multidatabase['Multidatabase']['key']]); ?>
 
-<div class="multidatabaseContents form" ng-controller="MultidatabaseContentEdit" ng-init=""Initialize(<?php echo h(json_encode(['multidatabaseMetadatas' => $multidatabaseMetadatas])); ?>)>
+<div class="multidatabaseContents form" ng-controller="MultidatabaseContentEdit" ng-init=""Initialize(<?php echo h(json_encode(['multidatabaseMetadata' => $multidatabaseMetadata])); ?>)>
 	<article>
 		<h1><?php echo h($multidatabase['Multidatabase']['name']) ?></h1>
 		<div class="panel panel-default">
