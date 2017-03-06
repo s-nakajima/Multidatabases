@@ -20,13 +20,6 @@ App::uses('CakeSession', 'Model/Datasourse');
 class MultidatabaseMetadata extends MultidatabasesAppModel {
 
 /**
- * Use database config
- *
- * @var string
- */
-	public $useDbConfig = 'master';
-
-/**
  * Use table
  *
  * @var mixed False or table name
@@ -205,14 +198,14 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  */
 	public $belongsTo = array(
 		'Multidatabase' => array(
-			'className' => 'Multidatabase',
+			'className' => 'Multidatabases.Multidatabase',
 			'foreignKey' => 'multidatabase_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		),
 		'Language' => array(
-			'className' => 'Language',
+			'className' => 'M17n.Language',
 			'foreignKey' => 'language_id',
 			'conditions' => '',
 			'fields' => '',

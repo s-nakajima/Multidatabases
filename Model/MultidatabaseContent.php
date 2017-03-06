@@ -23,13 +23,6 @@ App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
 class MultidatabaseContent extends MultidatabasesAppModel {
 
 /**
- * Use database config
- *
- * @var string
- */
-	public $useDbConfig = 'master';
-
-/**
  * Validation rules
  *
  * @var array
@@ -43,21 +36,21 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  */
 	public $belongsTo = array(
 		'Multidatabase' => array(
-			'className' => 'Multidatabase',
+			'className' => 'Multidatabases.Multidatabase',
 			'foreignKey' => 'multidatabase_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		),
 		'Language' => array(
-			'className' => 'Language',
+			'className' => 'M17.Language',
 			'foreignKey' => 'language_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		),
 		'Block' => array(
-			'className' => 'Block',
+			'className' => 'Blocks.Block',
 			'foreignKey' => 'block_id',
 			'conditions' => '',
 			'fields' => '',
