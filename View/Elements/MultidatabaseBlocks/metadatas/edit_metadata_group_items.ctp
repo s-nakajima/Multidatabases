@@ -7,16 +7,16 @@
 			<div class="pull-right">
 				<button class="btn btn-xs btn-danger" type="button"
 						ng-disabled="metadataGroup<?php echo $gPos; ?>.length < 2"
-						ng-click="delete(<?php echo $gPos; ?>, $index, '<?php echo __d('multidatabases', 'Do you want to delete this question ?'); ?>')">
+						ng-click="delete($event, <?php echo $gPos; ?>, $index, '<?php echo __d('multidatabases', 'Do you want to delete this question ?'); ?>')">
 					<span class="glyphicon glyphicon-remove"> </span>
 				</button>
 			</div>
 			<div class="pull-left">
-				<div class="btn-group">
-					<button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="sending">
+				<div class="btn-group" uib-dropdown dropdown-append-to-body>
+					<button type="button" class="btn btn-xs btn-default dropdown-toggle" uib-dropdown-toggle ng-disabled="sending" ng-click="eventStop($event)">
 						<?php echo __d('multidatabases', 'Move'); ?><span class="caret"></span>
 					</button>
-					<ul class="dropdown-menu">
+					<ul class="dropdown-menu" uib-dropdown-menu role="menu">
 						<li class="move-item-up"><a href="" ng-click="moveRank('up',<?php echo $gPos; ?>,$index)" ng-disabled="$first"><span class="glyphicon glyphicon-arrow-up"><?php echo __d('multidatabases', 'Go to Up'); ?></a></li>
 						<li class="move-item-down"><a href="" ng-click="moveRank('down',<?php echo $gPos; ?>,$index)" ng-disabled="$last"><span class="glyphicon glyphicon-arrow-down"><?php echo __d('multidatabases', 'Go to Down'); ?></a></li>
 						<li class="divider"></li>

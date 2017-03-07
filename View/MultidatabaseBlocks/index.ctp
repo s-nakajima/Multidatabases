@@ -27,7 +27,7 @@
 				'Frame.block_id'
 			); ?>
 			<?php echo $this->BlockIndex->tableHeader(
-				'Block.name', __d('multidatabases', 'Multidatabase name'),
+				'BlocksLanguage.name', __d('multidatabases', 'Multidatabase name'),
 				array('sort' => true, 'editUrl' => true)
 			); ?>
 			<?php echo $this->BlockIndex->tableHeader(
@@ -55,7 +55,7 @@
 				'Frame.block_id', $multidatabase['Block']['id']
 			); ?>
 			<?php echo $this->BlockIndex->tableData(
-				'Block.name', $multidatabase['Block']['name'],
+				'BlocksLanguage.name', $multidatabase['BlocksLanguage']['name'],
 				array('editUrl' => array('block_id' => $multidatabase['Block']['id']))
 			); ?>
 			<?php echo $this->BlockIndex->tableData(

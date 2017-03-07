@@ -1,31 +1,19 @@
 <?php echo $this->NetCommonsHtml->script([
 	'/multidatabases/js/edit_multi_database_contents.js',
 ]); ?>
-<?php echo $this->NetCommonsForm->hidden('key'); ?>
-<?php echo $this->NetCommonsForm->hidden('Frame.id', ['value' => Current::read('Frame.id')]); ?>
-<?php echo $this->NetCommonsForm->hidden('Block.id', ['value' => Current::read('Block.id')]); ?>
-<?php echo $this->NetCommonsForm->hidden('Multidatabase.id', ['value' => $multidatabase['Multidatabase']['id']]); ?>
-<?php echo $this->NetCommonsForm->hidden('Multidatabase.key', ['value' => $multidatabase['Multidatabase']['key']]); ?>
 
-<div class="multidatabaseContents form" ng-controller="MultidatabaseContentEdit" ng-init=""Initialize(<?php echo h(json_encode(['multidatabaseMetadata' => $multidatabaseMetadata])); ?>)>
+<div class="multidatabaseContents form" ng-controller="MultidatabaseContentEdit" ng-init="initialize(<?php echo h(json_encode(['multidatabaseMetadatas' => $multidatabaseMetadata])); ?>)">
 	<article>
 		<h1><?php echo h($multidatabase['Multidatabase']['name']) ?></h1>
 		<div class="panel panel-default">
-			<?php echo $this->NetCommonsForm->create(
-				'MultidatabaseContent',
-				array(
-					'inputDefaults' => array(
-						'div' => 'form-group',
-						'class' => 'form-control',
-						'error' => false,
-					),
-					'div' => 'form-control',
-					'novalidate' => true
-				)
-			);
-			?>
+			<?php echo $this->NetCommonsForm->create('MultidatabaseContent');?>
 			<div class="panel-body">
 				<fieldset>
+				<?php echo $this->NetCommonsForm->hidden('key'); ?>
+				<?php echo $this->NetCommonsForm->hidden('Frame.id', ['value' => Current::read('Frame.id')]); ?>
+				<?php echo $this->NetCommonsForm->hidden('Block.id', ['value' => Current::read('Block.id')]); ?>
+				<?php echo $this->NetCommonsForm->hidden('Multidatabase.id', ['value' => $multidatabase['Multidatabase']['id']]); ?>
+				<?php echo $this->NetCommonsForm->hidden('Multidatabase.key', ['value' => $multidatabase['Multidatabase']['key']]); ?>
 				<?php echo $this->element('MultidatabaseContents/edit/edit_content'); ?>
 				</fieldset>
 				<hr/>

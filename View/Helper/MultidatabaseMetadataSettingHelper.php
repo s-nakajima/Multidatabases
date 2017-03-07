@@ -39,6 +39,13 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 		'NetCommons.NetCommonsForm'
 	];
 
+	/**
+	 * CSS Style Sheetを読み込む
+	 *
+	 * @param string $viewFile viewファイル
+	 * @return void
+	 * @link http://book.cakephp.org/2.0/ja/views/helpers.html#Helper::beforeRender Helper::beforeRender
+	 */
 	public function beforeRender($viewFile)
 	{
 		parent::beforeRender($viewFile);

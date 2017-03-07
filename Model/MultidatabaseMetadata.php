@@ -19,13 +19,6 @@ App::uses('CakeSession', 'Model/Datasourse');
  */
 class MultidatabaseMetadata extends MultidatabasesAppModel {
 
-/**
- * Use database config
- *
- * @var string
- */
-	public $useDbConfig = 'master';
-
 	public $metadatas = [];
 
 /**
@@ -106,16 +99,16 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-		'type' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
+		//'type' => array(
+		//	'numeric' => array(
+		//		'rule' => array('numeric'),
+		//		//'message' => 'Your custom message here',
+		//		//'allowEmpty' => false,
+		//		//'required' => false,
+		//		//'last' => false, // Stop validation after this rule
+		//		//'on' => 'create', // Limit validation to 'create' or 'update' operations
+		//	),
+		//),
 		'rank' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
@@ -209,14 +202,14 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  */
 	public $belongsTo = array(
 		'Multidatabase' => array(
-			'className' => 'Multidatabase',
+			'className' => 'Multidatabases.Multidatabase',
 			'foreignKey' => 'multidatabase_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		),
 		'Language' => array(
-			'className' => 'Language',
+			'className' => 'M17n.Language',
 			'foreignKey' => 'language_id',
 			'conditions' => '',
 			'fields' => '',
@@ -288,9 +281,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 
 	}
 
-
-
-
 /**
  * DBよりメタデータを取得する
  * @return array
@@ -351,7 +341,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		}
 
 		foreach ($metadatas as $key => $metadata) {
-
 			switch ($this->dataType[$key]) {
 				case 'numeric':
 				case 'integer':
@@ -629,9 +618,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		return $result;
 
 	}
-
-
-
 
 /**
  * 編集用のメタデータを取得する
@@ -925,7 +911,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'col_no' => 9,
 				'type' => 'image',
 				'selections' => '',
-				'is_require' => 1,
+				'is_require' => 0,
 				'is_searchable' => 0,
 				'is_sortable' => 0,
 				'is_file_dl_require_auth' => 0,
