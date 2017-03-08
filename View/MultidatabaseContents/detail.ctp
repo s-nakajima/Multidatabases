@@ -25,7 +25,7 @@ echo $this->NetCommonsHtml->css([
 			<?php echo $this->LinkButton->toList(); ?>
 		</div>
 		<div class="pull-right">
-			<?php echo $this->element('BlogEntries/edit_link', array('status' => $blogEntry['BlogEntry']['status'])); ?>
+			<?php echo $this->element('MultidatabaseContents/view/view_content_edit_link', array('status' => $multidatabaseContent['MultidatabaseContent']['status'])); ?>
 		</div>
 
 	</header>

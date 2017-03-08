@@ -27,7 +27,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		'Workflow.WorkflowComment',
 		'Categories.Category',
 		'NetCommons.NetCommonsTime',
-		//'ContentComments.ContentComment',	// コンテンツコメント
 	);
 
 /**
@@ -39,7 +38,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		'Likes.Like',
 		'ContentComments.ContentComment' => array(
 			'viewVarsKey' => array(
-				'contentKey' => 'multidatabaseContent.key',
+				'contentKey' => 'multidatabaseContent.MultidatabaseContent.key',
 				'useComment' => 'multidatabaseSetting.use_comment',
 				'useCommentApproval' => 'multidatabaseSetting.use_comment_approval'
 			)
@@ -65,13 +64,12 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 					'approve' => 'content_comment_publishable',
 			),
 		),
-		'Categories.Categories',
 		'ContentComments.ContentComments' => array(
 			'viewVarsKey' => array(
 				'contentKey' => 'multidatabaseContent.MultidatabaseContent.key',
-				'useComment' => 'multidatabaseSetting.use_comment'
+				'useComment' => 'multidatabaseSetting.use_comment',
 			),
-			'allow' => array('view')
+			'allow' => array('detail')
 		)	);
 
 /**
@@ -185,8 +183,11 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 						'action' => 'detail',
 						'block_id' => Current::read('Block.id'),
 						'frame_id' => Current::read('Frame.id'),
+						'key' => $result['MultidatabaseContent']['key']
+
 					]
 				);
+
 				return $this->redirect($url);
 			}
 			$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
