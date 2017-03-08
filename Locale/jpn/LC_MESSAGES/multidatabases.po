@@ -126,3 +126,6 @@ msgstr "%sに移動"
 
 msgid "Metadata Settings"
 msgstr "メタデータ設定"
+
+msgid "View detail"
+msgstr "詳細を表示"

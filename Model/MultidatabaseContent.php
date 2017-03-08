@@ -103,6 +103,11 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 
+/**
+ * コンテンツを取得
+ *
+ * @return array|bool|null
+ */
 	public function getMultidatabaseContents() {
 		$this->loadModels([
 			'Multidatabase' => 'Multidatabases.Multidatabase',
@@ -111,15 +116,17 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			return false;
 		}
 
-		$multidatabaseContents = $this->find('all', array(
+		$result = $this->find('all', array(
 			'recursive' => 0,
 			'conditions' => [
 				'multidatabase_key' => $multidatabase['Multidatabase']['key'],
 			]
 		));
 
-		return $multidatabaseContents;
+		return $result;
 	}
+
+
 
 
 /**
@@ -201,6 +208,12 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 
+/**
+ * コンテンツを保存する
+ *
+ * @param $data
+ * @return bool|mixed
+ */
 	public function saveContent($data) {
 		$this->loadModels([
 			'Multidatabase' => 'Multidatabases.Multidatabase',

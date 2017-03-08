@@ -59,7 +59,7 @@ class MultidatabaseContentViewHelper extends AppHelper
  * @param integer $colSize 段の列数
  * @return string HTML
  */
-	public function renderGroup($metadataGroups, $contents, $position, $colSize = 1)
+	public function renderGroup($metadataGroups, $contents, $position, $colSize = 1, $viewMode = null)
 	{
 
 		switch ($colSize) {
@@ -72,7 +72,27 @@ class MultidatabaseContentViewHelper extends AppHelper
 				$element = 'MultidatabaseContents/view/view_content_group_c1';
 		}
 
-		$metadatas = $metadataGroups[$position];
+		$tmp = $metadataGroups[$position];
+
+		$metadatas = [];
+
+		if ($viewMode === 'detail') {
+			foreach ($tmp as $metadata) {
+				if ($metadata['is_visible_detail'] === 1) {
+					$metadatas[] = $metadata;
+				}
+			}
+		} else {
+			foreach ($tmp as $metadata) {
+				if ($metadata['is_visible_list'] === 1) {
+					$metadatas[] = $metadata;
+				}
+			}
+		}
+
+		if (empty($metadatas)) {
+			return '';
+		}
 
 		return $this->_View->Element(
 			$element,
@@ -142,7 +162,7 @@ class MultidatabaseContentViewHelper extends AppHelper
  * @param $metadataGroup
  * @param $content HTML
  */
-	public function renderContentsDetail($content, $metadatas) {
+	public function renderContentsDetail() {
 		return $this->_View->Element(
 			'MultidatabaseContents/view/view_content_detail',
 			[

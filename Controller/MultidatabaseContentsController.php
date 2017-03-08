@@ -99,15 +99,18 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$this->set('multidatabaseFrameSetting', $multidatabaseFrameSetting['MultidatabaseFrameSetting']);
 
 		// ゲストアクセスOKのアクションを設定
-		$this->Auth->allow('index', 'view', 'tag', 'year_month');
-		//$this->Categories->initCategories();
+		$this->Auth->allow('index', 'detail');
 
 		$this->_prepare();
 	}
 
 
-    	public function index() {
-
+/**
+ * 汎用データベース コンテンツ一覧表示
+ *
+ * @return void
+ */
+ 	public function index() {
 
 			if (! $multidatabaseContents = $this->MultidatabaseContent->getMultidatabaseContents()) {
 				$this->setAction('throwBadRequest');
@@ -115,7 +118,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			}
 
 			$conditions = [];
-
 
 			$this->Paginator->settings = array_merge(
 				$this->Paginator->settings,
@@ -126,15 +128,15 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 				)
 			);
 
-
-
 			$this->set('multidatabaseContents', $this->Paginator->paginate());
 			$this->set('viewMode', 'view');
-			//$this->set('multidatabaseContents', $multidatabaseContents);
-
-
 	}
 
+/**
+ * 汎用データベース コンテンツ詳細表示
+ *
+ * @return void
+ */
 	public function detail() {
 
 		$key = $this->params['key'];
@@ -144,7 +146,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			'conditions' => $conditions,
 			'recursive' => 0,
 		);
-
 
 		$this->MultidatabaseContent->Behaviors->load('ContentComments.ContentComment');
 		$multidatabaseContent = $this->MultidatabaseContent->find('first', $options);
@@ -168,7 +169,11 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 	}
 
-
+/**
+ * 汎用データベース コンテンツ追加
+ *
+ * @return void
+ */
 	public function add() {
 		if ($this->request->is('post')) {
 			$data = $this->request->data;
@@ -203,11 +208,21 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$this->render('form');
 	}
 
+/**
+ * 汎用データベース コンテンツ編集
+ *
+ * @return void
+ */
 	public function edit() {
 		$this->render('form');
 
 	}
 
+/**
+ * 汎用データベース コンテンツ削除
+ *
+ * @return void
+ */
 	public function delete() {
 
 	}
