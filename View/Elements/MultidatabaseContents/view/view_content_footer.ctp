@@ -9,6 +9,7 @@
 			<?php echo $this->Like->buttons('MultidatabaseContent', $multidatabaseSetting, $content); ?>
 		</div>
 		<div class="pull-right">
+			<?php echo $this->Workflow->label($content['MultidatabaseContent']['status']); ?>
 			<?php echo $this->NetCommonsHtml->handleLink($content, array('avatar' => true)); ?>&nbsp;
 			<?php if (! isset($viewMode) || $viewMode <> 'detail') : ?>
 				<?php echo $this->NetCommonsHtml->link(
