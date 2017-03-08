@@ -20,7 +20,7 @@ echo $this->NetCommonsHtml->css([
 			background-color:#F5F5F5;
 		}
 	</style>
-	<?php echo $this->NetCommonsHtml->blockTitle($multidatabase['name']); ?>
+	<?php echo $this->NetCommonsHtml->blockTitle($multidatabase['Multidatabase']['name']); ?>
 	<header class="clearfix">
 		<div class="pull-left">
 			<?php /*
@@ -66,15 +66,7 @@ echo $this->NetCommonsHtml->css([
 
 	<?php if ($multidatabaseContents) : ?>
 		<div>
-			<?php foreach ($multidatabaseContents as $multidatabaseContent) : ?>
-				<?php echo $this->element(
-					'MultidatabaseContents/view/view_content',
-					[
-						'multidatabaseContent' => $multidatabaseContent,
-						'multidatabaseMetadatas' => $multidatabaseMetadata
-					]
-				); ?>
-			<?php endforeach; ?>
+			<?php echo $this->MultidatabaseContentView->renderContentsList($multidatabaseContents); ?>
 			<?php echo $this->element('NetCommons.paginator'); ?>
 		</div>
 	<?php else : ?>

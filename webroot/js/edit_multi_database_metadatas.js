@@ -61,7 +61,7 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 			is_visible_list: '',
 			key: '',
 			language_id: '',
-			name: '無題',
+			name: '',
 			position: positionNo,
 			rank: nextRank,
 			selections: '',

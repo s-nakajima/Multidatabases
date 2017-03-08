@@ -117,25 +117,49 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			}
 
 			$this->set('viewMode', 'view');
-			$this->set('multidatabaseSetting',$this->_multidatabaseSetting['MultidatabaseSetting']);
-			$this->set('multidatabase', $this->_multidatabase['Multidatabase']);
-			$this->set('MultidatabaseMetadata', $this->_multidatabaseMetadata);
 			$this->set('multidatabaseContents', $multidatabaseContents);
 
 
 	}
 
-	public function detail($id = null) {
+	public function detail() {
 
-		if (! $multidatabaseContents = $this->MultidatabaseContent->getMultidatabaseContents()) {
-			$this->setAction('throwBadRequest');
-			return false;
+		$key = $this->params['key'];
+
+		/*
+		$conditions = $this->MultidatabaseContent->getConditions(
+			Current::read('Block.id'),
+			//$this->_getPermission()
+		);
+		exit;
+*/
+		$conditions['MultidatabaseContent.key'] = $key;
+
+		$options = array(
+			'conditions' => $conditions,
+			'recursive' => 0,
+		);
+
+
+		$this->MultidatabaseContent->Behaviors->load('ContentComments.ContentComment');
+		$multidatabaseContent = $this->MultidatabaseContent->find('first', $options);
+		$this->MultidatabaseContent->Behaviors->unload('ContentComments.ContentComment');
+
+
+		if ($multidatabaseContent) {
+			$this->set('multidatabaseContent',$multidatabaseContent);
+			$this->set('viewMode', 'detail');
+			if ($this->_multidatabaseSetting['BlogSetting']['use_comment']) {
+				$multidatabaseContentKey = $multidatabaseContent['MultidatabaseContent']['key'];
+				$useCommentApproval = $this->_multidatabaseSetting['MultidatabaseSetting']['use_comment_approval'];
+				if (!$this->ContentComments->comment('multidatabases', $multidatabaseContentKey,
+					$useCommentApproval)) {
+					return $this->throwBadRequest();
+				}
+			}
+		} else {
+			return $this->throwBadRequest();
 		}
-
-		$this->set('viewMode', 'detail');
-		$this->set('multidatabase', $this->_Multidatabase);
-		$this->set('MultidatabaseMetadata', $this->_MultidatabaseMetadata);
-		$this->set('multidatabaseContents', $multidatabaseContents);
 
 	}
 
@@ -155,11 +179,10 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			$data['MultidatabaseContent'] = Hash::remove($data['MultidatabaseContent'], 'id');
 
 			if ($result = $this->MultidatabaseContent->saveContent($data)) {
-				//後で詳細にリダイレクトするように修正すること(怒)
 				$url = NetCommonsUrl::actionUrl(
 					[
 						'controller' => 'multidatabase_contents',
-						'action' => 'index',
+						'action' => 'detail',
 						'block_id' => Current::read('Block.id'),
 						'frame_id' => Current::read('Frame.id'),
 					]

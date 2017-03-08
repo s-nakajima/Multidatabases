@@ -52,13 +52,13 @@ class MultidatabaseContentViewHelper extends AppHelper
 		parent::beforeRender($viewFile);
 	}
 
-	/**
-	 * 汎用データベースメタデータレイアウト グループのHTMLを出力する(列)
-	 *
-	 * @param integer $position グループ
-	 * @param integer $colSize 段の列数
-	 * @return string HTML
-	 */
+/**
+ * 汎用データベースコンテンツ グループのHTMLを出力する(列)
+ *
+ * @param integer $position グループ
+ * @param integer $colSize 段の列数
+ * @return string HTML
+ */
 	public function renderGroup($metadataGroups, $contents, $position, $colSize = 1)
 	{
 
@@ -72,22 +72,7 @@ class MultidatabaseContentViewHelper extends AppHelper
 				$element = 'MultidatabaseContents/view/view_content_group_c1';
 		}
 
-
-
-		if (is_array($position) && $colSize === 2) {
-			for ($i = 0; $i <= 1; $i++) {
-				foreach ($metadataGroups[$position[0]] as $key => $metadata) {
-					$metadatas[$key][$i] = $metadata;
-				}
-			}
-
-		} else {
-			if (!is_array($position) && $colSize === 1) {
-				$metadatas = $metadataGroups[$position];
-			} else {
-				return false;
-			}
-		}
+		$metadatas = $metadataGroups[$position];
 
 		return $this->_View->Element(
 			$element,
@@ -100,12 +85,78 @@ class MultidatabaseContentViewHelper extends AppHelper
 
 	}
 
-	/**
-	 * 汎用データベースメタデータレイアウト アイテムのHTMLを出力する
-	 *
-	 * @param integer $position グループ
-	 * @return string HTML
-	 */
+
+/**
+ * 汎用データベースコンテンツ コンテンツフッターのHTMLを出力する
+ *
+ * @param $content
+ * @param $index
+ * @return string HTML
+ */
+	public function renderContentFooter($content, $index) {
+		return $this->_View->Element(
+			'MultidatabaseContents/view/view_content_footer',
+			[
+				'content' => $content,
+				'index' => $index
+			]
+		);
+	}
+
+/**
+ * 汎用データベースコンテンツ レイアウトHTMLを出力する
+ *
+ *
+ * @param $metadataGroup
+ * @param $content HTML
+ */
+	public function renderContentLayout($content) {
+		return $this->_View->Element(
+			'MultidatabaseContents/view/view_content_layout',
+			[
+				'content' => $content
+			]
+		);
+	}
+
+/**
+ * 汎用データベースコンテンツ 一覧HTMLを出力する
+ *
+ *
+ * @param $metadataGroup
+ * @param $content HTML
+ */
+	public function renderContentsList() {
+		return $this->_View->Element(
+			'MultidatabaseContents/view/view_contents_list',
+			[
+				'viewMode' => 'list'
+			]
+		);
+	}
+
+/**
+ * 汎用データベースコンテンツ 詳細HTMLを出力する
+ *
+ *
+ * @param $metadataGroup
+ * @param $content HTML
+ */
+	public function renderContentsDetail($content, $metadatas) {
+		return $this->_View->Element(
+			'MultidatabaseContents/view/view_content_detail',
+			[
+				'viewMode' => 'detail',
+			]
+		);
+	}
+
+/**
+ * 汎用データベースコンテンツ アイテムのHTMLを出力する
+ *
+ * @param integer $position グループ
+ * @return string HTML
+ */
 	public function renderGroupItems($metadatas)
 	{
 		return $this->_View->Element(
