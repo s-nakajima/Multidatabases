@@ -1,4 +1,4 @@
-<article style="margin-bottom:50px;">
+<article>
 	<div class="panel panel-default">
 		<div class="panel-body">
 			<div class="col-xs-12">

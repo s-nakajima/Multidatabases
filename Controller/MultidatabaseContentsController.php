@@ -110,12 +110,27 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 
 			if (! $multidatabaseContents = $this->MultidatabaseContent->getMultidatabaseContents()) {
-				//$this->setAction('throwBadRequest');
-				//return false;
+				$this->setAction('throwBadRequest');
+				return false;
 			}
 
+			$conditions = [];
+
+
+			$this->Paginator->settings = array_merge(
+				$this->Paginator->settings,
+				array(
+					'conditions' => $conditions,
+					'limit' => $this->_frameSetting['MultidatabaseFrameSetting']['content_per_page'],
+					'order' => 'MultidatabaseContent.created DESC',
+				)
+			);
+
+
+
+			$this->set('multidatabaseContents', $this->Paginator->paginate());
 			$this->set('viewMode', 'view');
-			$this->set('multidatabaseContents', $multidatabaseContents);
+			//$this->set('multidatabaseContents', $multidatabaseContents);
 
 
 	}
@@ -123,14 +138,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 	public function detail() {
 
 		$key = $this->params['key'];
-
-		/*
-		$conditions = $this->MultidatabaseContent->getConditions(
-			Current::read('Block.id'),
-			//$this->_getPermission()
-		);
-		exit;
-*/
 		$conditions['MultidatabaseContent.key'] = $key;
 
 		$options = array(
