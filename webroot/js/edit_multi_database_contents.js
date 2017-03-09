@@ -15,7 +15,13 @@ NetCommonsApp.controller('MultidatabaseContentEdit',
 		 * @type {Array}
 		 */
 		$scope.initialize = function(data) {
-			$scope.multidatabaseMetadatas = data.multidatabaseMetadatas;
+			var colValue;
+
+			if (data.multidatabaseContent) {
+				$scope.multidatabaseContent = data.multidatabaseContent;
+			}
+
+
 		}
 
 }]);

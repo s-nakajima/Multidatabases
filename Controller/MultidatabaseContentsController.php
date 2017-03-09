@@ -237,9 +237,12 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			$url = $this->_save();
 			if (! $url) {
 				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
+			} else {
+				return $this->redirect($url);
 			}
-			return $this->redirect($url);
+
 		}
+	var_dump($this->request->data);
 
 		$this->render('form');
 	}
@@ -275,8 +278,10 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			$url = $this->_save();
 			if (! $url) {
 				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
+			} else {
+				return $this->redirect($url);
 			}
-			return $this->redirect($url);
+
 		} else {
 			$this->request->data = $multidatabaseContent;
 		}
@@ -297,7 +302,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  */
 
 	private function _save() {
-		$this->MultidatabaseContent->create();
 
 		$this->request->data['MultidatabaseContent']['multidatabase_key'] =
 			$this->_multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'];

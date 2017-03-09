@@ -2,7 +2,12 @@
 	'/multidatabases/js/edit_multi_database_contents.js',
 ]); ?>
 
-<div class="multidatabaseContents form" ng-controller="MultidatabaseContentEdit" ng-init="initialize(<?php echo h(json_encode(['multidatabaseMetadatas' => $multidatabaseMetadata])); ?>)">
+
+<div class="multidatabaseContents form" ng-controller="MultidatabaseContentEdit" ng-init="initialize(<?php
+	echo h(json_encode([
+	'multidatabaseMetadatas' => $multidatabaseMetadata,
+	'multidatabaseContent' => $multidatabaseContent['MultidatabaseContent']
+	])); ?>)">
 	<article>
 		<h1><?php echo h($multidatabase['Multidatabase']['name']) ?></h1>
 		<div class="panel panel-default">

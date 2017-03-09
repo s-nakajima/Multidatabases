@@ -127,7 +127,7 @@ class MultidatabaseContentEditHelper extends AppHelper
 		}
 
 
-		$name = 'value' . $metadata['col_no'];
+		$name = 'MultidatabaseContent.value' . $metadata['col_no'];
 		$options['id'] = $name;
 		$options['label'] = $metadata['name'];
 		$elementType = $metadata['type'];
