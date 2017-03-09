@@ -96,6 +96,13 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 	];
 
+	/**
+	 * @var array 絞り込みフィルタ保持値
+	 */
+	protected $_filter = array(
+		'status' => 0,
+	);
+
 
 	public function beforeValidate($options = []) {
 		$this->validate = $this->makeValidation();
@@ -262,6 +269,27 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 	}
 
+	/**
+	 * UserIdと権限から参照可能なEntryを取得するCondition配列を返す
+	 *
+	 * @param int $blockKey ブロックKey
+	 * @param array $permissions 権限
+	 * @return array condition
+	 */
+	public function getConditions($blockId, $permissions) {
+		// contentReadable falseなら何も見えない
+		if ($permissions['content_readable'] === false) {
+			$conditions = array('MultidatabaseContent.id' => 0);
+			return $conditions;
+		}
+
+		// デフォルト絞り込み条件
+		$conditions = array(
+			'MultidatabaseContent.block_Id' => $blockId
+		);
+
+		return $conditions;
+	}
 
 
 }

@@ -82,6 +82,26 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 	);
 
 /**
+ * 権限の取得
+ *
+ * @return array
+ */
+	protected function _getPermission() {
+		$permissionNames = array(
+			'content_readable',
+			'content_creatable',
+			'content_editable',
+			'content_publishable',
+		);
+		$permission = array();
+		foreach ($permissionNames as $key) {
+			$permission[$key] = Current::permission($key);
+		}
+		return $permission;
+	}
+
+
+/**
  * beforeFilter
  *
  * @return void
@@ -112,24 +132,35 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  */
  	public function index() {
 
-			if (! $multidatabaseContents = $this->MultidatabaseContent->getMultidatabaseContents()) {
-				$this->setAction('throwBadRequest');
-				return false;
-			}
+		if (!$multidatabaseContents = $this->MultidatabaseContent->getMultidatabaseContents()) {
+			$this->setAction('throwBadRequest');
+			return false;
+		}
 
-			$conditions = [];
+		$permission = $this->_getPermission();
 
-			$this->Paginator->settings = array_merge(
-				$this->Paginator->settings,
-				array(
-					'conditions' => $conditions,
-					'limit' => $this->_frameSetting['MultidatabaseFrameSetting']['content_per_page'],
-					'order' => 'MultidatabaseContent.created DESC',
-				)
-			);
+		$conditions = $this->MultidatabaseContent->getConditions(
+			Current::read('Block.id'),
+			$permission
+		);
 
-			$this->set('multidatabaseContents', $this->Paginator->paginate());
-			$this->set('viewMode', 'view');
+
+		$this->Paginator->settings = array_merge(
+			$this->Paginator->settings,
+			array(
+				'conditions' => $conditions,
+				'limit' => $this->_frameSetting['MultidatabaseFrameSetting']['content_per_page'],
+				'order' => 'MultidatabaseContent.created DESC',
+			)
+		);
+
+		$this->MultidatabaseContent->recursive = 0;
+		$this->MultidatabaseContent->Behaviors->load('ContentComments.ContentComment');
+		$this->set('multidatabaseContents', $this->Paginator->paginate());
+		$this->MultidatabaseContent->Behaviors->unload('ContentComments.ContentComment');
+		$this->MultidatabaseContent->recursive = -1;
+
+		$this->set('viewMode', 'list');
 	}
 
 /**
@@ -147,9 +178,11 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			'recursive' => 0,
 		);
 
+		$this->MultidatabaseContent->recursive = 0;
 		$this->MultidatabaseContent->Behaviors->load('ContentComments.ContentComment');
 		$multidatabaseContent = $this->MultidatabaseContent->find('first', $options);
 		$this->MultidatabaseContent->Behaviors->unload('ContentComments.ContentComment');
+		$this->MultidatabaseContent->recursive = -1;
 
 
 		if ($multidatabaseContent) {
@@ -175,6 +208,8 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * @return void
  */
 	public function add() {
+		$this->set('isEdit', false);
+
 		if ($this->request->is('post')) {
 			$data = $this->request->data;
 
@@ -214,6 +249,41 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * @return void
  */
 	public function edit() {
+		$this->set('isEdit', true);
+		$key = $this->params['key'];
+
+		$this->MultidatabaseContent->recursive = 0;
+		$options = [
+			'conditions' => [
+				'MultidatabaseContent.key' => $key
+			],
+			'recursive' => 0,
+		];
+
+		$multidatabaseContent = $this->MultidatabaseContent->find('first', $options);
+
+		if (empty($multidatabaseContent)) {
+			return $this->throwBadRequest();
+		}
+
+		if ($this->MultidatabaseContent->canEditWorkflowContent($multidatabaseContent) === false) {
+			return $this->throwBadRequest();
+		}
+
+		$this->_prepare();
+
+		if ($this->request->is(['post','put'])) {
+			$this->Multidatabase->create();
+			$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
+		} else {
+			$this->request->data = $multidatabaseContent;
+		}
+
+		$this->set('multidatabaseContent',$multidatabaseContent);
+		$this->set('isDeletable', $this->MultidatabaseContent->canDeleteWorkflowContent($multidatabaseContent));
+		$comments = $this->MultidatabaseContent->getCommentsByContentKey($multidatabaseContent['MultidatabaseContent']['key']);
+		$this->set('comments',$comments);
+
 		$this->render('form');
 
 	}

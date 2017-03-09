@@ -2,7 +2,7 @@
 	<div class="text-right">
 		<?php echo $this->Button->editLink('',
 			array(
-				'controller' => 'multidatabase_content',
+				'controller' => 'multidatabase_contents',
 				'action' => 'edit',
 				'key' => $multidatabaseContent['MultidatabaseContent']['key']
 			),
