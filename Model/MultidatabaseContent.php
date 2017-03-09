@@ -288,6 +288,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			'MultidatabaseContent.block_Id' => $blockId
 		);
 
+		$conditions = $this->getWorkflowConditions($conditions);
+
 		return $conditions;
 	}
 

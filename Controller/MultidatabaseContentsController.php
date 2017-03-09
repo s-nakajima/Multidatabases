@@ -110,6 +110,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		parent::beforeFilter();
 		$this->Security->validatePost = false;
 		$this->Security->csrfCheck=false;
+
 		if (! Current::read('Block.id')) {
 			$this->setAction('emptyRender');
 			return false;
@@ -131,11 +132,18 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * @return void
  */
  	public function index() {
+ 		$conditions = [];
+		$this->_list($conditions);
 
-		if (!$multidatabaseContents = $this->MultidatabaseContent->getMultidatabaseContents()) {
-			$this->setAction('throwBadRequest');
-			return false;
-		}
+	}
+
+/**
+ * 汎用データべース 一覧表示
+ *
+ * @param array $extraCondition
+ * @return void
+ */
+	private function _list($extraConditions = []) {
 
 		$permission = $this->_getPermission();
 
@@ -144,6 +152,9 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			$permission
 		);
 
+		if ($extraConditions) {
+			$conditions = Hash::merge($conditions, $extraConditions);
+		}
 
 		$this->Paginator->settings = array_merge(
 			$this->Paginator->settings,
@@ -163,6 +174,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$this->set('viewMode', 'list');
 	}
 
+
 /**
  * 汎用データベース コンテンツ詳細表示
  *
@@ -171,6 +183,14 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 	public function detail() {
 
 		$key = $this->params['key'];
+
+		$permission = $this->_getPermission();
+
+		$conditions = $this->MultidatabaseContent->getConditions(
+			Current::read('Block.id'),
+			$permission
+		);
+
 		$conditions['MultidatabaseContent.key'] = $key;
 
 		$options = array(
@@ -214,33 +234,11 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$this->set('isEdit', false);
 
 		if ($this->request->is('post')) {
-			$data = $this->request->data;
-
-			$status = $this->Workflow->parseStatus();
-
-			$data['MultidatabaseContent']['status'] = $status;
-			$data['MultidatabaseContent']['multidatabase_id'] = $this->_multidatabase['Multidatabase']['id'];
-			$data['MultidatabaseContent']['multidatabase_key'] = $this->_multidatabase['Multidatabase']['key'];
-			$data['MultidatabaseContent']['block_id'] = Current::read('Block.id');
-			$data['MultidatabaseContent']['language_id'] = Current::read('Language.id');
-
-			$data['MultidatabaseContent'] = Hash::remove($data['MultidatabaseContent'], 'id');
-
-			if ($result = $this->MultidatabaseContent->saveContent($data)) {
-				$url = NetCommonsUrl::actionUrl(
-					[
-						'controller' => 'multidatabase_contents',
-						'action' => 'detail',
-						'block_id' => Current::read('Block.id'),
-						'frame_id' => Current::read('Frame.id'),
-						'key' => $result['MultidatabaseContent']['key']
-
-					]
-				);
-
-				return $this->redirect($url);
+			$url = $this->_save();
+			if (! $url) {
+				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
 			}
-			$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
+			return $this->redirect($url);
 		}
 
 		$this->render('form');
@@ -273,11 +271,12 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			return $this->throwBadRequest();
 		}
 
-		$this->_prepare();
-
 		if ($this->request->is(['post','put'])) {
-			$this->Multidatabase->create();
-			$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
+			$url = $this->_save();
+			if (! $url) {
+				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
+			}
+			return $this->redirect($url);
 		} else {
 			$this->request->data = $multidatabaseContent;
 		}
@@ -288,6 +287,48 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$this->set('comments',$comments);
 
 		$this->render('form');
+
+	}
+
+/**
+ * データを保存する
+ *
+ * @return boolean|string
+ */
+
+	private function _save() {
+		$this->MultidatabaseContent->create();
+
+		$this->request->data['MultidatabaseContent']['multidatabase_key'] =
+			$this->_multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'];
+
+		$status = $this->Workflow->parseStatus();
+		$this->request->data['MultidatabaseContent']['block_id'] = Current::read('Block.id');
+		$this->request->data['MultidatabaseContent']['language_id'] = Current::read('Language.id');
+		$this->request->data['MultidatabaseContent']['status'] = $status;
+
+		$data = $this->request->data;
+
+		unset($data['MultidatabaseContent']['id']);
+
+
+		if ($result = $this->MultidatabaseContent->saveContent($data)) {
+			$url = NetCommonsUrl::actionUrl(
+				[
+					'controller' => 'multidatabase_contents',
+					'action' => 'detail',
+					'block_id' => Current::read('Block.id'),
+					'frame_id' => Current::read('Frame.id'),
+					'key' => $result['MultidatabaseContent']['key']
+
+				]
+			);
+
+			return $url;
+
+		}
+
+		return false;
 
 	}
 
