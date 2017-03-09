@@ -188,12 +188,15 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		if ($multidatabaseContent) {
 			$this->set('multidatabaseContent',$multidatabaseContent);
 			$this->set('viewMode', 'detail');
-			if ($this->_multidatabaseSetting['BlogSetting']['use_comment']) {
-				$multidatabaseContentKey = $multidatabaseContent['MultidatabaseContent']['key'];
-				$useCommentApproval = $this->_multidatabaseSetting['MultidatabaseSetting']['use_comment_approval'];
-				if (!$this->ContentComments->comment('multidatabases', $multidatabaseContentKey,
-					$useCommentApproval)) {
-					return $this->throwBadRequest();
+			if ($this->_multidatabaseSetting['MultidatabaseSetting']['use_comment']) {
+				if ($this->request->is('post')) {
+					$multidatabaseContentKey = $multidatabaseContent['MultidatabaseContent']['key'];
+					$useCommentApproval = $this->_multidatabaseSetting['MultidatabaseSetting']['use_comment_approval'];
+					if (!$this->ContentComments->comment('multidatabases', $multidatabaseContentKey,
+						$useCommentApproval)
+					) {
+						return $this->throwBadRequest();
+					}
 				}
 			}
 		} else {
@@ -294,7 +297,34 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * @return void
  */
 	public function delete() {
+		$this->request->allowMethod('post', 'delete');
 
+		$key = $this->request->data['MultidatabaseContent']['key'];
+		$multidatabaseContent = $this->MultidatabaseContent->getWorkflowContents('first', array(
+			'recursive' => 0,
+			'conditions' => array(
+				'MultidatabaseContent.key' => $key
+			)
+		));
+
+		// 権限チェック
+		if ($this->MultidatabaseContent->canDeleteWorkflowContent($multidatabaseContent) === false) {
+			return $this->throwBadRequest();
+		}
+
+		if ($this->MultidatabaseContent->deleteContentByKey($key) === false) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+		return $this->redirect(
+			NetCommonsUrl::actionUrl(
+				array(
+					'controller' => 'multidatabase_contents',
+					'action' => 'index',
+					'frame_id' => Current::read('Frame.id'),
+					'block_id' => Current::read('Block.id')
+				)
+			)
+		);
 	}
 
 

@@ -292,4 +292,34 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 
+/**
+ * コンテンツの削除
+ *
+ * @param $key
+ * @return bool
+ */
+	public function deleteContentByKey($key) {
+		$this->begin();
+		try {
+			$this->contentKey = $key;
+
+			$conditions = [
+				'MultidatabaseContent.Key' => $key
+			];
+
+			if ($result = $this->deleteAll($conditions, true, true)) {
+				$this->commit();
+			} else {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+		} catch (Exception $e) {
+			$this->rollback($e);
+		}
+
+		return $result;
+	}
+
+
+
 }
