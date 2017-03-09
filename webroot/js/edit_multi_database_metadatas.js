@@ -25,7 +25,6 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 
 	$scope.initialize = function(data) {
 		angular.forEach(data.multidatabaseMetadata, function(value) {
-			console.log(value.selections);
 			switch (value.position) {
 				case 0:
 					value.rank = $scope.metadataGroup0.length;
@@ -61,7 +60,7 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 			is_visible_list: '',
 			key: '',
 			language_id: '',
-			name: '',
+			name: 'No title',
 			position: positionNo,
 			rank: nextRank,
 			selections: '',
@@ -134,7 +133,6 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
 			value: ''
 		}
 
-		console.log(currentMetadata.selections);
 		currentMetadata.selections.push(selection);
 	}
 
