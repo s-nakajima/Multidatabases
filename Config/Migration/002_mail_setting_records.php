@@ -1,8 +1,9 @@
 <?php
 /**
- * メール設定データのMigration
+ * MutidatabaseMailSettingRecords Migration
+ * メール設定データのためのMigration
  *
- * @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
@@ -11,8 +12,9 @@
 App::uses('MailsMigration', 'Mails.Config/Migration');
 
 /**
- * メール設定データのMigration
+ * MultidatabaseMailSettingRecords Migration
  *
+ * @author Tomoyuki OHNO (Ricksoft, Co., LTD.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Mails\Config\Migration
  */
 class MultidatabaseMailSettingRecords extends MailsMigration {

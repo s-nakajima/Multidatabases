@@ -1,21 +1,23 @@
 <?php
 /**
  * MultidatabaseMetadata Model
+ * 汎用データベースメタデータ定義に関するモデル処理
  *
- * @property Multidatabase $Multidatabase
- * @property Language $Language
- *
-* @author Noriko Arai <arai@nii.ac.jp>
-* @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
-* @link http://www.netcommons.org NetCommons Project
-* @license http://www.netcommons.org/license.txt NetCommons License
-* @copyright Copyright 2014, NetCommons Project
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
  */
 
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
 App::uses('CakeSession', 'Model/Datasourse');
+
 /**
- * Summary for MultidatabaseMetadata Model
+ * MultidatabaseMetadata Model
+ *
+ * @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @package NetCommons\Multidatabases\Model
  */
 class MultidatabaseMetadata extends MultidatabasesAppModel {
 

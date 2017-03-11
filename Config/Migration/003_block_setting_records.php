@@ -1,8 +1,9 @@
 <?php
 /**
- * ブロックセッティングデータ migration
+ * BlockSettingRecords Migration
+ * ブロック設定のためのMigration
  *
- * @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
@@ -12,10 +13,10 @@ App::uses('BlockSettingMigration', 'Blocks.Config/Migration');
 App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
 
 /**
- * ブロックセッティングデータ migration
+ * BlockSettingRecords Migration
  *
- * @author Tomoyuki OHNO (Ricksoft, Inc) <ohno.tomoyuki@ricksoft.jp>
- * @package NetCommons\Videos\Config\Migration
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @package NetCommons\Multidatabases\Config\Migration
  */
 class BlockSettingRecords extends BlockSettingMigration {
 

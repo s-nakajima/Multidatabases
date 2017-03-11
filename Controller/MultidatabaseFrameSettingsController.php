@@ -2,9 +2,11 @@
 
 /**
  * MultidatabaseFrameSettings Controller
+ * 汎用データベース フレーム設定コントローラー
+ * （表示件数の設定）
  *
  * @author Noriko Arai <arai@nii.ac.jp>
- * @author Tomoyuki OHNO (Ricksoft, Inc) <ohno.tomoyuki@ricksoft.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
@@ -14,7 +16,7 @@ App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
 /**
  * MultidatabaseFrameSettings Controller
  *
- * @author Tomoyuki OHNO (Ricksoft, Inc) <ohno.tomoyuki@ricksoft.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Controller
  */
 class MultidatabaseFrameSettingsController extends MultidatabasesAppController {
@@ -68,6 +70,7 @@ class MultidatabaseFrameSettingsController extends MultidatabasesAppController {
                 'role_permissions' => array('url' => array('controller' => 'multidatabase_block_role_permissions')),
             ),
         ),
+		'NetCommons.DisplayNumber',
     );
 
 

@@ -1,16 +1,18 @@
 <?php
 /**
- * MultidatabaseSettings edit template
+ * MultidatabasesBlocks edit_form view element
+ * 汎用データベース ブロック設定 編集フォーム view element
  *
  * @author Noriko Arai <arai@nii.ac.jp>
- * @author Shohei Nakajima <nakajimashouhei@gmail.com>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+?>
 
+<?php
 echo $this->NetCommonsHtml->css('/multidatabases/css/style.css');
-
 ?>
 
 <?php echo $this->element('Blocks.form_hidden'); ?>

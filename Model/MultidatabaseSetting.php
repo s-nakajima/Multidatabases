@@ -1,11 +1,10 @@
 <?php
 /**
  * MultidatabaseSettings Model
+ * 汎用データベースのブロック設定に関するモデル処理
  *
- * @property Block $Block
- *
-  * @author Noriko Arai <arai@nii.ac.jp>
- * @author Tomoyuki OHNO (Ricksoft, Inc) <ohno.tomoyuki@ricksoft.jp>
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
@@ -17,7 +16,7 @@ App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
 /**
  * MultidatabaseSettings Model
  *
- * @author Tomoyuki OHNO (Ricksoft, Inc) <ohno.tomoyuki@ricksoft.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Model
  */
 class MultidatabaseSetting extends BlockBaseModel {

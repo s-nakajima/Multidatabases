@@ -1,16 +1,13 @@
 <?php
 /**
  * MultidatabaseContent Model
+ * 汎用データベースコンテンツデータに関するモデル処理
  *
- * @property Multidatabase $Multidatabase
- * @property Language $Language
- * @property Block $Block
- *
-* @author Noriko Arai <arai@nii.ac.jp>
-* @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
-* @link http://www.netcommons.org NetCommons Project
-* @license http://www.netcommons.org/license.txt NetCommons License
-* @copyright Copyright 2014, NetCommons Project
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
  */
 
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
@@ -18,7 +15,11 @@ App::uses('MultidatabaseModel', 'Multidatabase.Model');
 App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
 
 /**
- * Summary for MultidatabaseContent Model
+ * MultidatabaseContent Model
+ *
+ * @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @package NetCommons\Multidatabases\Model
+ *
  */
 class MultidatabaseContent extends MultidatabasesAppModel {
 
@@ -323,5 +324,49 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 
+	/**
+	 * ファイルアップロード
+	 *
+	 * @return array
+	 */
+/*
+	private function uploadFile($content){
+
+		$uploadData = array(
+			'name' => '',
+			'type' => '',
+			'tmp_name' => '',
+			'error' => UPLOAD_ERR_NO_FILE,
+			'size' => '',
+		);
+
+		$multidatabaseContentKey = $data['MultidatabaseContent']['key'];
+
+		if (!$multidatabaseContentKey) {
+			return $uploadData;
+		}
+
+
+		$UploadFile = ClassRegistry::init('Files.UploadFile');
+		$fieldName = PhotoAlbumPhoto::ATTACHMENT_FIELD_NAME;
+		$file = $UploadFile->getFile('multidatabases', $photoId, $fieldName);
+		$path = $UploadFile->getRealFilePath($file);
+
+		$Folder = new TemporaryFolder();
+		$tmpName = $Folder->path . DS . $file['UploadFile']['real_file_name'];
+		$jackeData = array(
+			'name' => $file['UploadFile']['original_name'],
+			'type' => $file['UploadFile']['mimetype'],
+			'tmp_name' => $tmpName,
+			'error' => UPLOAD_ERR_OK,
+			'size' => $file['UploadFile']['size'],
+		);
+		copy($path, $tmpName);
+
+		return $jackeData;
+	}
+
+	}
+*/
 
 }

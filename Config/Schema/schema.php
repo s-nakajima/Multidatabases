@@ -1,4 +1,20 @@
-<?php 
+<?php
+/**
+ * MultidatabasesSchema Schema
+ * Multidatabaseスキーマ
+ *
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
+ */
+
+/**
+ * MultidatabasesSchema Schema
+ *
+ * @author Tomoyuki OHNO (Ricksoft, Co., LTD.) <ohno.tomoyuki@ricksoft.jp>
+ * @package NetCommons\Multidatabases\Config\Schema
+ */
 class MultidatabasesSchema extends CakeSchema {
 
 	public $connection = 'master';

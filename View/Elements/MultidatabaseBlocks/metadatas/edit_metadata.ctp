@@ -1,4 +1,16 @@
 <?php
+/**
+ * MultidatabasesBlocks edit view element
+ * 汎用データベース ブロック設定 編集用フォーム view element
+ *
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
+ */
+?>
+
+<?php
 echo $this->NetCommonsHtml->script([
 	'/multidatabases/js/edit_multi_database_metadatas.js'
 ]);
@@ -6,7 +18,7 @@ echo $this->NetCommonsHtml->script([
 
 <?php echo $this->NetCommonsForm->unlockField('MultidatabaseMetadata'); ?>
 
-<div id="multidatabase-metadata-fields" ng-controller="MultidatabaseMetadata" ng-init="initialize(<?php echo h(json_encode(['multidatabaseMetadata' => $multidatabaseMetadata])); ?>)">
+<div ng-controller="MultidatabaseMetadata" ng-init="initialize(<?php echo h(json_encode(['multidatabaseMetadata' => $multidatabaseMetadata])); ?>)">
 	<div class="panel panel-default">
 		<div class="panel-heading clearfix">
 			<div class="pull-left">
@@ -25,10 +37,10 @@ echo $this->NetCommonsHtml->script([
 		</div>
 		<div class="panel-body">
 			<div class="row">
-				<div class="col-xs-12 col-sm-6 multidatabase-metadata-group" id="multidatabase-metadata-group-1">
+				<div class="col-xs-12 col-sm-6">
 					<?php echo $this->MultidatabaseMetadataSetting->renderGroup(1,2); ?>
 				</div>
-				<div class="col-xs-12 col-sm-6 multidatabase-metadata-group" id="multidatabase-metadata-group-2">
+				<div class="col-xs-12 col-sm-6">
 					<?php echo $this->MultidatabaseMetadataSetting->renderGroup(2,2); ?>
 				</div>
 			</div>

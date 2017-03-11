@@ -1,17 +1,13 @@
 <?php
 /**
  * Multidatabase Model
+ * 汎用データベース基本データに関するモデル処理
  *
- * @property Block $Block
- * @property MultidatabaseMetadataTitle $MultidatabaseMetadataTitle
- * @property MultidatabaseContent $MultidatabaseContent
- * @property MultidatabaseMetadata $MultidatabaseMetadata
- *
-* @author Noriko Arai <arai@nii.ac.jp>
-* @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
-* @link http://www.netcommons.org NetCommons Project
-* @license http://www.netcommons.org/license.txt NetCommons License
-* @copyright Copyright 2014, NetCommons Project
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
  */
 
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
@@ -19,7 +15,7 @@ App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
 /**
  * Multidatabase Model
  *
-* @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
+ * @author Tomoyuki OHNO (Ricksoft, Co., LTD.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Model
  */
 class Multidatabase extends MultidatabasesAppModel {

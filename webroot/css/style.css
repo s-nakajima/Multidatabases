@@ -1,39 +1,12 @@
 /**
- * multidatabases/css/style.css
+ *  Multidatabases CSS Style
  *
- * @author Tomoyuki Ohno (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
- * @link http://www.netcommons.org NetCommons Project
- * @license http://www.netcommons.org/license.txt NetCommons License
+ *  @author Noriko Arai <arai@nii.ac.jp>
+ *  @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ *  @link http://www.netcommons.org NetCommons Project
+ *  @license http://www.netcommons.org/license.txt NetCommons License
+ *  @copyright Copyright 2014, NetCommons Project
  */
-
-ul.multidatabase-metadata-edit {
-	padding-left: 0px;
-}
-
-.multidatabase-metadata-move,
-.multidatabase-metadata-display {
-	margin-right: 10px;
-}
-
-.multidatabase-metadata-choices-form {
-	margin-bottom: 8px;
-}
-.multidatabase-metadata-scrollable {
-	max-height: 180px;
-}
-
-div.multidatabase-metadata-label {
-	margin-bottom: 5px;
-	font-weight: bold;
-}
-
-.multidatabase-metadata-edit .list-group-item.disabled {
-	cursor: auto;
-}
-
-.multidatabase-metadata-edit button.multidatabases-display-btn {
-	min-width: 64px;
-}
 
 .multidatabase-metadata-item-caption {
 	line-height: 2em;

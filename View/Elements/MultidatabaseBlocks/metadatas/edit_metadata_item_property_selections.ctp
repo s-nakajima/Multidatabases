@@ -1,6 +1,19 @@
+<?php
+/**
+ * MultidatabasesBlocks metadatas edit_metadata_item_property_select view element
+ * 汎用データベース ブロック設定 メタデータ編集フォーム アイテム定義 選択肢 view element
+ *
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
+ */
+?>
+
 <div class="panel panel-default">
 	<div class="panel-heading">
-		Selections
+		<?php echo __d('multidatabases','Selections'); ?>
 	</div>
 	<div class="panel-body">
 		<div class="col-xs-12">
@@ -14,7 +27,7 @@
 		</div>
 		<div ng-hide="metadataGroup<?php echo $gPos; ?>[$index]['selections'].length">
 			<div class="col-xs-12">
-				<p><?php echo __d('multidatbases', 'No selections.'); ?></p>
+				<p><?php echo __d('multidatabases', 'No selections.'); ?></p>
 			</div>
 		</div>
 		<div class="col-xs-12 pre-scrollable" ng-show="metadataGroup<?php echo $gPos; ?>[$index]['selections'].length">

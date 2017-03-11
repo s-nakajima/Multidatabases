@@ -1,3 +1,16 @@
+<?php
+/**
+ * MultidatabasesBlocks metadatas edit_metadata_item_property view element
+ * 汎用データベース ブロック設定 メタデータ編集フォーム アイテム定義 view element
+ *
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
+ */
+?>
+
 <input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][id]" type="text" class="hidden" value="{{g<?php echo $gPos; ?>.id}}">
 <input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][key]" type="text" class="hidden" value="{{g<?php echo $gPos; ?>.key}}">
 <input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][rank]" type="text" class="hidden" value="{{g<?php echo $gPos; ?>.rank}}">
@@ -44,7 +57,8 @@
 					   id="MultidatabaseMetadataSettingEditIsRequire<?php echo$gPos; ?>-{{$index}}"
 					   ng-true-value="1"
 					   ng-false-value=""
-					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_require']">Require
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_require']">
+						<?php echo __d('multidatabases','Is require.'); ?>
 			</label>
 		</div>
 		<div class="checkbox" ng-if="
@@ -61,7 +75,8 @@
 					   id="MultidatabaseMetadataSettingEditIsSearchable<?php echo$gPos; ?>-{{$index}}"
 					   ng-true-value="1"
 					   ng-false-value=""
-					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_searchable']">Searchable
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_searchable']">
+						<?php echo __d('multidatabases','Is searchable.'); ?>
 			</label>
 		</div>
 		<div class="checkbox" ng-if="
@@ -77,7 +92,8 @@
 					   id="MultidatabaseMetadataSettingEditIsSortable<?php echo$gPos; ?>-{{$index}}"
 					   ng-true-value="1"
 					   ng-false-value=""
-					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_sortable']">Sortable
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_sortable']">
+						<?php echo __d('multidatabases','Is sortable.'); ?>
 			</label>
 		</div>
 		<div class="checkbox" ng-if="g<?php echo $gPos; ?>.type == 'file'">
@@ -87,7 +103,8 @@
 					   name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_file_dl_require_auth]"
 					   ng-true-value="1"
 					   ng-false-value=""
-					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_list']">Require auth if one file download
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_file_dl_require_auth']">
+						<?php echo __d('multidatabases','Enable to set download password.'); ?>
 			</label>
 		</div>
 		<div class="checkbox">
@@ -97,7 +114,8 @@
 					   name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_visible_list]"
 					   ng-true-value="1"
 					   ng-false-value=""
-					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_list']">Visible List
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_list']">
+						<?php echo __d('multidatabases','Enable to display on list.'); ?>
 			</label>
 		</div>
 		<div class="checkbox">
@@ -107,7 +125,8 @@
 					   id="MultidatabaseMetadataSettingEditIsVisibleDetail<?php echo$gPos; ?>-{{$index}}"
 					   ng-true-value="1"
 					   ng-false-value=""
-					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_detail']">Visible Detail
+					   ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_detail']">
+						<?php echo __d('multidatabases','Enable to display on detail.'); ?>
 			</label>
 		</div>
 	</div>

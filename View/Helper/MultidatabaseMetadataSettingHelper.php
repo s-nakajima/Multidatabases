@@ -1,9 +1,10 @@
 <?php
 /**
- * Multidatabase Helper
+ * MultidatabaseMetadataSettingHelper Helper
+ * 汎用データベースコンテンツメタデータ設定ヘルパー
  *
  * @author Noriko Arai <arai@nii.ac.jp>
- * @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
@@ -12,15 +13,13 @@
 App::uses('AppHelper', 'View/Helper');
 
 /**
- * 汎用データベースメタデータのレイアウトで使用するHelper
+ * MultidatabaseMetadataSettingHelper Helper
  *
- * このHelperを使う場合、
- * [Multidatabases.multidatabaseMetadataComponent](./multidatabaseMetadataComponent.html)
- * が読み込まれている必要がある。
- *
- * @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
+ * @author Tomoyuki OHNO (Ricksoft, Co., LTD.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabase\View\Helper
+ *
  */
+
 class MultidatabaseMetadataSettingHelper extends AppHelper
 {
 
@@ -164,11 +163,11 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 			'link' => __d('multidatabases','Link'),
 			'select' => __d('multidatabases','Select'),
 			'checkbox' => __d('multidatabases','Check box'),
-			'wysiwyg' => __d('multidatabases','Wysiwyg'),
+			'wysiwyg' => __d('multidatabases','WYSIWYG'),
 			'file' => __d('multidatabases','File'),
 			'image' => __d('multidatabases','Image'),
 			'autonumber' => __d('multidatabases','Auto number'),
-			'mail' => __d('multidatabases','E-mail Address'),
+			'mail' => __d('multidatabases','E-mail address'),
 			'date' => __d('multidatabases','Date'),
 			'created' => __d('multidatabases','Create date'),
 			'updated' => __d('multidatabases','Update date'),

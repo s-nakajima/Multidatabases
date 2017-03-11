@@ -1,15 +1,15 @@
 <?php
 /**
- * Blocks edit template
+ * MultidatabasesBlocks delete_form view element
+ * 汎用データベース ブロック設定 削除ボタン view element
  *
  * @author Noriko Arai <arai@nii.ac.jp>
- * @author Shohei Nakajima <nakajimashouhei@gmail.com>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
 ?>
-
 	<div class="inline-block">
 		<?php echo sprintf(__d('net_commons', 'Delete all data associated with the %s.'), __d('multidatabases', 'Multidatabase')); ?>
 	</div>

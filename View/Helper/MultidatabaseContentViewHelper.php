@@ -1,9 +1,10 @@
 <?php
 /**
- * MultidatabaseContentEdit Helper
+ * MultidatabaseContentViewHelper Helper
+ * 汎用データベースコンテンツ表示ヘルパー
  *
  * @author Noriko Arai <arai@nii.ac.jp>
- * @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
@@ -12,14 +13,11 @@
 App::uses('AppHelper', 'View/Helper');
 
 /**
- * 汎用データベースコンテンツのレイアウトで使用するHelper
+ * MultidatabaseContentViewHelper Helper
  *
- * このHelperを使う場合、
- * [Multidatabases.multidatabaseMetadataComponent](./multidatabaseMetadataComponent.html)
- * が読み込まれている必要がある。
- *
- * @author Tomoyuki OHNO (Ricksoft Inc.) <ohno.tomoyuki@ricksoft.jp>
+ * @author Tomoyuki OHNO (Ricksoft, Co., LTD.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabase\View\Helper
+ *
  */
 class MultidatabaseContentViewHelper extends AppHelper
 {

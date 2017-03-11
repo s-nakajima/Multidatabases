@@ -1,6 +1,7 @@
 <?php
 /**
- * Multidatabases index view
+ * MultidatabasesContents edit edit_content_group view element
+ * 汎用データベース コンテンツ編集 編集フォーム グループ view element
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
@@ -9,4 +10,4 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-echo $html;
+echo $this->MultidatabaseContentEdit->renderGroupItems($gMetadatas);
