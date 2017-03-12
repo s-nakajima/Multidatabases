@@ -18,14 +18,14 @@
 		<?php echo $this->BlockTabs->block(BlockTabsHelper::BLOCK_TAB_SETTING); ?>
 
 		<?php echo $this->BlockForm->displayEditForm(array(
-				'model' => 'Multidatabase',
-				'callback' => 'Multidatabases.MultidatabaseBlocks/edit_form',
-				'cancelUrl' => NetCommonsUrl::backToIndexUrl('default_setting_action'),
-				'displayModified' => true,
-			)); ?>
+			'model' => 'Multidatabase',
+			'callback' => 'Multidatabases.MultidatabaseBlocks/edit_form',
+			'cancelUrl' => NetCommonsUrl::backToIndexUrl('default_setting_action'),
+			'displayModified' => true,
+		)); ?>
 
 		<?php echo $this->BlockForm->displayDeleteForm(array(
-				'callback' => 'Multidatabases.MultidatabaseBlocks/delete_form',
-			)); ?>
+			'callback' => 'Multidatabases.MultidatabaseBlocks/delete_form',
+		)); ?>
 	</div>
 </article>

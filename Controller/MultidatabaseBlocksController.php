@@ -3,11 +3,11 @@
  * MultidatabaseBlocks Controller
  * 汎用データベース ブロック設定コントローラー
  *
- *  @author Noriko Arai <arai@nii.ac.jp>
- *  @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
- *  @link http://www.netcommons.org NetCommons Project
- *  @license http://www.netcommons.org/license.txt NetCommons License
- *  @copyright Copyright 2014, NetCommons Project
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
  */
 
 App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
@@ -18,95 +18,99 @@ App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Controller
  */
-class MultidatabaseBlocksController extends MultidatabasesAppController {
+class MultidatabaseBlocksController extends MultidatabasesAppController
+{
 
 /**
  * layout
  *
  * @var array
  */
-    public $layout = "NetCommons.setting";
+	public $layout = "NetCommons.setting";
 
 /**
  * use models
  *
  * @var array
  */
-    public $uses = array(
+	public $uses = array(
 		'Multidatabases.MultidatabaseFrameSetting',
 		'Multidatabases.MultidatabaseMetadata',
 		'DataTypes.DataTypeChoice',
-        'Blocks.Block',
-    );
+		'Blocks.Block',
+	);
 
 /**
  * use components
  *
  * @var array
  */
-    public $components = array(
-        'NetCommons.Permission' => array(
-            'allow' => array(
-                'index,add,edit,delete' => 'block_editable',
-            ),
-        ),
-        'Paginator',
-    );
+	public $components = array(
+		'NetCommons.Permission' => array(
+			'allow' => array(
+				'index,add,edit,delete' => 'block_editable',
+			),
+		),
+		'Paginator',
+	);
 
 /**
  * use helpers
  *
  * @var array
  */
-    public $helpers = array(
-        'Blocks.BlockForm',
-        'Blocks.BlockIndex',
-        'Blocks.BlockTabs' => array(
-            'mainTabs' => array(
-                'block_index' => array('url' => array('controller' => 'multidatabase_blocks')),
-                'frame_settings' => array('url' => array('controller' => 'multidatabase_frame_settings')),
-            ),
-            'blockTabs' => array(
-                'block_settings' => array('url' => array('controller' => 'multidatabase_blocks')),
-                'mail_settings' => array('url' => array('controller' => 'multidatabase_mail_settings')),
-                'role_permissions' => array('url' => array('controller' => 'multidatabase_block_role_permissions')),
-            ),
-        ),
-        'Likes.Like',
-    );
+	public $helpers = array(
+		'Blocks.BlockForm',
+		'Blocks.BlockIndex',
+		'Blocks.BlockTabs' => array(
+			'mainTabs' => array(
+				'block_index' => array('url' => array('controller' => 'multidatabase_blocks')),
+				'frame_settings' => array('url' => array('controller' => 'multidatabase_frame_settings')),
+			),
+			'blockTabs' => array(
+				'block_settings' => array('url' => array('controller' => 'multidatabase_blocks')),
+				'mail_settings' => array('url' => array('controller' => 'multidatabase_mail_settings')),
+				'role_permissions' => array('url' => array('controller' => 'multidatabase_block_role_permissions')),
+			),
+		),
+		'Likes.Like',
+	);
 
-    public function beforeFilter() {
-        parent::beforeFilter();
-    }
+	public function beforeFilter()
+	{
+		parent::beforeFilter();
+	}
 
 /**
  * ブロック一覧
  *
  * @return void
  */
-    public function index() {
-        $this->Paginator->settings = [
-            'Multidatabase' => $this->Multidatabase->getBlockIndexSettings()
-        ];
+	public function index()
+	{
+		$this->Paginator->settings = [
+			'Multidatabase' => $this->Multidatabase->getBlockIndexSettings()
+		];
 
-        $multidatabases = $this->Paginator->paginate('Multidatabase');
+		$multidatabases = $this->Paginator->paginate('Multidatabase');
 
-        if (!$multidatabases) {
-            $this->view = 'Blocks.Blocks/not_found';
-            return;
-        }
+		if (!$multidatabases) {
+			$this->view = 'Blocks.Blocks/not_found';
+			return;
+		}
 
-        $this->set('multidatabases', $multidatabases);
-        $this->request->data['Frame'] = Current::read('Frame');
-    }
+		$this->set('multidatabases', $multidatabases);
+		$this->request->data['Frame'] = Current::read('Frame');
+	}
 
 /**
  * ブロックの追加
  *
  * @return void
  */
-    public function add() {
-        $this->view = 'edit';
+	public function add()
+	{
+		$this->view = 'edit';
 
 		if ($this->request->is('put') || $this->request->is('post')) {
 			if ($this->Multidatabase->saveMultidatabase($this->data)) {
@@ -127,7 +131,7 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 		$this->set('multidatabaseMetadata', $multidatabases['MultidatabaseMetadata']);
 		$this->request->data['Frame'] = Current::read('Frame');
 
-    }
+	}
 
 
 /**
@@ -135,23 +139,24 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
  *
  * @return void
  */
-    public function edit() {
-        if ($this->request->is('put')) {
-            if ($this->Multidatabase->saveMultidatabase($this->data)) {
-                return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
-            }
-            return;
-        }
+	public function edit()
+	{
+		if ($this->request->is('put')) {
+			if ($this->Multidatabase->saveMultidatabase($this->data)) {
+				return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
+			}
+			return;
+		}
 
 		$multidatabases = $this->Multidatabase->getMultidatabase();
 
-        if (! $multidatabases) {
+		if (!$multidatabases) {
 			return $this->throwBadRequest();
 		}
 
-        $multidatabases['MultidatabaseMetadata'] = $this->MultidatabaseMetadata->getEditMetadatas($multidatabases['Multidatabase']['id']);
+		$multidatabases['MultidatabaseMetadata'] = $this->MultidatabaseMetadata->getEditMetadatas($multidatabases['Multidatabase']['id']);
 
-		if (! $multidatabases['MultidatabaseMetadata']) {
+		if (!$multidatabases['MultidatabaseMetadata']) {
 			return $this->throwBadRequest($multidatabases['MultidatabaseMetadata']);
 		}
 
@@ -163,22 +168,23 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 
 		$this->set('multidatabaseMetadata', $multidatabases['MultidatabaseMetadata']);
 		$this->request->data['Frame'] = Current::read('Frame');
-    }
+	}
 
 /**
  * ブロックの削除
  *
  * @return void
  */
-    public function delete() {
-        if ($this->request->is('delete')) {
-            if ($this->Multidatabase->deleteMultidatabase($this->data)) {
-                return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
-            }
-        }
+	public function delete()
+	{
+		if ($this->request->is('delete')) {
+			if ($this->Multidatabase->deleteMultidatabase($this->data)) {
+				return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
+			}
+		}
 
-        return $this->throwBadRequest();
-    }
+		return $this->throwBadRequest();
+	}
 
 
 }

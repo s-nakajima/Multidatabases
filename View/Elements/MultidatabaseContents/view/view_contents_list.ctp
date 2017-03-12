@@ -1,4 +1,3 @@
-
 <?php
 /**
  * MultidatabasesContents view view_content_list view element

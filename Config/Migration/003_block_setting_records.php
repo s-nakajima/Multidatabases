@@ -18,31 +18,32 @@ App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Config\Migration
  */
-class BlockSettingRecords extends BlockSettingMigration {
+class BlockSettingRecords extends BlockSettingMigration
+{
 
 /**
  * プラグインキー
  *
  * @var string
  */
-        const PLUGIN_KEY = 'multidatabases';
+	const PLUGIN_KEY = 'multidatabases';
 
 /**
  * Migration description
  *
  * @var string
  */
-        public $description = 'block_setting_records';
+	public $description = 'block_setting_records';
 
 /**
  * Actions to be performed
  *
  * @var array $migration
  */
-        public $migration = array(
-                'up' => array(),
-                'down' => array(),
-        );
+	public $migration = array(
+		'up' => array(),
+		'down' => array(),
+	);
 
 /**
  * plugin data
@@ -50,34 +51,34 @@ class BlockSettingRecords extends BlockSettingMigration {
  * @var array $migration
  * @see BlockSettingMigration::updateAndDelete() recordsの注意点あり
  */
-        public $records = array(
-                'BlockSetting' => array(
-                        array(
-                                'plugin_key' => self::PLUGIN_KEY,
-                                'room_id' => null,
-                                'block_key' => null,
-                                'field_name' => BlockSettingBehavior::FIELD_USE_LIKE,
-                                'value' => '1',
-                                'type' => BlockSettingBehavior::TYPE_BOOLEAN,
-                        ),
-                        array(
-                                'plugin_key' => self::PLUGIN_KEY,
-                                'room_id' => null,
-                                'block_key' => null,
-                                'field_name' => BlockSettingBehavior::FIELD_USE_UNLIKE,
-                                'value' => '1',
-                                'type' => BlockSettingBehavior::TYPE_BOOLEAN,
-                        ),
-                        array(
-                                'plugin_key' => self::PLUGIN_KEY,
-                                'room_id' => null,
-                                'block_key' => null,
-                                'field_name' => BlockSettingBehavior::FIELD_USE_COMMENT,
-                                'value' => '1',
-                                'type' => BlockSettingBehavior::TYPE_BOOLEAN,
-                        ),
-                ),
-        );
+	public $records = array(
+		'BlockSetting' => array(
+			array(
+				'plugin_key' => self::PLUGIN_KEY,
+				'room_id' => null,
+				'block_key' => null,
+				'field_name' => BlockSettingBehavior::FIELD_USE_LIKE,
+				'value' => '1',
+				'type' => BlockSettingBehavior::TYPE_BOOLEAN,
+			),
+			array(
+				'plugin_key' => self::PLUGIN_KEY,
+				'room_id' => null,
+				'block_key' => null,
+				'field_name' => BlockSettingBehavior::FIELD_USE_UNLIKE,
+				'value' => '1',
+				'type' => BlockSettingBehavior::TYPE_BOOLEAN,
+			),
+			array(
+				'plugin_key' => self::PLUGIN_KEY,
+				'room_id' => null,
+				'block_key' => null,
+				'field_name' => BlockSettingBehavior::FIELD_USE_COMMENT,
+				'value' => '1',
+				'type' => BlockSettingBehavior::TYPE_BOOLEAN,
+			),
+		),
+	);
 
 /**
  * Before migration callback
@@ -85,9 +86,10 @@ class BlockSettingRecords extends BlockSettingMigration {
  * @param string $direction Direction of migration process (up or down)
  * @return bool Should process continue
  */
-        public function before($direction) {
-                return true;
-        }
+	public function before($direction)
+	{
+		return true;
+	}
 
 /**
  * After migration callback
@@ -95,7 +97,8 @@ class BlockSettingRecords extends BlockSettingMigration {
  * @param string $direction Direction of migration process (up or down)
  * @return bool Should process continue
  */
-        public function after($direction) {
-                return parent::updateAndDelete($direction, self::PLUGIN_KEY);
-        }
+	public function after($direction)
+	{
+		return parent::updateAndDelete($direction, self::PLUGIN_KEY);
+	}
 }

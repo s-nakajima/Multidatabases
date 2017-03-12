@@ -11,10 +11,10 @@
  */
 ?>
 
-<?php foreach($metadatas as $metadata): ?>
+<?php foreach ($metadatas as $metadata): ?>
 	<div>
 		<?php echo $this->MultidatabaseContentEdit->renderFormElement($metadata);
 		?>
 	</div>
-<?php
+	<?php
 endforeach;

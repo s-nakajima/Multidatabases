@@ -21,7 +21,8 @@ App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
  * @package NetCommons\Multidatabases\Model
  *
  */
-class MultidatabaseContent extends MultidatabasesAppModel {
+class MultidatabaseContent extends MultidatabasesAppModel
+{
 
 /**
  * Validation rules
@@ -72,40 +73,41 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Likes.Like',
 		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
-/*
-		'Topics.Topics' => array(
-			'fields' => array(
-				'title' => 'title',
-				'summary' => 'body1',
-				'path' => '/:plugin_key/multidatabase_contents/view/:block_id/:content_key',
-			),
-			'search_contents' => array('body2')
-		),
-		'Mails.MailQueue' => array(
-			'embedTags' => array(
-				'X-SUBJECT' => 'BlogEntry.title',
-				'X-BODY' => 'BlogEntry.body1',
-				'X-URL' => [
-					'controller' => 'blog_entries'
-				]
-			),
-		),
-		'Wysiwyg.Wysiwyg' => array(
-			'fields' => array('body1', 'body2'),
-		),
-*/
+		/*
+				'Topics.Topics' => array(
+					'fields' => array(
+						'title' => 'title',
+						'summary' => 'body1',
+						'path' => '/:plugin_key/multidatabase_contents/view/:block_id/:content_key',
+					),
+					'search_contents' => array('body2')
+				),
+				'Mails.MailQueue' => array(
+					'embedTags' => array(
+						'X-SUBJECT' => 'BlogEntry.title',
+						'X-BODY' => 'BlogEntry.body1',
+						'X-URL' => [
+							'controller' => 'blog_entries'
+						]
+					),
+				),
+				'Wysiwyg.Wysiwyg' => array(
+					'fields' => array('body1', 'body2'),
+				),
+		*/
 
 	];
 
-	/**
-	 * @var array 絞り込みフィルタ保持値
-	 */
+/**
+ * @var array 絞り込みフィルタ保持値
+ */
 	protected $_filter = array(
 		'status' => 0,
 	);
 
 
-	public function beforeValidate($options = []) {
+	public function beforeValidate($options = [])
+	{
 		$this->validate = $this->makeValidation();
 		return parent::beforeValidate($options);
 	}
@@ -116,11 +118,12 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  *
  * @return array|bool|null
  */
-	public function getMultidatabaseContents() {
+	public function getMultidatabaseContents()
+	{
 		$this->loadModels([
 			'Multidatabase' => 'Multidatabases.Multidatabase',
 		]);
-		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
+		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
 
@@ -135,24 +138,23 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 
-
-
 /**
  * バリデーションルールの作成
  *
  * @return bool
  */
-	public function makeValidation() {
+	public function makeValidation()
+	{
 		$this->loadModels([
 			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
 			'Multidatabase' => 'Multidatabases.Multidatabase',
 		]);
 
-		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
+		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
 
-		if(! $multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+		if (!$multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
 			return false;
 		}
 
@@ -175,13 +177,12 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 						break;
 				}
 				$tmp['required'] = true;
-				$result['value' . $metadata['col_no']] =  $tmp;
+				$result['value' . $metadata['col_no']] = $tmp;
 			}
 		}
 
-		return Hash::merge($this->validate,$result);
+		return Hash::merge($this->validate, $result);
 	}
-
 
 
 /**
@@ -191,7 +192,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @param array $colNos
  * @return bool
  */
-	public function clearValues($multidatabaseKey = null, $colNos = []) {
+	public function clearValues($multidatabaseKey = null, $colNos = [])
+	{
 
 		if (
 			is_null($multidatabaseKey)
@@ -207,7 +209,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			$data['value' . $colNo] = '';
 		}
 
-		if (! $this->updateAll($data,$conditions)) {
+		if (!$this->updateAll($data, $conditions)) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
@@ -222,17 +224,18 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @param $data
  * @return bool|mixed
  */
-	public function saveContent($data) {
+	public function saveContent($data)
+	{
 		$this->loadModels([
 			'Multidatabase' => 'Multidatabases.Multidatabase',
 			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
 		]);
 
-		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
+		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
 
-		if(! $multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+		if (!$multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
 			return false;
 		}
 
@@ -252,12 +255,12 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 					isset($data['MultidatabaseContent'][$key]) &&
 					is_array($data['MultidatabaseContent'][$key])
 				) {
-					$data['MultidatabaseContent'][$key] = implode('||',$val);
+					$data['MultidatabaseContent'][$key] = implode('||', $val);
 				}
 			}
 
 
-			if (($savedData = $this->save($data,false)) === false) {
+			if (($savedData = $this->save($data, false)) === false) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			$this->commit();
@@ -270,14 +273,15 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 	}
 
-	/**
-	 * UserIdと権限から参照可能なEntryを取得するCondition配列を返す
-	 *
-	 * @param int $blockKey ブロックKey
-	 * @param array $permissions 権限
-	 * @return array condition
-	 */
-	public function getConditions($blockId, $permissions) {
+/**
+ * UserIdと権限から参照可能なEntryを取得するCondition配列を返す
+ *
+ * @param int $blockKey ブロックKey
+ * @param array $permissions 権限
+ * @return array condition
+ */
+	public function getConditions($blockId, $permissions)
+	{
 		// contentReadable falseなら何も見えない
 		if ($permissions['content_readable'] === false) {
 			$conditions = array('MultidatabaseContent.id' => 0);
@@ -301,7 +305,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @param $key
  * @return bool
  */
-	public function deleteContentByKey($key) {
+	public function deleteContentByKey($key)
+	{
 		$this->begin();
 		try {
 			$this->contentKey = $key;
@@ -324,49 +329,49 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 
-	/**
-	 * ファイルアップロード
-	 *
-	 * @return array
-	 */
-/*
-	private function uploadFile($content){
+/**
+ * ファイルアップロード
+ *
+ * @return array
+ */
+	/*
+		private function uploadFile($content){
 
-		$uploadData = array(
-			'name' => '',
-			'type' => '',
-			'tmp_name' => '',
-			'error' => UPLOAD_ERR_NO_FILE,
-			'size' => '',
-		);
+			$uploadData = array(
+				'name' => '',
+				'type' => '',
+				'tmp_name' => '',
+				'error' => UPLOAD_ERR_NO_FILE,
+				'size' => '',
+			);
 
-		$multidatabaseContentKey = $data['MultidatabaseContent']['key'];
+			$multidatabaseContentKey = $data['MultidatabaseContent']['key'];
 
-		if (!$multidatabaseContentKey) {
-			return $uploadData;
+			if (!$multidatabaseContentKey) {
+				return $uploadData;
+			}
+
+
+			$UploadFile = ClassRegistry::init('Files.UploadFile');
+			$fieldName = PhotoAlbumPhoto::ATTACHMENT_FIELD_NAME;
+			$file = $UploadFile->getFile('multidatabases', $photoId, $fieldName);
+			$path = $UploadFile->getRealFilePath($file);
+
+			$Folder = new TemporaryFolder();
+			$tmpName = $Folder->path . DS . $file['UploadFile']['real_file_name'];
+			$jackeData = array(
+				'name' => $file['UploadFile']['original_name'],
+				'type' => $file['UploadFile']['mimetype'],
+				'tmp_name' => $tmpName,
+				'error' => UPLOAD_ERR_OK,
+				'size' => $file['UploadFile']['size'],
+			);
+			copy($path, $tmpName);
+
+			return $jackeData;
 		}
 
-
-		$UploadFile = ClassRegistry::init('Files.UploadFile');
-		$fieldName = PhotoAlbumPhoto::ATTACHMENT_FIELD_NAME;
-		$file = $UploadFile->getFile('multidatabases', $photoId, $fieldName);
-		$path = $UploadFile->getRealFilePath($file);
-
-		$Folder = new TemporaryFolder();
-		$tmpName = $Folder->path . DS . $file['UploadFile']['real_file_name'];
-		$jackeData = array(
-			'name' => $file['UploadFile']['original_name'],
-			'type' => $file['UploadFile']['mimetype'],
-			'tmp_name' => $tmpName,
-			'error' => UPLOAD_ERR_OK,
-			'size' => $file['UploadFile']['size'],
-		);
-		copy($path, $tmpName);
-
-		return $jackeData;
-	}
-
-	}
-*/
+		}
+	*/
 
 }

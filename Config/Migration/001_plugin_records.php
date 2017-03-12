@@ -1,4 +1,3 @@
-
 <?php
 /**
  * PluginRecords Migration
@@ -20,72 +19,73 @@ App::uses('Space', 'Rooms.Model');
  * @package NetCommons\Multidatabases\Config\Migration
  *
  */
-class PluginRecords extends NetCommonsMigration {
+class PluginRecords extends NetCommonsMigration
+{
 
 /**
  * Migration description
  *
  * @var string
  */
-        public $description = 'plugin_records';
+	public $description = 'plugin_records';
 
 /**
  * Actions to be performed
  *
  * @var array $migration
  */
-        public $migration = array(
-                'up' => array(),
-                'down' => array(),
-        );
+	public $migration = array(
+		'up' => array(),
+		'down' => array(),
+	);
 
 /**
  * plugin data
  *
  * @var array $migration
  */
-        public $records = array(
-                'Plugin' => array(
-                        //日本語
-                        array(
-                                'language_id' => '2',
-                                'key' => 'multidatabases',
-                                'namespace' => 'netcommons/multidatabases',
-                                'name' => '汎用データベース',
-                                'type' => 1,
-                                'default_action' => 'multidatabase_contents/index',
-                                'default_setting_action' => 'multidatabase_blocks/index',
-                                'display_topics' => 1,
-                                'display_search' => 1,
-                        ),
-                        //英語
-                        array(
-                                'language_id' => '1',
-                                'key' => 'multidatabases',
-                                'namespace' => 'netcommons/multidatabases',
-                                'name' => 'MultiDatabases',
-                                'type' => 1,
-                                'default_action' => 'multidatabase_contents/index',
-                                'default_setting_action' => 'multidatabase_blocks/index',
-                                'display_topics' => 1,
-                                'display_search' => 1,
-                        ),
-                ),
-                'PluginsRole' => array(
-                        array(
-                                'role_key' => 'room_administrator',
-                                'plugin_key' => 'multidatabases'
-                        ),
-                ),
-                'PluginsRoom' => array(
-                        //パブリックスペース
-                        array('room_id' => '2', 'plugin_key' => 'multidatabases', ),
-                        //プライベートスペース
-                        array('room_id' => '3', 'plugin_key' => 'multidatabases', ),
-                        //グループスペース
-                        array('room_id' => '4', 'plugin_key' => 'multidatabases', ),
-                ),
-        );
+	public $records = array(
+		'Plugin' => array(
+			//日本語
+			array(
+				'language_id' => '2',
+				'key' => 'multidatabases',
+				'namespace' => 'netcommons/multidatabases',
+				'name' => '汎用データベース',
+				'type' => 1,
+				'default_action' => 'multidatabase_contents/index',
+				'default_setting_action' => 'multidatabase_blocks/index',
+				'display_topics' => 1,
+				'display_search' => 1,
+			),
+			//英語
+			array(
+				'language_id' => '1',
+				'key' => 'multidatabases',
+				'namespace' => 'netcommons/multidatabases',
+				'name' => 'MultiDatabases',
+				'type' => 1,
+				'default_action' => 'multidatabase_contents/index',
+				'default_setting_action' => 'multidatabase_blocks/index',
+				'display_topics' => 1,
+				'display_search' => 1,
+			),
+		),
+		'PluginsRole' => array(
+			array(
+				'role_key' => 'room_administrator',
+				'plugin_key' => 'multidatabases'
+			),
+		),
+		'PluginsRoom' => array(
+			//パブリックスペース
+			array('room_id' => '2', 'plugin_key' => 'multidatabases',),
+			//プライベートスペース
+			array('room_id' => '3', 'plugin_key' => 'multidatabases',),
+			//グループスペース
+			array('room_id' => '4', 'plugin_key' => 'multidatabases',),
+		),
+	);
 
 
 /**
@@ -94,7 +94,8 @@ class PluginRecords extends NetCommonsMigration {
  * @param string $direction Direction of migration process (up or down)
  * @return bool Should process continue
  */
-	public function before($direction) {
+	public function before($direction)
+	{
 		$pluginName = $this->records['Plugin'][0]['key'];
 		$this->records['PluginsRoom'] = array(
 			//サイト全体
@@ -127,21 +128,22 @@ class PluginRecords extends NetCommonsMigration {
  * @param string $direction Direction of migration process (up or down)
  * @return bool Should process continue
  */
-        public function after($direction) {
-                $this->loadModels([
-                        'Plugin' => 'PluginManager.Plugin',
-                ]);
+	public function after($direction)
+	{
+		$this->loadModels([
+			'Plugin' => 'PluginManager.Plugin',
+		]);
 
-                if ($direction === 'down') {
-                        $this->Plugin->uninstallPlugin($this->records['Plugin'][0]['key']);
-                        return true;
-                }
+		if ($direction === 'down') {
+			$this->Plugin->uninstallPlugin($this->records['Plugin'][0]['key']);
+			return true;
+		}
 
-                foreach ($this->records as $model => $records) {
-                        if (!$this->updateRecords($model, $records)) {
-                                return false;
-                        }
-                }
-                return true;
-        }
+		foreach ($this->records as $model => $records) {
+			if (!$this->updateRecords($model, $records)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

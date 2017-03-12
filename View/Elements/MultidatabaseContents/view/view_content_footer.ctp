@@ -13,7 +13,7 @@
 <footer>
 	<div class="clearfix">
 		<div class="pull-left">
-			<?php if (! isset($viewMode) || ($viewMode <> 'detail')) : ?>
+			<?php if (!isset($viewMode) || ($viewMode <> 'detail')) : ?>
 				<span class="multidatabases__content-comment-count">
 					<?php echo $this->ContentComment->count($content); ?>
 				</span>
@@ -23,7 +23,7 @@
 		<div class="pull-right">
 			<?php echo $this->Workflow->label($content['MultidatabaseContent']['status']); ?>
 			<?php echo $this->NetCommonsHtml->handleLink($content, array('avatar' => true)); ?>&nbsp;
-			<?php if (! isset($viewMode) || $viewMode <> 'detail') : ?>
+			<?php if (!isset($viewMode) || $viewMode <> 'detail') : ?>
 				<?php echo $this->NetCommonsHtml->link(
 					__d('multidatabases', 'View detail'),
 					array(

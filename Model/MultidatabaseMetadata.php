@@ -19,7 +19,8 @@ App::uses('CakeSession', 'Model/Datasourse');
  * @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Model
  */
-class MultidatabaseMetadata extends MultidatabasesAppModel {
+class MultidatabaseMetadata extends MultidatabasesAppModel
+{
 
 	public $metadatas = [];
 
@@ -220,17 +221,18 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	);
 
 
-	/**
-	 * Constructor. Binds the model's database table to the object.
-	 *
-	 * @param bool|int|string|array $id Set this ID for this model on startup,
-	 * can also be an array of options, see above.
-	 * @param string $table Name of database table to use.
-	 * @param string $ds DataSource connection name.
-	 * @see Model::__construct()
-	 * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
-	 */
-	public function __construct($id = false, $table = null, $ds = null) {
+/**
+ * Constructor. Binds the model's database table to the object.
+ *
+ * @param bool|int|string|array $id Set this ID for this model on startup,
+ * can also be an array of options, see above.
+ * @param string $table Name of database table to use.
+ * @param string $ds DataSource connection name.
+ * @see Model::__construct()
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
+	public function __construct($id = false, $table = null, $ds = null)
+	{
 		parent::__construct($id, $table, $ds);
 
 		$this->loadModels([
@@ -241,22 +243,22 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 
+/**
+ * メタデータを1件取得する
+ * @param array $metadatas
+ * @param null $myMetadataId
+ * @return array|bool
+ */
+	public function getMetadata($keyValue = null, $type = 'id')
+	{
 
-	/**
-	 * メタデータを1件取得する
-	 * @param array $metadatas
-	 * @param null $myMetadataId
-	 * @return array|bool
-	 */
-	public function getMetadata($keyValue = null, $type = 'id') {
-
-		if(empty($keyValue)) {
+		if (empty($keyValue)) {
 			return false;
 		}
 
 		$multidatabase = $this->multidatabase->getMultidatabase();
 
-		if (! $multidatabase) {
+		if (!$multidatabase) {
 			return $multidatabase;
 		}
 
@@ -287,9 +289,10 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * DBよりメタデータを取得する
  * @return array
  */
-	public function getMetadatas($multidatabase_id = null) {
+	public function getMetadatas($multidatabase_id = null)
+	{
 
-		if (! $multidatabase_id) {
+		if (!$multidatabase_id) {
 			return false;
 		}
 
@@ -310,18 +313,19 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		return $multidatabaseMetadatas;
 	}
 
-	public function getMetadataGroups($multidatabase_id) {
+	public function getMetadataGroups($multidatabase_id)
+	{
 		if (empty($multidatabase_id)) {
 			return false;
 		}
 
 		$metadatas = $this->getEditMetadatas($multidatabase_id);
 
-		if (! $metadatas) {
+		if (!$metadatas) {
 			return false;
 		}
 
-		foreach ($metadatas as  $metadata) {
+		foreach ($metadatas as $metadata) {
 			$result[$metadata['position']][$metadata['rank']] = $metadata;
 		}
 
@@ -330,14 +334,12 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 
-
-
-
 /**
  * メタデータの型を調整する（JSのため）
  * @param array $metadatas
  */
-	public function normalizeEditMetadatasType($metadatas = array()) {
+	public function normalizeEditMetadatasType($metadatas = array())
+	{
 		if (empty($metadatas)) {
 			return false;
 		}
@@ -362,7 +364,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 					if (empty($metadata)) {
 						$result[$key] = [];
 					} else {
-						$result[$key] = json_decode($metadata,true);
+						$result[$key] = json_decode($metadata, true);
 					}
 					break;
 
@@ -379,10 +381,10 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 
+	public function mergeGroupToMetadatas($data)
+	{
 
-	public function mergeGroupToMetadatas($data) {
-
-		$result['MultidatabaseMetadata'] =  array_merge($data[0], $data[1],$data[2],$data[3]);
+		$result['MultidatabaseMetadata'] = array_merge($data[0], $data[1], $data[2], $data[3]);
 
 		return $result;
 
@@ -395,7 +397,8 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @param array $metadatas
  * @return array
  */
-	public function getSkipColNos($metadatas = []) {
+	public function getSkipColNos($metadatas = [])
+	{
 
 		if (empty($metadatas)) {
 			return [];
@@ -420,7 +423,8 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @param $col_no_t
  * @return array|bool
  */
-	public function getFreeColNo($metadatas, $colNos) {
+	public function getFreeColNo($metadatas, $colNos)
+	{
 
 		if (empty($metadatas) || empty($colNos)) {
 			return false;
@@ -452,7 +456,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		$chkSkipColNo = false;
 
 		while (!$chkSkipColNo) {
-			if(in_array($result['col_no_t'],$skipColNos)) {
+			if (in_array($result['col_no_t'], $skipColNos)) {
 				if ($result['col_no_t'] >= 80 && $result['col_no_t'] <= 100) {
 					$result['col_no_t']++;
 				} else {
@@ -473,7 +477,8 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @param array $metadatas
  * @return array
  */
-	public function makeSaveData($multidatabase, $metadatas = []) {
+	public function makeSaveData($multidatabase, $metadatas = [])
+	{
 
 		if (empty($metadatas)) {
 			return [];
@@ -489,14 +494,14 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 			$selections_json = [];
 
 			// チェックボックス、セレクトの場合の処理（JSON化）
-			if(!empty($metadata['selections']) && is_array($metadata['selections'])) {
+			if (!empty($metadata['selections']) && is_array($metadata['selections'])) {
 				$selections_json = json_encode($metadata['selections']);
 				$metadata['selections'] = $selections_json;
 			}
 
 
 			// カラムNoが未設定の場合は、カラムNoを付与する
-			if (! isset($metadata['col_no']) || empty($metadata['col_no'])) {
+			if (!isset($metadata['col_no']) || empty($metadata['col_no'])) {
 				// 空きカラムNoの取得
 				$colNos = $this->getFreeColNo($metadatas, $colNos);
 
@@ -537,13 +542,14 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @param null $metadata_id
  * @return void
  */
-	public function deleteMetadatas($metadataIds = []) {
+	public function deleteMetadatas($metadataIds = [])
+	{
 		if (empty($metadataIds)) {
 			return false;
 		}
 
 		foreach ($metadataIds as $metadataId) {
-			if (! $this->delete($metadataId)) {
+			if (!$this->delete($metadataId)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
@@ -555,8 +561,9 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @param $metadatas
  * @return void
  */
-	public function saveMetadatas($metadatas) {
-		if (! $this->saveAll($metadatas)) {
+	public function saveMetadatas($metadatas)
+	{
+		if (!$this->saveAll($metadatas)) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 	}
@@ -568,7 +575,8 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @param array $currentMetadatas
  * @return array|bool
  */
-	public function getDeleteMetadatas($multidatabaseId = null, $currentMetadatas = [], $type = 'all') {
+	public function getDeleteMetadatas($multidatabaseId = null, $currentMetadatas = [], $type = 'all')
+	{
 
 		if (
 			is_null($multidatabaseId)
@@ -577,14 +585,14 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 			return false;
 		}
 
-		if(! $beforeSaveMetadatas = $this->getEditMetadatas($multidatabaseId)) {
+		if (!$beforeSaveMetadatas = $this->getEditMetadatas($multidatabaseId)) {
 			return false;
 		}
 
 		$result = [];
 
 		foreach ($currentMetadatas as $currentMetadata) {
-			if(isset($currentMetadata['col_no'])) {
+			if (isset($currentMetadata['col_no'])) {
 				$currentColNos[] = $currentMetadata['col_no'];
 			}
 		}
@@ -595,7 +603,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 
 		foreach ($beforeSaveMetadatas as $beforeSaveMetadata) {
 			if (isset($beforeSaveMetadata['col_no'])) {
-				if (! in_array($beforeSaveMetadata['col_no'],$currentColNos)) {
+				if (!in_array($beforeSaveMetadata['col_no'], $currentColNos)) {
 					switch ($type) {
 						case 'id':
 							$result[] = $beforeSaveMetadata['id'];
@@ -626,7 +634,8 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @param null $multidatabaseId
  * @return bool
  */
-	public function getEditMetadatas($multidatabaseId = null) {
+	public function getEditMetadatas($multidatabaseId = null)
+	{
 
 		if (is_null($multidatabaseId)) {
 			return false;
@@ -634,7 +643,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 
 		$multidatabaseMetadatas = $this->getMetadatas($multidatabaseId);
 
-		if (! $multidatabaseMetadatas) {
+		if (!$multidatabaseMetadatas) {
 			return false;
 		}
 
@@ -647,17 +656,17 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		}
 
 
-
 		return $result;
 
 	}
 
 
-	/**
-	 * 件数カウント
-	 * @param $metadatas
-	 */
-	public function countMetadatas($metadatas) {
+/**
+ * 件数カウント
+ * @param $metadatas
+ */
+	public function countMetadatas($metadatas)
+	{
 
 		$totalAllMetadatas = count($metadatas);
 
@@ -687,9 +696,10 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 
-	public function getEmptyMetadata() {
+	public function getEmptyMetadata()
+	{
 		return array(
-			'MultidatabaseMetadata' => array (
+			'MultidatabaseMetadata' => array(
 				'id' => '',
 				'key' => '',
 				'name' => '無題',
@@ -710,13 +720,14 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 
-	/**
-	 * 初期データ
-	 * @return array
-	 */
-	public function getInitMetadatas() {
+/**
+ * 初期データ
+ * @return array
+ */
+	public function getInitMetadatas()
+	{
 		return array(
-			array (
+			array(
 				'id' => '',
 				'key' => '',
 				'name' => 'タイトル',
@@ -733,7 +744,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'is_visible_list' => 1,
 				'is_visible_detail' => 1,
 			),
-			array (
+			array(
 				'id' => '',
 				'key' => '',
 				'name' => 'ふりがな',
@@ -750,7 +761,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'is_visible_list' => 0,
 				'is_visible_detail' => 1,
 			),
-			array (
+			array(
 				'id' => '',
 				'key' => '',
 				'name' => 'カテゴリ',
@@ -759,7 +770,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'rank' => 2,
 				'col_no' => 3,
 				'type' => 'select',
-				'selections' => ['国語','算数','理科','社会','総合','音楽','図工','体育'],
+				'selections' => ['国語', '算数', '理科', '社会', '総合', '音楽', '図工', '体育'],
 				'is_require' => 1,
 				'is_searchable' => 1,
 				'is_sortable' => 0,
@@ -767,7 +778,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'is_visible_list' => 1,
 				'is_visible_detail' => 1,
 			),
-			array (
+			array(
 				'id' => '',
 				'key' => '',
 				'name' => '概要',
@@ -784,7 +795,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'is_visible_list' => 1,
 				'is_visible_detail' => 1,
 			),
-			array (
+			array(
 				'id' => '',
 				'key' => '',
 				'name' => '連絡先',
@@ -844,7 +855,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'rank' => 3,
 				'col_no' => 6,
 				'type' => 'select',
-				'selections' => ['小学校','中学校','高校'],
+				'selections' => ['小学校', '中学校', '高校'],
 				'is_require' => 0,
 				'is_searchable' => 1,
 				'is_sortable' => 0,
@@ -869,7 +880,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'is_visible_list' => 0,
 				'is_visible_detail' => 1,
 			),
-			array (
+			array(
 				'id' => '',
 				'key' => '',
 				'name' => 'コメント',
@@ -903,7 +914,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'is_visible_list' => 0,
 				'is_visible_detail' => 0,
 			),
-			array (
+			array(
 				'id' => '',
 				'key' => '',
 				'name' => '画像',

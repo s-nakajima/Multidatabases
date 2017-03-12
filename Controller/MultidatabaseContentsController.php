@@ -18,9 +18,10 @@ App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Controller
  */
-class MultidatabaseContentsController extends MultidatabasesAppController {
+class MultidatabaseContentsController extends MultidatabasesAppController
+{
 
-    /**
+/**
  * @var array use models
  */
 	public $uses = array(
@@ -61,8 +62,8 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		'NetCommons.Permission' => array(
 			//アクセスの権限
 			'allow' => array(
-					'add,edit,delete' => 'content_creatable',
-					'approve' => 'content_comment_publishable',
+				'add,edit,delete' => 'content_creatable',
+				'approve' => 'content_comment_publishable',
 			),
 		),
 		'ContentComments.ContentComments' => array(
@@ -71,15 +72,13 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 				'useComment' => 'multidatabaseSetting.use_comment',
 			),
 			'allow' => array('detail')
-		)	);
+		));
 
 /**
  * @var array 絞り込みフィルタ保持値
  */
 	protected $_filter = array(
-		'categoryId' => 0,
 		'status' => 0,
-		'yearMonth' => 0,
 	);
 
 /**
@@ -87,7 +86,8 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  *
  * @return array
  */
-	protected function _getPermission() {
+	protected function _getPermission()
+	{
 		$permissionNames = array(
 			'content_readable',
 			'content_creatable',
@@ -107,12 +107,13 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  *
  * @return void
  */
-	public function beforeFilter() {
+	public function beforeFilter()
+	{
 		parent::beforeFilter();
 		$this->Security->validatePost = false;
-		$this->Security->csrfCheck=false;
+		$this->Security->csrfCheck = false;
 
-		if (! Current::read('Block.id')) {
+		if (!Current::read('Block.id')) {
 			$this->setAction('emptyRender');
 			return false;
 		}
@@ -132,8 +133,9 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  *
  * @return void
  */
- 	public function index() {
- 		$conditions = [];
+	public function index()
+	{
+		$conditions = [];
 		$this->_list($conditions);
 
 	}
@@ -144,7 +146,8 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * @param array $extraCondition
  * @return void
  */
-	private function _list($extraConditions = []) {
+	private function _list($extraConditions = [])
+	{
 
 		$permission = $this->_getPermission();
 
@@ -181,7 +184,8 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  *
  * @return void
  */
-	public function detail() {
+	public function detail()
+	{
 
 		$key = $this->params['key'];
 
@@ -207,7 +211,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 
 		if ($multidatabaseContent) {
-			$this->set('multidatabaseContent',$multidatabaseContent);
+			$this->set('multidatabaseContent', $multidatabaseContent);
 			$this->set('viewMode', 'detail');
 			if ($this->_multidatabaseSetting['MultidatabaseSetting']['use_comment']) {
 				if ($this->request->is('post')) {
@@ -231,19 +235,19 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  *
  * @return void
  */
-	public function add() {
+	public function add()
+	{
 		$this->set('isEdit', false);
 
 		if ($this->request->is('post')) {
 			$url = $this->_save();
-			if (! $url) {
+			if (!$url) {
 				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
 			} else {
 				return $this->redirect($url);
 			}
 
 		}
-	var_dump($this->request->data);
 
 		$this->render('form');
 	}
@@ -253,7 +257,8 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  *
  * @return void
  */
-	public function edit() {
+	public function edit()
+	{
 		$this->set('isEdit', true);
 		$key = $this->params['key'];
 
@@ -275,9 +280,9 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			return $this->throwBadRequest();
 		}
 
-		if ($this->request->is(['post','put'])) {
+		if ($this->request->is(['post', 'put'])) {
 			$url = $this->_save();
-			if (! $url) {
+			if (!$url) {
 				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
 			} else {
 				return $this->redirect($url);
@@ -287,10 +292,10 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			$this->request->data = $multidatabaseContent;
 		}
 
-		$this->set('multidatabaseContent',$multidatabaseContent);
+		$this->set('multidatabaseContent', $multidatabaseContent);
 		$this->set('isDeletable', $this->MultidatabaseContent->canDeleteWorkflowContent($multidatabaseContent));
 		$comments = $this->MultidatabaseContent->getCommentsByContentKey($multidatabaseContent['MultidatabaseContent']['key']);
-		$this->set('comments',$comments);
+		$this->set('comments', $comments);
 
 		$this->render('form');
 
@@ -301,8 +306,8 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  *
  * @return boolean|string
  */
-
-	private function _save() {
+	private function _save()
+	{
 
 		$this->request->data['MultidatabaseContent']['multidatabase_key'] =
 			$this->_multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'];
@@ -342,7 +347,8 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  *
  * @return void
  */
-	public function delete() {
+	public function delete()
+	{
 		$this->request->allowMethod('post', 'delete');
 
 		$key = $this->request->data['MultidatabaseContent']['key'];

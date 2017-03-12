@@ -18,13 +18,13 @@ echo $this->NetCommonsHtml->css([
 
 <article class="multidatabaseContents">
 	<style>
-		.multidatabaseContents td,th {
-			padding:5px;
+		.multidatabaseContents td, th {
+			padding: 5px;
 		}
 
 		.multidatabaseContents th {
-			text-align:center;
-			background-color:#F5F5F5;
+			text-align: center;
+			background-color: #F5F5F5;
 		}
 	</style>
 	<header class="clearfix">
@@ -37,7 +37,7 @@ echo $this->NetCommonsHtml->css([
 
 	</header>
 	<?php echo $this->NetCommonsHtml->blockTitle($multidatabase['Multidatabase']['name']); ?>
-		<article>
-			<?php echo $this->MultidatabaseContentView->renderContentsDetail(); ?>
-		</article>
+	<article>
+		<?php echo $this->MultidatabaseContentView->renderContentsDetail(); ?>
+	</article>
 </article>

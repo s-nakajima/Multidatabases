@@ -18,13 +18,14 @@ App::uses('MailSettingsController', 'Mails.Controller');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Controller
  */
-class MultidatabaseMailSettingsController extends MailSettingsController {
+class MultidatabaseMailSettingsController extends MailSettingsController
+{
 
-	/**
-	 * use helpers
-	 *
-	 * @var array
-	 */
+/**
+ * use helpers
+ *
+ * @var array
+ */
 	public $helpers = array(
 		'Blocks.BlockRolePermissionForm',
 		'Blocks.BlockTabs' => array(

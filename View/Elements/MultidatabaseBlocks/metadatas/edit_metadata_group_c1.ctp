@@ -12,8 +12,10 @@
 ?>
 
 <p class="text-right">
-	<a href="" class="btn btn-success nc-btn-style"  ng-click="add(<?php echo $gPos; ?>,metadataGroup<?php echo $gPos; ?>.length)">
-		<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <span class="hidden-xs"><?php echo __d('multidatabases', 'Add'); ?></span>
+	<a href="" class="btn btn-success nc-btn-style" ng-click="
+		add(<?php echo $gPos; ?>,
+		metadataGroup<?php echo $gPos; ?>.length)">
+	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <span class="hidden-xs"><?php echo __d('multidatabases', 'Add'); ?></span>
 	</a>
 </p>
 <div class="row">

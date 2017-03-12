@@ -19,7 +19,8 @@ App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Model
  */
-class MultidatabaseSetting extends BlockBaseModel {
+class MultidatabaseSetting extends BlockBaseModel
+{
 
 /**
  * Custom database table name
@@ -57,7 +58,8 @@ class MultidatabaseSetting extends BlockBaseModel {
  * @return array
  * @see BlockSettingBehavior::getBlockSetting() 取得
  */
-	public function getMultidatabaseSetting() {
+	public function getMultidatabaseSetting()
+	{
 		return $this->getBlockSetting();
 	}
 
@@ -68,7 +70,8 @@ class MultidatabaseSetting extends BlockBaseModel {
  * @return mixed On success Model::$data if its not empty or true, false on failure
  * @throws InternalErrorException
  */
-	public function saveMultidatabaseSetting($data) {
+	public function saveMultidatabaseSetting($data)
+	{
 		$this->loadModels([
 			'MultidatabaseSetting' => 'Multidatabases.MultidatabaseSetting',
 		]);
@@ -78,7 +81,7 @@ class MultidatabaseSetting extends BlockBaseModel {
 
 		//バリデーション
 		$this->set($data);
-		if (! $this->validates()) {
+		if (!$this->validates()) {
 			return false;
 		}
 

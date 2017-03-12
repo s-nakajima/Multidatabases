@@ -20,17 +20,17 @@
 					<?php
 					switch ($metadata['type']) {
 						case 'created':
-							echo date("Y/m/d",strtotime($gContents['MultidatabaseContent']['created']));
+							echo date("Y/m/d", strtotime($gContents['MultidatabaseContent']['created']));
 							break;
 						case 'updated':
-							echo date("Y/m/d",strtotime($gContents['MultidatabaseContent']['modified']));
+							echo date("Y/m/d", strtotime($gContents['MultidatabaseContent']['modified']));
 							break;
 						default:
 							echo $gContents['MultidatabaseContent']['value' . $metadata['col_no']];
 							break;
 					}
 					?>
-					<?php  ?>
+					<?php ?>
 				</td>
 			</tr>
 		<?php endforeach; ?>
