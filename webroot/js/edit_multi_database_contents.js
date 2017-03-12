@@ -1,35 +1,35 @@
 /**
- *  [[changeme]] [Controller|Model|View]
+ *  Multidatabases DatabaseContents JS
+ *  コンテンツ編集関連フロントエンド処理
+ *  webroot/js/edit_multi_database_contents.js
  *
- *  @author Noriko Arai <arai@nii.ac.jp>
- *  @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ *  @author ohno.tomoyuki@ricksoft.jp (Tomoyuki OHNO/Ricksoft, Co., Ltd.)
  *  @link http://www.netcommons.org NetCommons Project
  *  @license http://www.netcommons.org/license.txt NetCommons License
- *  @copyright Copyright 2014, NetCommons Project
  */
 
 NetCommonsApp.controller('MultidatabaseContentEdit',
-	['$scope', 'NetCommonsWysiwyg', function($scope, NetCommonsWysiwyg) {
+    ['$scope', 'NetCommonsWysiwyg', function($scope, NetCommonsWysiwyg) {
 
-		/**
-		 * tinymce
-		 *
-		 * @type {object}
-		 */
+      /**
+     * tinymce
+     *
+     * @type {object}
+     */
+      $scope.tinymce = NetCommonsWysiwyg.new();
 
-		$scope.tinymce = NetCommonsWysiwyg.new();
+      /**
+     * initialize
+     *
+     * @param {Object} data
+     * @type {object}
+     */
+      $scope.initialize = function(data) {
+        if (data.multidatabaseContent) {
+          $scope.multidatabaseContent = data.multidatabaseContent;
+        }
 
-		/**
-		 * initialize
-		 *
-		 * @type {Array}
-		 */
-		$scope.initialize = function(data) {
-			if (data.multidatabaseContent) {
-				$scope.multidatabaseContent = data.multidatabaseContent;
-			}
 
+      };
 
-		}
-
-}]);
+    }]);
