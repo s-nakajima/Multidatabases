@@ -19,8 +19,7 @@ App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Model
  */
-class MultidatabaseSetting extends BlockBaseModel
-{
+class MultidatabaseSetting extends BlockBaseModel {
 
 /**
  * Custom database table name
@@ -34,44 +33,44 @@ class MultidatabaseSetting extends BlockBaseModel
  *
  * @var array
  */
-	public $validate = array();
+	public $validate = [];
 
 /**
  * use behaviors
  *
  * @var array
  */
-	public $actsAs = array(
+	public $actsAs = [
 		'Blocks.BlockRolePermission',
-		'Blocks.BlockSetting' => array(
+		'Blocks.BlockSetting' => [
 			BlockSettingBehavior::FIELD_USE_LIKE,
 			BlockSettingBehavior::FIELD_USE_UNLIKE,
 			BlockSettingBehavior::FIELD_USE_COMMENT,
 			BlockSettingBehavior::FIELD_USE_WORKFLOW,
 			BlockSettingBehavior::FIELD_USE_COMMENT_APPROVAL,
-		),
-	);
+		],
+	];
 
 /**
  * Get multidatabase setting data
+ * ブロック設定を取得する
  *
  * @return array
  * @see BlockSettingBehavior::getBlockSetting() 取得
  */
-	public function getMultidatabaseSetting()
-	{
+	public function getMultidatabaseSetting() {
 		return $this->getBlockSetting();
 	}
 
 /**
  * Save multidatabase_setting
+ * ブロック設定を保存する
  *
  * @param array $data received post data
  * @return mixed On success Model::$data if its not empty or true, false on failure
  * @throws InternalErrorException
  */
-	public function saveMultidatabaseSetting($data)
-	{
+	public function saveMultidatabaseSetting($data) {
 		$this->loadModels([
 			'MultidatabaseSetting' => 'Multidatabases.MultidatabaseSetting',
 		]);

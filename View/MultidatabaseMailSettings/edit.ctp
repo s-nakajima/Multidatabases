@@ -19,11 +19,11 @@
 
 		<?php /** @see MailFormHelper::editFrom() */ ?>
 		<?php echo $this->MailForm->editFrom(
-			array(
-				array(
+			[
+				[
 					'mailBodyPopoverMessage' => __d('multidatbases', 'Multidatabase.mail_fixed_phrase_body.popover'),
-				),
-			),
+				],
+			],
 			NetCommonsUrl::backToIndexUrl('default_setting_action')
 		); ?>
 	</div>

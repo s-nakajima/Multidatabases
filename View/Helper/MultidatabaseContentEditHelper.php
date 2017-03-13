@@ -19,49 +19,40 @@ App::uses('AppHelper', 'View/Helper');
  * @package NetCommons\Multidatabase\View\Helper
  *
  */
-class MultidatabaseContentEditHelper extends AppHelper
-{
+class MultidatabaseContentEditHelper extends AppHelper {
 
-	/**
-	 * 使用するHelpers
-	 *
-	 * - [NetCommons.ButtonHelper](../../NetCommons/classes/ButtonHelper.html)
-	 * - [NetCommons.NetCommonsHtml](../../NetCommons/classes/NetCommonsHtml.html)
-	 * - [NetCommons.NetCommonsForm](../../NetCommons/classes/NetCommonsForm.html)
-	 *
-	 * @var array
-	 */
+/**
+ * 使用するHelpers
+ *
+ * @var array
+ */
 	public $helpers = [
 		'NetCommons.Button',
 		'NetCommons.NetCommonsHtml',
 		'NetCommons.NetCommonsForm',
-		'Form'
+		'Form',
 	];
 
-	/**
-	 * CSS Style Sheetを読み込む
-	 *
-	 * @param string $viewFile viewファイル
-	 * @return void
-	 * @link http://book.cakephp.org/2.0/ja/views/helpers.html#Helper::beforeRender Helper::beforeRender
-	 */
-	public function beforeRender($viewFile)
-	{
+/**
+ * before render
+ *
+ * @param string $viewFile viewファイル
+ * @return void
+ * @link http://book.cakephp.org/2.0/ja/views/helpers.html#Helper::beforeRender Helper::beforeRender
+ */
+	public function beforeRender($viewFile) {
 		parent::beforeRender($viewFile);
 	}
 
-	/**
-	 * 汎用データベースメタデータレイアウト グループのHTMLを出力する(列)
-	 *
-	 * @param integer $position グループ
-	 * @param integer $colSize 段の列数
-	 * @return string HTML
-	 */
-	public function renderGroup($metadataGroups, $position, $colSize = 1)
-	{
-
+/**
+ * 汎用データベースメタデータレイアウト グループのHTMLを出力する(列)
+ *
+ * @param array $metadataGroups メタデータグループ
+ * @param int $position グループNo
+ * @return string HTML
+ */
+	public function renderGroup($metadataGroups, $position) {
 		$element = 'MultidatabaseContents/edit/edit_content_group';
-
 
 		switch ($position) {
 			case 0:
@@ -72,50 +63,54 @@ class MultidatabaseContentEditHelper extends AppHelper
 					$element,
 					[
 						'gMetadatas' => $metadataGroups[$position],
-						'gPos' => $position
+						'gPos' => $position,
 					]
 				);
 			default:
-				return false;
+				return '';
 		}
 	}
 
-	/**
-	 * 汎用データベースメタデータレイアウト アイテムのHTMLを出力する
-	 *
-	 * @param integer $position グループ
-	 * @return string HTML
-	 */
-	public function renderGroupItems($metadatas)
-	{
+/**
+ * 汎用データベースメタデータレイアウト アイテムのHTMLを出力する
+ *
+ * @param array $metadatas 特定グループのメタデータ
+ * @return string HTML
+ */
+	public function renderGroupItems($metadatas) {
 		return $this->_View->Element(
 			'MultidatabaseContents/edit/edit_content_group_items',
 			[
-				'metadatas' => $metadatas
+				'metadatas' => $metadatas,
 			]
 		);
 	}
 
+/**
+ * 選択肢の値を配列に変換する
+ *
+ * @param string $selections 選択肢の値（||で区切られた文字列）
+ * @return array
+ */
 	public function convertSelectionsToArray($selections) {
-		$result = array();
-		foreach (explode('||',$selections) as $selection) {
+		$result = [];
+		foreach (explode('||', $selections) as $selection) {
 			$result[md5($selection)] = $selection;
 		}
-
 		return $result;
 	}
 
 /**
  * フォーム部品を出力する
  *
- * @param $elementType
+ * @param array $metadata メタデータ
+ * @param array $options オプション
+ * @return string HTML
  */
 	public function renderFormElement($metadata, $options = []) {
-
 		if (!empty($label)) {
 			$options['label'] = $label;
 		}
-
 
 		$name = 'MultidatabaseContent.value' . $metadata['col_no'];
 		$options['id'] = $name;
@@ -145,7 +140,6 @@ class MultidatabaseContentEditHelper extends AppHelper
 			case 'checkbox':
 				$options['options'] = $this->convertSelectionsToArray($metadata['selections']);
 				$result .= $this->renderFormElementCheckBox($name, $options);
-
 				break;
 			case 'wysiwyg':
 				$options['rows'] = 12;
@@ -180,76 +174,147 @@ class MultidatabaseContentEditHelper extends AppHelper
 				break;
 		}
 
-
 		return $result;
 	}
 
-	public function renderFormElementReadOnly($name,  $options = []) {
+/**
+ * 値を出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementReadOnly($name, $options = []) {
 		if (isset($options['value'])) {
 			return $options['value'];
 		}
+
 		return '';
 	}
 
-	public function renderFormElementText($name,  $options = []) {
+/**
+ * テキストボックスを出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementText($name, $options = []) {
 		$options['type'] = 'text';
-		return $this->NetCommonsForm->input($name,$options);
+		return $this->NetCommonsForm->input($name, $options);
 	}
 
-	public function renderFormElementWysiwyg($name,  $options = []) {
-		return $this->NetCommonsForm->wysiwyg($name,$options);
+/**
+ * WYSIWYGを出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementWysiwyg($name, $options = []) {
+		return $this->NetCommonsForm->wysiwyg($name, $options);
 	}
 
-	public function renderFormElementTextArea($name,  $options = []) {
+/**
+ * テキストエリアを出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementTextArea($name, $options = []) {
 		$options['type'] = 'textarea';
-		return $this->NetCommonsForm->input($name,$options);
+		return $this->NetCommonsForm->input($name, $options);
 	}
 
-	public function renderFormElementCheckBox($name,  $options = []) {
+/**
+ * チェックボックスを出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementCheckBox($name, $options = []) {
 		$options += [
 			'type' => 'select',
 			'multiple' => 'checkbox',
 			'options' => $options,
-			'class' => 'checkbox-inline nc-checkbox'
+			'class' => 'checkbox-inline nc-checkbox',
 		];
 
-		return $this->NetCommonsForm->input($name,$options);
+		return $this->NetCommonsForm->input($name, $options);
 	}
 
-	public function renderFormElementRadio($name,  $options = []) {
+/**
+ * ラジオボタンを出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementRadio($name, $options = []) {
 		$options['type'] = 'radio';
 		$options['inline'] = true;
-		return $this->NetCommonsForm->input($name,$options);
+		return $this->NetCommonsForm->input($name, $options);
 	}
 
-	public function renderFormElementSelect($name,  $options = []) {
+/**
+ * セレクトボックスを出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementSelect($name, $options = []) {
 		$options['type'] = 'select';
-		return $this->NetCommonsForm->input($name,$options);
+		return $this->NetCommonsForm->input($name, $options);
 	}
 
-	public function renderFormElementDate($name,  $options = []) {
+/**
+ * デートピッカー対応のテキストボックスを出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementDate($name, $options = []) {
 		$options['type'] = 'datetime';
-		return $this->NetCommonsForm->input($name,$options);
+		return $this->NetCommonsForm->input($name, $options);
 	}
 
-	public function renderFormElementFile($name,  $options = []) {
+/**
+ * ファイルアップロードエレメントを出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementFile($name, $options = []) {
 		$options['type'] = 'file';
-		return $this->NetCommonsForm->input($name,$options);
+		return $this->NetCommonsForm->input($name, $options);
 	}
 
-	public function renderFormElementImage($name,  $options = []) {
+/**
+ * 画像用のファイルアップロードエレメントを出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementImage($name, $options = []) {
 		$options['type'] = 'file';
-		return $this->NetCommonsForm->input($name,$options);
+		return $this->NetCommonsForm->input($name, $options);
 	}
 
-	public function renderFormElementHidden($name,  $options = []) {
+/**
+ * 隠し属性のエレメントを出力する
+ *
+ * @param string $name フィールド名(key)
+ * @param array $options オプション
+ * @return string HTML
+ */
+	public function renderFormElementHidden($name, $options = []) {
 		$options['type'] = 'hidden';
-		return $this->NetCommonsForm->input($name,$options);
+		return $this->NetCommonsForm->input($name, $options);
 	}
-
-
-
-
-
-
 }

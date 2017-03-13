@@ -19,8 +19,7 @@ App::uses('Space', 'Rooms.Model');
  * @package NetCommons\Multidatabases\Config\Migration
  *
  */
-class PluginRecords extends NetCommonsMigration
-{
+class PluginRecords extends NetCommonsMigration {
 
 /**
  * Migration description
@@ -34,20 +33,20 @@ class PluginRecords extends NetCommonsMigration
  *
  * @var array $migration
  */
-	public $migration = array(
-		'up' => array(),
-		'down' => array(),
-	);
+	public $migration = [
+		'up' => [],
+		'down' => [],
+	];
 
 /**
  * plugin data
  *
  * @var array $migration
  */
-	public $records = array(
-		'Plugin' => array(
+	public $records = [
+		'Plugin' => [
 			//日本語
-			array(
+			[
 				'language_id' => '2',
 				'key' => 'multidatabases',
 				'namespace' => 'netcommons/multidatabases',
@@ -57,9 +56,9 @@ class PluginRecords extends NetCommonsMigration
 				'default_setting_action' => 'multidatabase_blocks/index',
 				'display_topics' => 1,
 				'display_search' => 1,
-			),
+			],
 			//英語
-			array(
+			[
 				'language_id' => '1',
 				'key' => 'multidatabases',
 				'namespace' => 'netcommons/multidatabases',
@@ -69,24 +68,23 @@ class PluginRecords extends NetCommonsMigration
 				'default_setting_action' => 'multidatabase_blocks/index',
 				'display_topics' => 1,
 				'display_search' => 1,
-			),
-		),
-		'PluginsRole' => array(
-			array(
+			],
+		],
+		'PluginsRole' => [
+			[
 				'role_key' => 'room_administrator',
-				'plugin_key' => 'multidatabases'
-			),
-		),
-		'PluginsRoom' => array(
+				'plugin_key' => 'multidatabases',
+			],
+		],
+		'PluginsRoom' => [
 			//パブリックスペース
-			array('room_id' => '2', 'plugin_key' => 'multidatabases',),
+			['room_id' => '2', 'plugin_key' => 'multidatabases', ],
 			//プライベートスペース
-			array('room_id' => '3', 'plugin_key' => 'multidatabases',),
+			['room_id' => '3', 'plugin_key' => 'multidatabases', ],
 			//グループスペース
-			array('room_id' => '4', 'plugin_key' => 'multidatabases',),
-		),
-	);
-
+			['room_id' => '4', 'plugin_key' => 'multidatabases', ],
+		],
+	];
 
 /**
  * Before migration callback
@@ -94,31 +92,31 @@ class PluginRecords extends NetCommonsMigration
  * @param string $direction Direction of migration process (up or down)
  * @return bool Should process continue
  */
-	public function before($direction)
-	{
+	public function before($direction) {
 		$pluginName = $this->records['Plugin'][0]['key'];
-		$this->records['PluginsRoom'] = array(
+		$this->records['PluginsRoom'] = [
 			//サイト全体
-			array(
+			[
 				'room_id' => Space::getRoomIdRoot(Space::WHOLE_SITE_ID, 'Room'),
-				'plugin_key' => $pluginName
-			),
+				'plugin_key' => $pluginName,
+			],
 			//パブリックスペース
-			array(
+			[
 				'room_id' => Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID, 'Room'),
-				'plugin_key' => $pluginName
-			),
+				'plugin_key' => $pluginName,
+			],
 			//プライベートスペース
-			array(
+			[
 				'room_id' => Space::getRoomIdRoot(Space::PRIVATE_SPACE_ID, 'Room'),
-				'plugin_key' => $pluginName
-			),
+				'plugin_key' => $pluginName,
+			],
 			//グループスペース
-			array(
+			[
 				'room_id' => Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID, 'Room'),
-				'plugin_key' => $pluginName
-			),
-		);
+				'plugin_key' => $pluginName,
+			],
+		];
+
 		return true;
 	}
 
@@ -128,14 +126,14 @@ class PluginRecords extends NetCommonsMigration
  * @param string $direction Direction of migration process (up or down)
  * @return bool Should process continue
  */
-	public function after($direction)
-	{
+	public function after($direction) {
 		$this->loadModels([
 			'Plugin' => 'PluginManager.Plugin',
 		]);
 
 		if ($direction === 'down') {
 			$this->Plugin->uninstallPlugin($this->records['Plugin'][0]['key']);
+
 			return true;
 		}
 
@@ -144,6 +142,7 @@ class PluginRecords extends NetCommonsMigration
 				return false;
 			}
 		}
+
 		return true;
 	}
 }

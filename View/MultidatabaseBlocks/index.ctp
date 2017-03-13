@@ -28,23 +28,23 @@
 			); ?>
 			<?php echo $this->BlockIndex->tableHeader(
 				'BlocksLanguage.name', __d('multidatabases', 'Multidatabase name'),
-				array('sort' => true, 'editUrl' => true)
+				['sort' => true, 'editUrl' => true]
 			); ?>
 			<?php echo $this->BlockIndex->tableHeader(
 				'Block.content_count', __d('net_commons', 'Number'),
-				array('sort' => true, 'type' => 'numeric')
+				['sort' => true, 'type' => 'numeric']
 			); ?>
 			<?php echo $this->BlockIndex->tableHeader(
 				'Block.public_type', __d('blocks', 'Publishing setting'),
-				array('sort' => true)
+				['sort' => true]
 			); ?>
 			<?php echo $this->BlockIndex->tableHeader(
 				'TrackableUpdater.handlename', __d('net_commons', 'Modified user'),
-				array('sort' => true, 'type' => 'handle')
+				['sort' => true, 'type' => 'handle']
 			); ?>
 			<?php echo $this->BlockIndex->tableHeader(
 				'Block.modified', __d('net_commons', 'Modified datetime'),
-				array('sort' => true, 'type' => 'datetime')
+				['sort' => true, 'type' => 'datetime']
 			); ?>
 		</tr>
 		</thead>
@@ -56,22 +56,22 @@
 			); ?>
 			<?php echo $this->BlockIndex->tableData(
 				'BlocksLanguage.name', $multidatabase['BlocksLanguage']['name'],
-				array('editUrl' => array('block_id' => $multidatabase['Block']['id']))
+				['editUrl' => ['block_id' => $multidatabase['Block']['id']]]
 			); ?>
 			<?php echo $this->BlockIndex->tableData(
 				'Block.content_count', $multidatabase['Block']['content_count'],
-				array('type' => 'numeric')
+				['type' => 'numeric']
 			); ?>
 			<?php echo $this->BlockIndex->tableData(
 				'Block.public_type', $multidatabase
 			); ?>
 			<?php echo $this->BlockIndex->tableData(
 				'TrackableUpdater', $multidatabase,
-				array('type' => 'handle')
+				['type' => 'handle']
 			); ?>
 			<?php echo $this->BlockIndex->tableData(
 				'Block.modified', $multidatabase['Block']['modified'],
-				array('type' => 'datetime')
+				['type' => 'datetime']
 			); ?>
 			<?php echo $this->BlockIndex->endTableRow(); ?>
 		<?php endforeach; ?>

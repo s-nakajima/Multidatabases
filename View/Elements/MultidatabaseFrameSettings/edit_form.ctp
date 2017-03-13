@@ -14,10 +14,10 @@
 <?php echo $this->NetCommonsForm->hidden('MultidatabaseFrameSetting.id'); ?>
 <?php echo $this->NetCommonsForm->hidden('MultidatabaseFrameSetting.frame_key'); ?>
 
-<?php echo $this->DisplayNumber->select('MultidatabaseFrameSetting.content_per_page', array(
+<?php echo $this->DisplayNumber->select('MultidatabaseFrameSetting.content_per_page', [
 	'label' => __d('multidatabases', 'Show contents per page'),
-	'unit' => array(
+	'unit' => [
 		'single' => __d('multidatabases', '%s article'),
-		'multiple' => __d('multidatabases', '%s articles')
-	),
-));
+		'multiple' => __d('multidatabases', '%s articles'),
+	],
+]);

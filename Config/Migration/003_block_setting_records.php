@@ -18,8 +18,7 @@ App::uses('BlockSettingBehavior', 'Blocks.Model/Behavior');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Config\Migration
  */
-class BlockSettingRecords extends BlockSettingMigration
-{
+class BlockSettingRecords extends BlockSettingMigration {
 
 /**
  * プラグインキー
@@ -86,8 +85,7 @@ class BlockSettingRecords extends BlockSettingMigration
  * @param string $direction Direction of migration process (up or down)
  * @return bool Should process continue
  */
-	public function before($direction)
-	{
+	public function before($direction) {
 		return true;
 	}
 
@@ -97,8 +95,7 @@ class BlockSettingRecords extends BlockSettingMigration
  * @param string $direction Direction of migration process (up or down)
  * @return bool Should process continue
  */
-	public function after($direction)
-	{
+	public function after($direction) {
 		return parent::updateAndDelete($direction, self::PLUGIN_KEY);
 	}
 }

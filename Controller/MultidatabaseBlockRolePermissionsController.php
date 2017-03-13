@@ -32,61 +32,65 @@ class MultidatabaseBlockRolePermissionsController extends MultidatabasesAppContr
  *
  * @var array
  */
-	public $uses = array(
+	public $uses = [
 		'Multidatabases.Multidatabase',
-	);
+	];
 
 /**
  * use components
  *
  * @var array
  */
-	public $components = array(
-		'NetCommons.Permission' => array(
+	public $components = [
+		'NetCommons.Permission' => [
 			//アクセスの権限
-			'allow' => array(
+			'allow' => [
 				'edit' => 'block_permission_editable',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * use helpers
  *
  * @var array
  */
-    public $helpers = array(
-        'Blocks.BlockForm',
-        'Blocks.BlockTabs' => array(
-            'mainTabs' => array(
-                'block_index' => array('url' => array('controller' => 'multidatabase_blocks')),
-                'frame_settings' => array('url' => array('controller' => 'multidatabase_frame_settings')),
-            ),
-            'blockTabs' => array(
-                'block_settings' => array('url' => array('controller' => 'multidatabase_blocks')),
-				'metadata_settings' => array('url' => array('controller' => 'multidatabase_metadata_settings'), 'label' => ['multidatabases', 'Metadata Settings']),
-                'mail_settings' => array('url' => array('controller' => 'multidatabase_mail_settings')),
-                'role_permissions' => array('url' => array('controller' => 'multidatabase_block_role_permissions')),
-            ),
-        ),
-    );
+	public $helpers = [
+		'Blocks.BlockForm',
+		'Blocks.BlockTabs' => [
+			'mainTabs' => [
+				'block_index' => ['url' => ['controller' => 'multidatabase_blocks']],
+				'frame_settings' => ['url' => ['controller' => 'multidatabase_frame_settings']],
+			],
+			'blockTabs' => [
+				'block_settings' => ['url' => ['controller' => 'multidatabase_blocks']],
+				'metadata_settings' => ['url' => [
+					'controller' => 'multidatabase_metadata_settings'],
+					'label' => ['multidatabases', 'Metadata Settings']
+				],
+				'mail_settings' => ['url' => ['controller' => 'multidatabase_mail_settings']],
+				'role_permissions' => ['url' => ['controller' => 'multidatabase_block_role_permissions']],
+			],
+		],
+	];
+
 /**
  * edit
  *
  * @return void
  */
 	public function edit() {
-		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
+		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return $this->throwBadRequest();
 		}
 
 		$permissions = $this->Workflow->getBlockRolePermissions(
-			array(
+			[
 				'content_creatable',
 				'content_publishable',
 				'content_comment_creatable',
-				'content_comment_publishable'
-			)
+				'content_comment_publishable',
+			]
 		);
 		$this->set('roles', $permissions['Roles']);
 

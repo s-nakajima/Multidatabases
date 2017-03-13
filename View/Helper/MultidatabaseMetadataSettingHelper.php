@@ -19,47 +19,38 @@ App::uses('AppHelper', 'View/Helper');
  * @package NetCommons\Multidatabase\View\Helper
  *
  */
+class MultidatabaseMetadataSettingHelper extends AppHelper {
 
-class MultidatabaseMetadataSettingHelper extends AppHelper
-{
-
-	/**
-	 * 使用するHelpers
-	 *
-	 * - [NetCommons.ButtonHelper](../../NetCommons/classes/ButtonHelper.html)
-	 * - [NetCommons.NetCommonsHtml](../../NetCommons/classes/NetCommonsHtml.html)
-	 * - [NetCommons.NetCommonsForm](../../NetCommons/classes/NetCommonsForm.html)
-	 *
-	 * @var array
-	 */
+/**
+ * 使用するHelpers
+ *
+ * @var array
+ */
 	public $helpers = [
 		'NetCommons.Button',
 		'NetCommons.NetCommonsHtml',
-		'NetCommons.NetCommonsForm'
+		'NetCommons.NetCommonsForm',
 	];
 
-	/**
-	 * CSS Style Sheetを読み込む
-	 *
-	 * @param string $viewFile viewファイル
-	 * @return void
-	 * @link http://book.cakephp.org/2.0/ja/views/helpers.html#Helper::beforeRender Helper::beforeRender
-	 */
-	public function beforeRender($viewFile)
-	{
+/**
+ * before render
+ *
+ * @param string $viewFile viewファイル
+ * @return void
+ * @link http://book.cakephp.org/2.0/ja/views/helpers.html#Helper::beforeRender Helper::beforeRender
+ */
+	public function beforeRender($viewFile) {
 		parent::beforeRender($viewFile);
 	}
 
 /**
  * 汎用データベースメタデータレイアウト グループのHTMLを出力する(列)
  *
- * @param integer $position グループ
- * @param integer $colSize 段の列数
+ * @param int $position グループ
+ * @param int $colSize 段の列数
  * @return string HTML
  */
-	public function renderGroup($position, $colSize = 1)
-	{
-
+	public function renderGroup($position, $colSize = 1) {
 		switch ($colSize) {
 			case 2:
 				// 2列レイアウト
@@ -69,7 +60,6 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 				// 1列レイアウト
 				$element = 'MultidatabaseBlocks/metadatas/edit_metadata_group_c1';
 		}
-
 
 		switch ($position) {
 			case 0:
@@ -88,11 +78,10 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 /**
  * 汎用データベースメタデータレイアウト アイテムのHTMLを出力する
  *
- * @param integer $position グループ
+ * @param int $position グループ
  * @return string HTML
  */
-	public function renderGroupItems($position)
-	{
+	public function renderGroupItems($position) {
 		switch ($position) {
 			case 0:
 			case 1:
@@ -110,11 +99,10 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 /**
  * 汎用データベースメタデータレイアウト アイテムプロパティのHTMLを出力する
  *
- * @param integer $position グループ
+ * @param int $position グループ
  * @return string HTML
  */
-	public function renderGroupItemProperty($position)
-	{
+	public function renderGroupItemProperty($position) {
 		switch ($position) {
 			case 0:
 			case 1:
@@ -132,7 +120,7 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 /**
  * 汎用データベースメタデータレイアウト アイテムプロパティ 選択肢入力のHTMLを出力する
  *
- * @param integer $position グループ
+ * @param int $position グループ
  * @return string HTML
  */
 	public function renderGroupItemPropertySelections($position) {
@@ -150,7 +138,6 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 		}
 	}
 
-
 /**
  * フィールド種別
  *
@@ -158,19 +145,19 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
  */
 	public function fieldTypeList() {
 		return [
-			'text' => __d('multidatabases','Text'),
-			'textarea' => __d('multidatabases','Text area'),
-			'link' => __d('multidatabases','Link'),
-			'select' => __d('multidatabases','Select'),
-			'checkbox' => __d('multidatabases','Check box'),
-			'wysiwyg' => __d('multidatabases','WYSIWYG'),
-			'file' => __d('multidatabases','File'),
-			'image' => __d('multidatabases','Image'),
-			'autonumber' => __d('multidatabases','Auto number'),
-			'mail' => __d('multidatabases','E-mail address'),
-			'date' => __d('multidatabases','Date'),
-			'created' => __d('multidatabases','Create date'),
-			'updated' => __d('multidatabases','Update date'),
+			'text' => __d('multidatabases', 'Text'),
+			'textarea' => __d('multidatabases', 'Text area'),
+			'link' => __d('multidatabases', 'Link'),
+			'select' => __d('multidatabases', 'Select'),
+			'checkbox' => __d('multidatabases', 'Check box'),
+			'wysiwyg' => __d('multidatabases', 'WYSIWYG'),
+			'file' => __d('multidatabases', 'File'),
+			'image' => __d('multidatabases', 'Image'),
+			'autonumber' => __d('multidatabases', 'Auto number'),
+			'mail' => __d('multidatabases', 'E-mail address'),
+			'date' => __d('multidatabases', 'Date'),
+			'created' => __d('multidatabases', 'Create date'),
+			'updated' => __d('multidatabases', 'Update date'),
 		];
 	}
 
@@ -192,8 +179,7 @@ class MultidatabaseMetadataSettingHelper extends AppHelper
 			'is_sortable',
 			'is_file_dl_require_auth',
 			'is_visible_list',
-			'is_visible_detail'
+			'is_visible_detail',
 		];
-
 	}
 }

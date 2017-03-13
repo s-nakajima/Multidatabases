@@ -18,103 +18,102 @@ App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Controller
  */
-class MultidatabaseContentsController extends MultidatabasesAppController
-{
+class MultidatabaseContentsController extends MultidatabasesAppController {
 
 /**
  * @var array use models
  */
-	public $uses = array(
+	public $uses = [
 		'Multidatabases.MultidatabaseContent',
 		'Workflow.WorkflowComment',
 		'Categories.Category',
 		'NetCommons.NetCommonsTime',
-	);
+	];
 
 /**
  * @var array helpers
  */
-	public $helpers = array(
+	public $helpers = [
 		'NetCommons.BackTo',
 		'Workflow.Workflow',
 		'Likes.Like',
-		'ContentComments.ContentComment' => array(
-			'viewVarsKey' => array(
+		'ContentComments.ContentComment' => [
+			'viewVarsKey' => [
 				'contentKey' => 'multidatabaseContent.MultidatabaseContent.key',
 				'useComment' => 'multidatabaseSetting.use_comment',
-				'useCommentApproval' => 'multidatabaseSetting.use_comment_approval'
-			)
-		),
+				'useCommentApproval' => 'multidatabaseSetting.use_comment_approval',
+			],
+		],
 		'NetCommons.NetCommonsForm',
 		'NetCommons.NetCommonsTime',
 		'NetCommons.SnsButton',
 		'NetCommons.TitleIcon',
 		'NetCommons.DisplayNumber',
-	);
+	];
 
 /**
  * Components
  *
  * @var array
  */
-	public $components = array(
+	public $components = [
 		'Paginator',
-		'NetCommons.Permission' => array(
+		'NetCommons.Permission' => [
 			//アクセスの権限
-			'allow' => array(
+			'allow' => [
 				'add,edit,delete' => 'content_creatable',
 				'approve' => 'content_comment_publishable',
-			),
-		),
-		'ContentComments.ContentComments' => array(
-			'viewVarsKey' => array(
+			],
+		],
+		'ContentComments.ContentComments' => [
+			'viewVarsKey' => [
 				'contentKey' => 'multidatabaseContent.MultidatabaseContent.key',
 				'useComment' => 'multidatabaseSetting.use_comment',
-			),
-			'allow' => array('detail')
-		));
+			],
+			'allow' => ['detail'],
+		]];
 
 /**
  * @var array 絞り込みフィルタ保持値
  */
-	protected $_filter = array(
+	protected $_filter = [
 		'status' => 0,
-	);
+	];
 
 /**
+ * Get Permission
  * 権限の取得
  *
  * @return array
  */
-	protected function _getPermission()
-	{
-		$permissionNames = array(
+	protected function _getPermission() {
+		$permissionNames = [
 			'content_readable',
 			'content_creatable',
 			'content_editable',
 			'content_publishable',
-		);
-		$permission = array();
+		];
+		$permission = [];
 		foreach ($permissionNames as $key) {
 			$permission[$key] = Current::permission($key);
 		}
+
 		return $permission;
 	}
-
 
 /**
  * beforeFilter
  *
  * @return void
  */
-	public function beforeFilter()
-	{
+	public function beforeFilter() {
 		parent::beforeFilter();
 		$this->Security->validatePost = false;
 		$this->Security->csrfCheck = false;
 
 		if (!Current::read('Block.id')) {
 			$this->setAction('emptyRender');
+
 			return false;
 		}
 
@@ -127,28 +126,26 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 		$this->_prepare();
 	}
 
-
 /**
- * 汎用データベース コンテンツ一覧表示
+ * Show Index
+ * 汎用データベース コンテンツインデックス
  *
  * @return void
  */
-	public function index()
-	{
+	public function index() {
 		$conditions = [];
-		$this->_list($conditions);
-
+		// 一覧を表示する
+		$this->__list($conditions);
 	}
 
 /**
- * 汎用データべース 一覧表示
+ * Show Contents List
+ * 汎用データべース コンテンツ一覧表示
  *
- * @param array $extraCondition
+ * @param array $extraConditions 追加条件
  * @return void
  */
-	private function _list($extraConditions = [])
-	{
-
+	private function __list($extraConditions = []) {
 		$permission = $this->_getPermission();
 
 		$conditions = $this->MultidatabaseContent->getConditions(
@@ -162,11 +159,11 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 
 		$this->Paginator->settings = array_merge(
 			$this->Paginator->settings,
-			array(
+			[
 				'conditions' => $conditions,
 				'limit' => $this->_frameSetting['MultidatabaseFrameSetting']['content_per_page'],
 				'order' => 'MultidatabaseContent.created DESC',
-			)
+			]
 		);
 
 		$this->MultidatabaseContent->recursive = 0;
@@ -178,15 +175,13 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 		$this->set('viewMode', 'list');
 	}
 
-
 /**
+ * Show Content Detail
  * 汎用データベース コンテンツ詳細表示
  *
  * @return void
  */
-	public function detail()
-	{
-
+	public function detail() {
 		$key = $this->params['key'];
 
 		$permission = $this->_getPermission();
@@ -198,10 +193,10 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 
 		$conditions['MultidatabaseContent.key'] = $key;
 
-		$options = array(
+		$options = [
 			'conditions' => $conditions,
 			'recursive' => 0,
-		);
+		];
 
 		$this->MultidatabaseContent->recursive = 0;
 		$this->MultidatabaseContent->Behaviors->load('ContentComments.ContentComment');
@@ -209,14 +204,15 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 		$this->MultidatabaseContent->Behaviors->unload('ContentComments.ContentComment');
 		$this->MultidatabaseContent->recursive = -1;
 
-
 		if ($multidatabaseContent) {
 			$this->set('multidatabaseContent', $multidatabaseContent);
 			$this->set('viewMode', 'detail');
 			if ($this->_multidatabaseSetting['MultidatabaseSetting']['use_comment']) {
 				if ($this->request->is('post')) {
-					$multidatabaseContentKey = $multidatabaseContent['MultidatabaseContent']['key'];
-					$useCommentApproval = $this->_multidatabaseSetting['MultidatabaseSetting']['use_comment_approval'];
+					$multidatabaseContentKey
+						= $multidatabaseContent['MultidatabaseContent']['key'];
+					$useCommentApproval
+						= $this->_multidatabaseSetting['MultidatabaseSetting']['use_comment_approval'];
 					if (!$this->ContentComments->comment('multidatabases', $multidatabaseContentKey,
 						$useCommentApproval)
 					) {
@@ -227,45 +223,43 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 		} else {
 			return $this->throwBadRequest();
 		}
-
 	}
 
 /**
+ * Add Content
  * 汎用データベース コンテンツ追加
  *
  * @return void
  */
-	public function add()
-	{
+	public function add() {
 		$this->set('isEdit', false);
 
 		if ($this->request->is('post')) {
-			$url = $this->_save();
+			$url = $this->__save();
 			if (!$url) {
 				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
 			} else {
 				return $this->redirect($url);
 			}
-
 		}
 
 		$this->render('form');
 	}
 
 /**
+ * Edit Content
  * 汎用データベース コンテンツ編集
  *
  * @return void
  */
-	public function edit()
-	{
+	public function edit() {
 		$this->set('isEdit', true);
 		$key = $this->params['key'];
 
 		$this->MultidatabaseContent->recursive = 0;
 		$options = [
 			'conditions' => [
-				'MultidatabaseContent.key' => $key
+				'MultidatabaseContent.key' => $key,
 			],
 			'recursive' => 0,
 		];
@@ -281,7 +275,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 		}
 
 		if ($this->request->is(['post', 'put'])) {
-			$url = $this->_save();
+			$url = $this->__save();
 			if (!$url) {
 				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
 			} else {
@@ -293,22 +287,24 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 		}
 
 		$this->set('multidatabaseContent', $multidatabaseContent);
-		$this->set('isDeletable', $this->MultidatabaseContent->canDeleteWorkflowContent($multidatabaseContent));
-		$comments = $this->MultidatabaseContent->getCommentsByContentKey($multidatabaseContent['MultidatabaseContent']['key']);
+		$this->set('isDeletable',
+			$this->MultidatabaseContent->canDeleteWorkflowContent($multidatabaseContent)
+		);
+		$comments = $this->MultidatabaseContent->getCommentsByContentKey(
+			$multidatabaseContent['MultidatabaseContent']['key']
+		);
 		$this->set('comments', $comments);
 
 		$this->render('form');
-
 	}
 
 /**
+ * Save Content
  * データを保存する
  *
- * @return boolean|string
+ * @return bool|string
  */
-	private function _save()
-	{
-
+	private function __save() {
 		$this->request->data['MultidatabaseContent']['multidatabase_key'] =
 			$this->_multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'];
 
@@ -321,7 +317,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 
 		unset($data['MultidatabaseContent']['id']);
 
-
 		if ($result = $this->MultidatabaseContent->saveContent($data)) {
 			$url = NetCommonsUrl::actionUrl(
 				[
@@ -329,35 +324,32 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 					'action' => 'detail',
 					'block_id' => Current::read('Block.id'),
 					'frame_id' => Current::read('Frame.id'),
-					'key' => $result['MultidatabaseContent']['key']
+					'key' => $result['MultidatabaseContent']['key'],
 
 				]
 			);
-
 			return $url;
-
 		}
-
 		return false;
-
 	}
 
 /**
+ * Delete Content
  * 汎用データベース コンテンツ削除
  *
- * @return void
+ * @return string
+ * @throws InternalErrorException
  */
-	public function delete()
-	{
+	public function delete() {
 		$this->request->allowMethod('post', 'delete');
 
 		$key = $this->request->data['MultidatabaseContent']['key'];
-		$multidatabaseContent = $this->MultidatabaseContent->getWorkflowContents('first', array(
+		$multidatabaseContent = $this->MultidatabaseContent->getWorkflowContents('first', [
 			'recursive' => 0,
-			'conditions' => array(
-				'MultidatabaseContent.key' => $key
-			)
-		));
+			'conditions' => [
+				'MultidatabaseContent.key' => $key,
+			],
+		]);
 
 		// 権限チェック
 		if ($this->MultidatabaseContent->canDeleteWorkflowContent($multidatabaseContent) === false) {
@@ -367,18 +359,17 @@ class MultidatabaseContentsController extends MultidatabasesAppController
 		if ($this->MultidatabaseContent->deleteContentByKey($key) === false) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
+
 		return $this->redirect(
 			NetCommonsUrl::actionUrl(
-				array(
+				[
 					'controller' => 'multidatabase_contents',
 					'action' => 'index',
 					'frame_id' => Current::read('Frame.id'),
-					'block_id' => Current::read('Block.id')
-				)
+					'block_id' => Current::read('Block.id'),
+				]
 			)
 		);
 	}
-
-
 }
 

@@ -19,28 +19,27 @@ App::uses('AppController', 'Controller');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Controller
  */
-class MultidatabasesAppController extends AppController
-{
+class MultidatabasesAppController extends AppController {
 
 /**
  * 使用するComponent
  *
  * @var array
  */
-	public $components = array(
+	public $components = [
 		'Pages.PageLayout',
 		'Security',
-	);
+	];
 
 /**
  * @var array use model
  */
-	public $uses = array(
+	public $uses = [
 		'Multidatabases.Multidatabase',
 		'Multidatabases.MultidatabaseMetadata',
 		'Multidatabases.MultidatabaseSetting',
-		'Multidatabases.MultidatabaseFrameSetting'
-	);
+		'Multidatabases.MultidatabaseFrameSetting',
+	];
 
 /**
  * @var array 汎用DBタイトル
@@ -53,23 +52,29 @@ class MultidatabasesAppController extends AppController
 	protected $_frameSetting;
 
 /**
- * @var array 汎用DB設定
+ * @var array 汎用DBブロック設定
  */
 	protected $_multidatabaseSetting;
+
+/**
+ * @var array 汎用DB設定
+ */
 	protected $_multidatabase;
+
+/**
+ * @var array 汎用DB メタデータ設定
+ */
 	protected $_multidatabaseMetadata;
 
-
-	protected function _prepare()
-	{
+/**
+ * prepare
+ *
+ * @return void
+ */
+	protected function _prepare() {
 		$this->_setupMultidatabaseTitle();
 		$this->_initMultidatabase(['multidatabaseSetting']);
 		$this->_loadFrameSetting();
-	}
-
-	protected function _loadFrameSetting()
-	{
-		$this->_frameSetting = $this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting();
 	}
 
 /**
@@ -77,32 +82,38 @@ class MultidatabasesAppController extends AppController
  *
  * @return void
  */
-	protected function _setupMultidatabaseTitle()
-	{
+	protected function _setupMultidatabaseTitle() {
 		$this->loadModel('Blocks.Block');
-		$block = $this->Block->find('first', array(
+		$block = $this->Block->find('first', [
 			'recursive' => 0,
-			'conditions' => array('Block.id' => Current::read('Block.id'))
-		));
+			'conditions' => ['Block.id' => Current::read('Block.id')],
+		]);
 		$this->_multidatabaseTitle = $block['BlocksLanguage']['name'];
 	}
 
-	protected function _initMultidatabase($contains = [])
-	{
+/**
+ * 初期設定
+ *
+ * @return bool|void
+ */
+	protected function _initMultidatabase() {
 		// 汎用DBを取得
 		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return $this->throwBadRequest();
 		}
 
 		// メタデータを取得
-		if (!$multidatabaseMetadata = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+		if (!$multidatabaseMetadata = $this->MultidatabaseMetadata->getEditMetadatas(
+			$multidatabase['Multidatabase']['id'])
+		) {
 			return $this->throwBadRequest();
 		}
 
-		if (!$multidatabaseMetadataGroups = $this->MultidatabaseMetadata->getMetadataGroups($multidatabase['Multidatabase']['id'])) {
+		if (!$multidatabaseMetadataGroups = $this->MultidatabaseMetadata->getMetadataGroups(
+			$multidatabase['Multidatabase']['id'])
+		) {
 			return $this->throwBadRequest();
 		}
-
 
 		$this->_multidatabaseTitle = $multidatabase['Multidatabase']['name'];
 		$this->set('multidatabase', $multidatabase);
@@ -113,7 +124,8 @@ class MultidatabasesAppController extends AppController
 			$multidatabaseSetting = $this->MultidatabaseSetting->createBlockSetting();
 			$multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'] = null;
 		} else {
-			$multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'] = $multidatabase['Multidatabase']['key'];
+			$multidatabaseSetting['MultidatabaseSetting']['multidatabase_key']
+				= $multidatabase['Multidatabase']['key'];
 		}
 
 		$this->_multidatabase = $multidatabase;
@@ -123,8 +135,14 @@ class MultidatabasesAppController extends AppController
 		$this->set('userId', (int)$this->Auth->user('id'));
 
 		return true;
-
 	}
 
-
+/**
+ * フレーム設定を取得する
+ *
+ * @return void
+ */
+	protected function _loadFrameSetting() {
+		$this->_frameSetting = $this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting();
+	}
 }

@@ -10,15 +10,13 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 ?>
-
-
 <article class="block-setting-body">
 	<?php echo $this->BlockTabs->main(BlockTabsHelper::MAIN_TAB_FRAME_SETTING); ?>
 	<div class="tab-content">
-		<?php echo $this->BlockForm->displayEditForm(array(
+		<?php echo $this->BlockForm->displayEditForm([
 			'model' => 'MultidatabaseFrameSetting',
 			'callback' => 'Multidatabases.MultidatabaseFrameSettings/edit_form',
 			'cancelUrl' => NetCommonsUrl::backToPageUrl(true),
-		)); ?>
+		]); ?>
 	</div>
 </article>

@@ -19,8 +19,7 @@ App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Controller
  */
-class MultidatabaseFrameSettingsController extends MultidatabasesAppController
-{
+class MultidatabaseFrameSettingsController extends MultidatabasesAppController {
 
 /**
  * layout
@@ -34,54 +33,55 @@ class MultidatabaseFrameSettingsController extends MultidatabasesAppController
  *
  * @var array
  */
-	public $uses = array(
+	public $uses = [
 		'Multidatabases.MultidatabaseFrameSetting',
-	);
+	];
 
 /**
  * use components
  *
  * @var array
  */
-	public $components = array(
-		'NetCommons.Permission' => array(
+	public $components = [
+		'NetCommons.Permission' => [
 			//アクセスの権限
-			'allow' => array(
+			'allow' => [
 				'edit' => 'page_editable',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * use helpers
  *
  * @var array
  */
-	public $helpers = array(
+	public $helpers = [
 		'Blocks.BlockForm',
-		'Blocks.BlockTabs' => array(
-			'mainTabs' => array(
-				'block_index' => array('url' => array('controller' => 'multidatabase_blocks')),
-				'frame_settings' => array('url' => array('controller' => 'multidatabase_frame_settings')),
-			),
-			'blockTabs' => array(
-				'block_settings' => array('url' => array('controller' => 'multidatabase_blocks')),
-				'metadata_settings' => array('url' => array('controller' => 'multidatabase_metadata_settings'), 'label' => ['multidatabases', 'Metadata Settings']),
-				'mail_settings' => array('url' => array('controller' => 'multidatabase_mail_settings')),
-				'role_permissions' => array('url' => array('controller' => 'multidatabase_block_role_permissions')),
-			),
-		),
+		'Blocks.BlockTabs' => [
+			'mainTabs' => [
+				'block_index' => ['url' => ['controller' => 'multidatabase_blocks']],
+				'frame_settings' => ['url' => ['controller' => 'multidatabase_frame_settings']],
+			],
+			'blockTabs' => [
+				'block_settings' => ['url' => ['controller' => 'multidatabase_blocks']],
+				'metadata_settings' => ['url' => [
+					'controller' => 'multidatabase_metadata_settings'],
+					'label' => ['multidatabases', 'Metadata Settings']
+				],
+				'mail_settings' => ['url' => ['controller' => 'multidatabase_mail_settings']],
+				'role_permissions' => ['url' => ['controller' => 'multidatabase_block_role_permissions']],
+			],
+		],
 		'NetCommons.DisplayNumber',
-	);
-
+	];
 
 /**
  * edit
  *
  * @return void
  */
-	public function edit()
-	{
+	public function edit() {
 		if ($this->request->is('put') || $this->request->is('post')) {
 			if ($this->MultidatabaseFrameSetting->saveMultidatabaseFrameSetting($this->data)) {
 				$this->redirect(NetCommonsUrl::backToPageUrl(true));
@@ -89,10 +89,8 @@ class MultidatabaseFrameSettingsController extends MultidatabasesAppController
 			}
 			$this->NetCommons->handleValidationError($this->MultidatabaseFrameSetting->validationErrors);
 		} else {
-
 			$this->request->data = $this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true);
 			$this->request->data['Frame'] = Current::read('Frame');
 		}
 	}
-
 }

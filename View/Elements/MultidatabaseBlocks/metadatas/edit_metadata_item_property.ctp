@@ -45,12 +45,14 @@
 		        class="form-control"
 		        ng-model="metadataGroup<?php echo $gPos; ?>[$index]['type']">
 			<?php foreach ($this->MultidatabaseMetadataSetting->fieldTypeList() as $key => $fieldName): ?>
-				<option value="<?php echo $key; ?>"><?php echo $fieldName; ?></option>
+				<option value="<?php echo $key; ?>">
+					<?php echo $fieldName; ?>
+				</option>
 			<?php endforeach; ?>
 		</select>
 	</div>
 </div>
-<div ng-if="g<?php echo $gPos; ?>.type == 'select' || g<?php echo $gPos; ?>.type == 'checkbox'">
+<div ng-if="<?php echo "g${gPos}.type == 'select' || g${gPos}.type == 'checkbox'"; ?>">
 	<?php echo $this->MultidatabaseMetadataSetting->renderGroupItemPropertySelections($gPos); ?>
 </div>
 <div class="row form-group">

@@ -18,29 +18,31 @@ App::uses('MailSettingsController', 'Mails.Controller');
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Controller
  */
-class MultidatabaseMailSettingsController extends MailSettingsController
-{
+class MultidatabaseMailSettingsController extends MailSettingsController {
 
 /**
  * use helpers
  *
  * @var array
  */
-	public $helpers = array(
+	public $helpers = [
 		'Blocks.BlockRolePermissionForm',
-		'Blocks.BlockTabs' => array(
-			'mainTabs' => array(
+		'Blocks.BlockTabs' => [
+			'mainTabs' => [
 				'block_index',
-				'frame_settings'
-			),
-			'blockTabs' => array(
-				'block_settings' => array('url' => array('controller' => 'multidatabase_blocks')),
-				'metadata_settings' => array('url' => array('controller' => 'multidatabase_metadata_settings'), 'label' => ['multidatabases', 'Metadata Settings']),
-				'mail_settings' => array('url' => array('controller' => 'multidatabase_mail_settings')),
-				'role_permissions' => array('url' => array('controller' => 'multidatabase_block_role_permissions')),
-			)
-		),
+				'frame_settings',
+			],
+			'blockTabs' => [
+				'block_settings' => ['url' => ['controller' => 'multidatabase_blocks']],
+				'metadata_settings' => ['url' => [
+					'controller' => 'multidatabase_metadata_settings'],
+					'label' => ['multidatabases', 'Metadata Settings']
+				],
+				'mail_settings' => ['url' => ['controller' => 'multidatabase_mail_settings']],
+				'role_permissions' => ['url' => ['controller' => 'multidatabase_block_role_permissions']],
+			],
+		],
 		'Mails.MailForm',
-	);
+	];
 
 }

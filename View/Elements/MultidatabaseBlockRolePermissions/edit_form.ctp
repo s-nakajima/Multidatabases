@@ -15,26 +15,27 @@ echo $this->Form->hidden('Block.id');
 echo $this->Form->hidden('Block.key');
 ?>
 
-<?php echo $this->element('Blocks.block_creatable_setting', array(
-	'settingPermissions' => array(
+<?php echo $this->element('Blocks.block_creatable_setting', [
+	'settingPermissions' => [
 		'content_creatable' => __d('blocks', 'Content creatable roles'),
-		'content_comment_creatable' => array(
+		'content_comment_creatable' => [
 			'label' => __d('blocks', 'Content comment creatable roles'),
 			'help' => __d('content_comments', 'Content comment creatable roles help'),
-		),
-	),
-)); ?>
+		],
+	],
+]); ?>
 
-<?php echo $this->element('Blocks.block_approval_setting', array(
+<?php echo $this->element('Blocks.block_approval_setting', [
 	'model' => 'MultidatabaseSetting',
 	'useWorkflow' => 'use_workflow',
 	'useCommentApproval' => 'use_comment_approval',
-	'settingPermissions' => array(
+	'settingPermissions' => [
 		'content_comment_publishable' => __d('blocks', 'Content comment publishable roles'),
-	),
-	'options' => array(
-		Block::NEED_APPROVAL => __d('blocks', 'Need approval in both %s and comments ', __d('multidatabases', 'MultidatabaseContent')),
+	],
+	'options' => [
+		Block::NEED_APPROVAL => __d('blocks', 'Need approval in both %s and comments ',
+			__d('multidatabases', 'MultidatabaseContent')),
 		Block::NEED_COMMENT_APPROVAL => __d('blocks', 'Need only comments approval'),
 		Block::NOT_NEED_APPROVAL => __d('blocks', 'Not need approval'),
-	),
-));
+	],
+]);

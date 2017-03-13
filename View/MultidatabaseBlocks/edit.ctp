@@ -17,15 +17,15 @@
 	<div class="tab-content">
 		<?php echo $this->BlockTabs->block(BlockTabsHelper::BLOCK_TAB_SETTING); ?>
 
-		<?php echo $this->BlockForm->displayEditForm(array(
+		<?php echo $this->BlockForm->displayEditForm([
 			'model' => 'Multidatabase',
 			'callback' => 'Multidatabases.MultidatabaseBlocks/edit_form',
 			'cancelUrl' => NetCommonsUrl::backToIndexUrl('default_setting_action'),
 			'displayModified' => true,
-		)); ?>
+		]); ?>
 
-		<?php echo $this->BlockForm->displayDeleteForm(array(
+		<?php echo $this->BlockForm->displayDeleteForm([
 			'callback' => 'Multidatabases.MultidatabaseBlocks/delete_form',
-		)); ?>
+		]); ?>
 	</div>
 </article>

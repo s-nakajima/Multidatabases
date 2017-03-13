@@ -20,94 +20,110 @@ App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
  * @package NetCommons\Multidatabases\Model
  *
  */
-class MultidatabaseFrameSetting extends MultidatabasesAppModel
-{
+class MultidatabaseFrameSetting extends MultidatabasesAppModel {
 
 /**
  * Validation rules
  *
  * @var array
  */
-	public $validate = array();
+	public $validate = [];
 
-	public function beforeValidate($options = array())
-	{
-		$this->validate = array(
-			'frame_key' => array(
-				'notBlank' => array(
-					'rule' => array('notBlank'),
+/**
+ * Before validate
+ *
+ * @param array $options オプション
+ * @return bool
+ */
+	public function beforeValidate($options = []) {
+		$this->validate = [
+			'frame_key' => [
+				'notBlank' => [
+					'rule' => ['notBlank'],
 					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
-				)
-			),
-			'content_per_page' => array(
-				'number' => array(
-					'rule' => array('notBlank'),
+				],
+			],
+			'content_per_page' => [
+				'number' => [
+					'rule' => ['notBlank'],
 					'message' => __d('net_commons', 'Invalid request.'),
 					'required' => true,
-				)
+				],
 
-			),
-			'default_sort_type' => array(
-				'numeric' => array(
-					'rule' => array('numeric'),
+			],
+			'default_sort_type' => [
+				'numeric' => [
+					'rule' => ['numeric'],
 					//'message' => 'Your custom message here',
 					//'allowEmpty' => false,
 					//'required' => false,
 					//'last' => false, // Stop validation after this rule
 					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				),
-			),
-			'default_sort_order' => array(
-				'boolean' => array(
-					'rule' => array('boolean'),
+				],
+			],
+			'default_sort_order' => [
+				'boolean' => [
+					'rule' => ['boolean'],
 					//'message' => 'Your custom message here',
 					//'allowEmpty' => false,
 					//'required' => false,
 					//'last' => false, // Stop validation after this rule
 					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				),
-			),
-			'multidatabase_metadata_sort_id' => array(
-				'numeric' => array(
-					'rule' => array('numeric'),
+				],
+			],
+			'multidatabase_metadata_sort_id' => [
+				'numeric' => [
+					'rule' => ['numeric'],
 					//'message' => 'Your custom message here',
 					//'allowEmpty' => false,
 					//'required' => false,
 					//'last' => false, // Stop validation after this rule
 					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				),
-			),
-		);
+				],
+			],
+		];
+
 		return parent::beforeValidate($options);
 
 		//The Associations below have been created with all possible keys, those that are not needed can be removed
 	}
 
-	public function getMultidatabaseFrameSetting()
-	{
+/**
+ * Get frame setting
+ * フレーム設定を取得する
+ *
+ * @return array|null
+ */
+	public function getMultidatabaseFrameSetting() {
+		$conditions = [
+			'frame_key' => Current::read('Frame.key'),
+		];
 
-		$conditions = array(
-			'frame_key' => Current::read('Frame.key')
-		);
-
-		$multidatabaseFrameSetting = $this->find('first', array(
+		$multidatabaseFrameSetting = $this->find('first', [
 				'recursive' => -1,
 				'conditions' => $conditions,
-			)
+			]
 		);
 
 		if (!$multidatabaseFrameSetting) {
-			$multidatabaseFrameSetting = $this->create(array(
+			$multidatabaseFrameSetting = $this->create([
 				'frame_key' => Current::read('Frame.key'),
-			));
+			]);
 		}
 
 		return $multidatabaseFrameSetting;
 	}
 
-	public function saveMultidatabaseFrameSetting($data)
-	{
+/**
+ * Save frame setting
+ * フレーム設定を保存する
+ *
+ * @param array $data データ
+ * @return bool
+ * @throws InternalErrorException
+ */
+	public function saveMultidatabaseFrameSetting($data) {
 		$this->loadModels([
 			'MultidatabaseFrameSetting' => 'Multidatabases.MultidatabaseFrameSetting',
 		]);
@@ -133,8 +149,6 @@ class MultidatabaseFrameSetting extends MultidatabasesAppModel
 			//トランザクションRollback
 			$this->rollback($ex);
 		}
-
 		return true;
 	}
-
 }

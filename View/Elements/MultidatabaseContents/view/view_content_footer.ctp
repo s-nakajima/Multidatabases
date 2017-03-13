@@ -22,19 +22,19 @@
 		</div>
 		<div class="pull-right">
 			<?php echo $this->Workflow->label($content['MultidatabaseContent']['status']); ?>
-			<?php echo $this->NetCommonsHtml->handleLink($content, array('avatar' => true)); ?>&nbsp;
+			<?php echo $this->NetCommonsHtml->handleLink($content, ['avatar' => true]); ?>&nbsp;
 			<?php if (!isset($viewMode) || $viewMode <> 'detail') : ?>
 				<?php echo $this->NetCommonsHtml->link(
 					__d('multidatabases', 'View detail'),
-					array(
+					[
 						'controller' => 'multidatabase_contents',
 						'action' => 'detail',
 						//'frame_id' => Current::read('Frame.id'),
-						'key' => $content['MultidatabaseContent']['key']
-					),
-					array(
+						'key' => $content['MultidatabaseContent']['key'],
+					],
+					[
 						'class' => 'btn btn-default',
-					)
+					]
 				);
 				?>
 			<?php endif; ?>

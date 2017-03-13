@@ -14,15 +14,14 @@
 <?php if ($this->Workflow->canEdit('Multidatabases.MultidatabaseContent', $multidatabaseContent)) : ?>
 	<div class="text-right">
 		<?php echo $this->Button->editLink('',
-			array(
+			[
 				'controller' => 'multidatabase_contents',
 				'action' => 'edit',
-				'key' => $multidatabaseContent['MultidatabaseContent']['key']
-			),
-			array(
+				'key' => $multidatabaseContent['MultidatabaseContent']['key'],
+			],
+			[
 				'tooltip' => true,
-			)
+			]
 		); ?>
 	</div>
-<?php
-endif;
+<?php endif;

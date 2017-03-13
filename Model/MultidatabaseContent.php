@@ -21,8 +21,7 @@ App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
  * @package NetCommons\Multidatabases\Model
  *
  */
-class MultidatabaseContent extends MultidatabasesAppModel
-{
+class MultidatabaseContent extends MultidatabasesAppModel {
 
 /**
  * Validation rules
@@ -36,36 +35,43 @@ class MultidatabaseContent extends MultidatabasesAppModel
  *
  * @var array
  */
-	public $belongsTo = array(
-//		'Multidatabase' => array(
-//			'className' => 'Multidatabases.Multidatabase',
-//			'foreignKey' => 'multidatabase_id',
-//			'conditions' => '',
-//			'fields' => '',
-//			'order' => ''
-//		),
-//		'Language' => array(
-//			'className' => 'M17.Language',
-//			'foreignKey' => 'language_id',
-//			'conditions' => '',
-//			'fields' => '',
-//			'order' => ''
-//		),
-		'Block' => array(
+	public $belongsTo = [
+		/*
+		'Multidatabase' => array(
+			'className' => 'Multidatabases.Multidatabase',
+			'foreignKey' => 'multidatabase_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'Language' => array(
+			'className' => 'M17.Language',
+			'foreignKey' => 'language_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		*/
+		'Block' => [
 			'className' => 'Blocks.Block',
 			'foreignKey' => 'block_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
-			'counterCache' => array(
-				'content_count' => array(
+			'counterCache' => [
+				'content_count' => [
 					//'MultidatabaseContent.is_origin' => true,
-					'MultidatabaseContent.is_latest' => true
-				),
-			),
-		)
-	);
+					'MultidatabaseContent.is_latest' => true,
+				],
+			],
+		],
+	];
 
+/**
+ * Behavior
+ *
+ * @var array
+ */
 	public $actsAs = [
 		'NetCommons.Trackable',
 		'NetCommons.OriginalKey',
@@ -101,25 +107,29 @@ class MultidatabaseContent extends MultidatabasesAppModel
 /**
  * @var array 絞り込みフィルタ保持値
  */
-	protected $_filter = array(
+	protected $_filter = [
 		'status' => 0,
-	);
+	];
 
-
-	public function beforeValidate($options = [])
-	{
+/**
+ * Before validate
+ *
+ * @param array $options オプション
+ * @return bool
+ */
+	public function beforeValidate($options = []) {
 		$this->validate = $this->makeValidation();
+
 		return parent::beforeValidate($options);
 	}
 
-
 /**
- * コンテンツを取得
+ * Get contents
+ * 複数のコンテンツを取得
  *
- * @return array|bool|null
+ * @return array|bool
  */
-	public function getMultidatabaseContents()
-	{
+	public function getMultidatabaseContents() {
 		$this->loadModels([
 			'Multidatabase' => 'Multidatabases.Multidatabase',
 		]);
@@ -127,24 +137,23 @@ class MultidatabaseContent extends MultidatabasesAppModel
 			return false;
 		}
 
-		$result = $this->find('all', array(
+		$result = $this->find('all', [
 			'recursive' => 0,
 			'conditions' => [
 				'multidatabase_key' => $multidatabase['Multidatabase']['key'],
-			]
-		));
+			],
+		]);
 
 		return $result;
 	}
 
-
 /**
+ * Make validation rules
  * バリデーションルールの作成
  *
- * @return bool
+ * @return array|bool
  */
-	public function makeValidation()
-	{
+	public function makeValidation() {
 		$this->loadModels([
 			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
 			'Multidatabase' => 'Multidatabases.Multidatabase',
@@ -154,7 +163,11 @@ class MultidatabaseContent extends MultidatabasesAppModel
 			return false;
 		}
 
-		if (!$multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+		if (!$multidatabaseMetadatas =
+			$this->MultidatabaseMetadata->getEditMetadatas(
+				$multidatabase['Multidatabase']['id']
+			)
+		) {
 			return false;
 		}
 
@@ -167,8 +180,8 @@ class MultidatabaseContent extends MultidatabasesAppModel
 						$tmp['rule'] = [
 							'multiple',
 							[
-								'min' => 1
-							]
+								'min' => 1,
+							],
 						];
 						break;
 					default:
@@ -184,17 +197,16 @@ class MultidatabaseContent extends MultidatabasesAppModel
 		return Hash::merge($this->validate, $result);
 	}
 
-
 /**
+ * Clear values
  * 削除対象カラムに存在する値をクリアする
  *
- * @param null $multidatabase_key
- * @param array $colNos
+ * @param string $multidatabaseKey 汎用データベースKey（プラグインキー）
+ * @param array $colNos 列番号
  * @return bool
+ * @throws InternalErrorException
  */
-	public function clearValues($multidatabaseKey = null, $colNos = [])
-	{
-
+	public function clearValues($multidatabaseKey = null, $colNos = []) {
 		if (
 			is_null($multidatabaseKey)
 			|| empty($currentMetadatas)
@@ -214,18 +226,17 @@ class MultidatabaseContent extends MultidatabasesAppModel
 		}
 
 		return true;
-
 	}
 
-
 /**
+ * Save content
  * コンテンツを保存する
  *
- * @param $data
- * @return bool|mixed
+ * @param array $data 保存するコンテンツデータ
+ * @return bool|array
+ * @throws InternalErrorException
  */
-	public function saveContent($data)
-	{
+	public function saveContent($data) {
 		$this->loadModels([
 			'Multidatabase' => 'Multidatabases.Multidatabase',
 			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
@@ -235,7 +246,10 @@ class MultidatabaseContent extends MultidatabasesAppModel
 			return false;
 		}
 
-		if (!$multidatabaseMetadatas = $this->MultidatabaseMetadata->getEditMetadatas($multidatabase['Multidatabase']['id'])) {
+		if (!$multidatabaseMetadatas =
+			$this->MultidatabaseMetadata->getEditMetadatas(
+				$multidatabase['Multidatabase']['id'])
+		) {
 			return false;
 		}
 
@@ -246,6 +260,7 @@ class MultidatabaseContent extends MultidatabasesAppModel
 
 			if (!$this->validates()) {
 				$this->rollback();
+
 				return false;
 			}
 
@@ -259,7 +274,6 @@ class MultidatabaseContent extends MultidatabasesAppModel
 				}
 			}
 
-
 			if (($savedData = $this->save($data, false)) === false) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
@@ -269,50 +283,52 @@ class MultidatabaseContent extends MultidatabasesAppModel
 		}
 
 		return $savedData;
-
-
 	}
 
 /**
+ * Get conditions
  * UserIdと権限から参照可能なEntryを取得するCondition配列を返す
  *
- * @param int $blockKey ブロックKey
+ * @param int $blockId ブロックID
  * @param array $permissions 権限
  * @return array condition
  */
-	public function getConditions($blockId, $permissions)
-	{
+	public function getConditions($blockId, $permissions) {
 		// contentReadable falseなら何も見えない
 		if ($permissions['content_readable'] === false) {
-			$conditions = array('MultidatabaseContent.id' => 0);
+			$conditions = ['MultidatabaseContent.id' => 0];
+
 			return $conditions;
 		}
 
 		// デフォルト絞り込み条件
-		$conditions = array(
-			'MultidatabaseContent.block_Id' => $blockId
-		);
+		$conditions = [
+			'MultidatabaseContent.block_Id' => $blockId,
+		];
 
 		$conditions = $this->getWorkflowConditions($conditions);
 
 		return $conditions;
 	}
 
-
 /**
+ * Delete content
  * コンテンツの削除
  *
- * @param $key
+ * @param string $key コンテンツキー
  * @return bool
+ * @throws InternalErrorException
  */
-	public function deleteContentByKey($key)
-	{
+	public function deleteContentByKey($key) {
 		$this->begin();
+
+		$result = false;
+
 		try {
 			$this->contentKey = $key;
 
 			$conditions = [
-				'MultidatabaseContent.Key' => $key
+				'MultidatabaseContent.Key' => $key,
 			];
 
 			if ($result = $this->deleteAll($conditions, true, true)) {
@@ -320,14 +336,12 @@ class MultidatabaseContent extends MultidatabasesAppModel
 			} else {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-
 		} catch (Exception $e) {
 			$this->rollback($e);
 		}
 
 		return $result;
 	}
-
 
 /**
  * ファイルアップロード

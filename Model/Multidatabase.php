@@ -25,47 +25,46 @@ class Multidatabase extends MultidatabasesAppModel {
  *
  * @var array
  */
-	public $validate = array();
+	public $validate = [];
 
 /**
  * use behaviors
  *
  * @var array
  */
-	public $actsAs = array(
-		'Blocks.Block' => array(
+	public $actsAs = [
+		'Blocks.Block' => [
 			'name' => 'Multidatabase.name',
-			'loadModels' => array(
+			'loadModels' => [
 				'Like' => 'Likes.Like',
 				'BlockSetting' => 'Blocks.BlockSetting',
-			)
-		),
+			],
+		],
 		'NetCommons.OriginalKey',
-	);
+	];
 
 /**
  * belongsTo associations
  *
  * @var array
  */
-	public $belongsTo = array(
-		'Block' => array(
+	public $belongsTo = [
+		'Block' => [
 			'className' => 'Blocks.Block',
 			'foreignKey' => 'block_id',
 			'conditions' => '',
 			'fields' => '',
-			'order' => ''
-		),
-	);
+			'order' => '',
+		],
+	];
 
 /**
  * hasMany associations
  *
  * @var array
  */
-
-	public $hasMany = array(
-		'MultidatabaseContent' => array(
+	public $hasMany = [
+		'MultidatabaseContent' => [
 			'className' => 'Multidatabases.MultidatabaseContent',
 			'foreignKey' => 'multidatabase_id',
 			'dependent' => false,
@@ -76,9 +75,9 @@ class Multidatabase extends MultidatabasesAppModel {
 			'offset' => '',
 			'exclusive' => '',
 			'finderQuery' => '',
-			'counterQuery' => ''
-		),
-		'MultidatabaseMetadata' => array(
+			'counterQuery' => '',
+		],
+		'MultidatabaseMetadata' => [
 			'className' => 'Multidatabases.MultidatabaseMetadata',
 			'foreignKey' => 'multidatabase_id',
 			'dependent' => false,
@@ -89,10 +88,9 @@ class Multidatabase extends MultidatabasesAppModel {
 			'offset' => '',
 			'exclusive' => '',
 			'finderQuery' => '',
-			'counterQuery' => ''
-		)
-	);
-
+			'counterQuery' => '',
+		],
+	];
 
 /**
  * Constructor. Binds the model's database table to the object.
@@ -123,31 +121,33 @@ class Multidatabase extends MultidatabasesAppModel {
  * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforevalidate
  * @see Model::save()
  */
-	public function beforeValidate($options = array()) {
-
+	public function beforeValidate($options = []) {
 		$this->MultidatabaseSetting->set($this->data['MultidatabaseSetting']);
 		$this->MultidatabaseFrameSetting->set($this->data['MultidatabaseFrameSetting']);
-/*
-		if (isset($this->data['MultidatabaseSetting'])) {
-			$this->MultidatabaseSetting->set($this->data['MultidatabaseSetting']);
-			if (! $this->MultidatabaseSetting->validates()) {
-				$this->validationErrors = Hash::merge(
-					$this->validationErrors, $this->MultidatabaseSetting->validationErrors
-				);
-				return false;
-			}
-		}
+		/*
+				if (isset($this->data['MultidatabaseSetting'])) {
+					$this->MultidatabaseSetting->set($this->data['MultidatabaseSetting']);
+					if (! $this->MultidatabaseSetting->validates()) {
+						$this->validationErrors = Hash::merge(
+							$this->validationErrors, $this->MultidatabaseSetting->validationErrors
+						);
+						return false;
+					}
+				}
 
-		if (isset($this->data['MultidatabaseFrameSetting']) && ! $this->data['MultidatabaseFrameSetting']['id']) {
-			$this->MultidatabaseFrameSetting->set($this->data['MultidatabaseFrameSetting']);
-			if (! $this->MultidatabaseFrameSetting->validates()) {
-				$this->validationErrors = Hash::merge(
-					$this->validationErrors, $this->MultidatabaseFrameSetting->validationErrors
-				);
-				return false;
-			}
-		}
-*/
+				if (
+					isset($this->data['MultidatabaseFrameSetting']) &&
+					! $this->data['MultidatabaseFrameSetting']['id']
+				) {
+					$this->MultidatabaseFrameSetting->set($this->data['MultidatabaseFrameSetting']);
+					if (! $this->MultidatabaseFrameSetting->validates()) {
+						$this->validationErrors = Hash::merge(
+							$this->validationErrors, $this->MultidatabaseFrameSetting->validationErrors
+						);
+						return false;
+					}
+				}
+		*/
 		if (isset($this->data['MultidatabaseMetadata'])) {
 			//TODO:SecurityComponentを除外したため、ここにMetadataのチェックを記述する
 			$metadatas = $this->data['MultidatabaseMetadata'];
@@ -155,7 +155,7 @@ class Multidatabase extends MultidatabasesAppModel {
 
 			$this->MultidatabaseMetadata->set($metadatas);
 
-			if (! $this->MultidatabaseMetadata->validates()) {
+			if (!$this->MultidatabaseMetadata->validates()) {
 				$this->validationErrors = Hash::merge(
 					$this->validationErrors, $this->MultidatabaseMetadata->validationErrors
 				);
@@ -176,7 +176,7 @@ class Multidatabase extends MultidatabasesAppModel {
  * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#aftersave
  * @see Model::save()
  */
-	public function afterSave($created, $options = array()) {
+	public function afterSave($created, $options = []) {
 		//MultidatabaseSetting登録
 		if (isset($this->MultidatabaseSetting->data['MultidatabaseSetting'])) {
 			$this->MultidatabaseSetting->set($this->MultidatabaseSetting->data['MultidatabaseSetting']);
@@ -185,90 +185,92 @@ class Multidatabase extends MultidatabasesAppModel {
 
 		//MultidatabaseFrameSetting登録
 		if (isset($this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']) &&
-				! $this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']['id']) {
+			!$this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']['id']
+		) {
 
-			if (! $this->MultidatabaseFrameSetting->save(null, false)) {
+			if (!$this->MultidatabaseFrameSetting->save(null, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
 
-		if (! isset($this->MultidatabaseMetadata->data['MultidatabaseMetadata'])) {
+		if (!isset($this->MultidatabaseMetadata->data['MultidatabaseMetadata'])) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
 		$metadatas = $this->MultidatabaseMetadata->data['MultidatabaseMetadata'];
 
 		// 削除ID,カラムの確認
-		$delMetadataIds = $this->MultidatabaseMetadata->getDeleteMetadatas($this->data['Multidatabase']['id'],$metadatas,'id');
-		$delMetadataColNos = $this->MultidatabaseMetadata->getDeleteMetadatas($this->data['Multidatabase']['id'],$metadatas,'col_no');
+		$delMetadataIds =
+			$this->MultidatabaseMetadata->getDeleteMetadatas(
+				$this->data['Multidatabase']['id'], $metadatas, 'id'
+			);
+
+		$delMetadataColNos =
+			$this->MultidatabaseMetadata->getDeleteMetadatas(
+				$this->data['Multidatabase']['id'], $metadatas, 'col_no'
+			);
 
 		// MultidatabaseMetadata登録
 		$metadatas = $this->MultidatabaseMetadata->makeSaveData(
 			$this->data,
 			$metadatas
 		);
-		$this->MultidatabaseMetadata->saveMetadatas($metadatas);
 
+		$this->MultidatabaseMetadata->saveMetadatas($metadatas);
 
 		// MultidatabaseMetadata削除
 		if (!empty($delMetadataIds)) {
 			$this->MultidatabaseMetadata->deleteMetadatas($delMetadataIds);
 		}
 
-
-
 		// MultidatabaseContentの削除
-
-
 		parent::afterSave($created, $options);
 	}
 
 /**
  * Create Multidatabase data
+ * 汎用データベースを作成する
  *
  * @return array
  */
 	public function createMultidatabase() {
-		$multidatabase = $this->createAll(array(
-			'Multidatabase' => array(
+		$multidatabase = $this->createAll([
+			'Multidatabase' => [
 				'name' => __d('multidatabases', 'New multidatabase %s', date('YmdHis')),
-			),
-			'Block' => array(
+			],
+			'Block' => [
 				'room_id' => Current::read('Room.id'),
 				'language_id' => Current::read('Language.id'),
-			),
+			],
 
-		));
+		]);
 		$multidatabase = Hash::merge($multidatabase, $this->MultidatabaseSetting->createBlockSetting());
+
 		return $multidatabase;
 	}
 
-
 /**
  * Get Multidatabase data
+ * 汎用データベースを取得する
  *
  * @return array
  */
-
-
 	public function getMultidatabase() {
-
-		$multidatabase = $this->find('first', array(
+		$multidatabase = $this->find('first', [
 			'recursive' => 0,
 			'conditions' => $this->getBlockConditionById(),
-		));
+		]);
 
-		if (! $multidatabase) {
+		if (!$multidatabase) {
 			return $multidatabase;
 		}
 
 		return Hash::merge($multidatabase, $this->MultidatabaseSetting->getMultidatabaseSetting());
 	}
 
-
-
 /**
  * Save Multidatabases
+ * 汎用データベースを保存する
  *
  * @param array $data received post data
  * @return bool True on success, false on validation errors
@@ -279,10 +281,11 @@ class Multidatabase extends MultidatabasesAppModel {
 		$this->begin();
 
 		//バリデーション
-			$this->set($data);
+		$this->set($data);
 
-		if (! $this->validates()) {
-				$this->rollback();
+		if (!$this->validates()) {
+			$this->rollback();
+
 			return false;
 		}
 
@@ -290,7 +293,7 @@ class Multidatabase extends MultidatabasesAppModel {
 			//登録処理
 			$result = $this->save($data, false);
 
-			if (! $result) {
+			if (!$result) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
@@ -302,10 +305,11 @@ class Multidatabase extends MultidatabasesAppModel {
 		}
 
 		return true;
-        }
+	}
 
 /**
  * Delete Multidatabases
+ * 汎用データベースを削除する
  *
  * @param array $data received post data
  * @return mixed On success Model::$data if its not empty or true, false on failure
@@ -315,28 +319,32 @@ class Multidatabase extends MultidatabasesAppModel {
 		//トランザクションBegin
 		$this->begin();
 
-		$conditions = array(
-			$this->alias . '.key' => $data['Multidatabase']['key']
-		);
-		$multidatabases = $this->find('list', array(
+		$conditions = [
+			$this->alias . '.key' => $data['Multidatabase']['key'],
+		];
+		$multidatabases = $this->find('list', [
 			'recursive' => -1,
 			'conditions' => $conditions,
-		));
+		]);
 		$multidatabaseIds = array_keys($multidatabases);
 
 		try {
-			if (! $this->deleteAll(array($this->alias . '.key' => $data['Multidatabase']['key']), false, false)) {
+			if (!$this->deleteAll(
+				[$this->alias . '.key' => $data['Multidatabase']['key']], false, false
+			)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
 			$this->MultidatabaseContent->blockKey = $data['Block']['key'];
-			$conditions = array($this->MultidatabaseContent->alias . '.multidatabase_id' => $multidatabaseIds);
-			if (! $this->MultidatabaseContent->deleteAll($conditions, false, true)) {
+			$conditions = [$this->MultidatabaseContent->alias . '.multidatabase_id' => $multidatabaseIds];
+			if (!$this->MultidatabaseContent->deleteAll($conditions, false, true)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
-			$conditions = array($this->MultidatabaseMetadata->alias . '.multidatabase_id' => $data['Multidatabase']['id']);
-			if (! $this->MultidatabaseMetadata->deleteAll($conditions, false, false)) {
+			$conditions = [
+				$this->MultidatabaseMetadata->alias . '.multidatabase_id' => $data['Multidatabase']['id']
+			];
+			if (!$this->MultidatabaseMetadata->deleteAll($conditions, false, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
@@ -345,16 +353,10 @@ class Multidatabase extends MultidatabasesAppModel {
 
 			//トランザクションCommit
 			$this->commit();
-
 		} catch (Exception $ex) {
 			//トランザクションRollback
 			$this->rollback($ex);
 		}
-
 		return true;
 	}
-
-
-
-
 }

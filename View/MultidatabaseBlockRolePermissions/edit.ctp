@@ -17,11 +17,11 @@
 	<div class="tab-content">
 		<?php echo $this->BlockTabs->block(BlockTabsHelper::BLOCK_TAB_PERMISSION); ?>
 
-		<?php echo $this->element('Blocks.edit_form', array(
+		<?php echo $this->element('Blocks.edit_form', [
 			'model' => 'MultidatabaseBlockRolePermission',
 			//'action' => 'edit' . '/' . $this->data['Frame']['id'] . '/' . $this->data['Block']['id'],
 			'callback' => 'Multidatabases.MultidatabaseBlockRolePermissions/edit_form',
 			'cancelUrl' => NetCommonsUrl::backToIndexUrl('default_setting_action'),
-		)); ?>
+		]); ?>
 	</div>
 </div>
