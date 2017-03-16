@@ -13,6 +13,7 @@
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
 App::uses('MultidatabaseModel', 'Multidatabase.Model');
 App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
+App::uses('TemporaryFolder', 'Files.Utility');
 
 /**
  * MultidatabaseContent Model
@@ -101,7 +102,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 					'fields' => array('body1', 'body2'),
 				),
 		*/
-
 	];
 
 /**
@@ -242,38 +242,53 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
 		]);
 
-		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
+		if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
-		}
 
-		if (!$multidatabaseMetadatas =
-			$this->MultidatabaseMetadata->getEditMetadatas(
-				$multidatabase['Multidatabase']['id'])
+		}
+		if (! $metadatas = $this->MultidatabaseMetadata->getMetadatasColNo(
+			$multidatabase['Multidatabase']['id'])
 		) {
 			return false;
 		}
 
-		$this->begin();
-		try {
-			$this->create();
-			$this->set($data);
+		$this->set($data);
 
-			if (!$this->validates()) {
-				$this->rollback();
+		if (!$this->validates()) {
+			return false;
+		}
 
-				return false;
-			}
+		$multidatabaseContent = $data['MultidatabaseContent'];
+		foreach ($multidatabaseContent as $key => $val) {
+			if (strstr($key,'value') <> false) {
+				$colNo = (int)str_replace('value','',$key);
 
-			$multidatabaseContent = $data['MultidatabaseContent'];
-			foreach ($multidatabaseContent as $key => $val) {
-				if (
-					isset($data['MultidatabaseContent'][$key]) &&
-					is_array($data['MultidatabaseContent'][$key])
-				) {
-					$data['MultidatabaseContent'][$key] = implode('||', $val);
+				if (isset($metadatas[$colNo])) {
+					switch ($metadatas[$colNo]['type']) {
+						case 'checkbox':
+							$data['MultidatabaseContent'][$key] = implode('||', $val);
+							break;
+						case 'file':
+						case 'image':
+							$data['MultidatabaseContent'][$key . '_attach'] =
+								$data['MultidatabaseContent'][$key];
+							$data['MultidatabaseContent'][$key] = $val['name'];
+							$attachFields[] = $key .'_attach';
+							break;
+						default:
+							break;
+					}
 				}
 			}
+		}
 
+		if (!empty($attachFields)) {
+			$this->Behaviors->load('Files.Attachment',$attachFields);
+		}
+
+		$this->begin();
+		try {
+			//$this->create();
 			if (($savedData = $this->save($data, false)) === false) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
@@ -283,6 +298,19 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		}
 
 		return $savedData;
+	}
+
+/**
+ * Get File download URL
+ * ファイルダウンロードURLを出力
+ *
+ * @return void
+ */
+	function getFileURL() {
+		$contentKey = $this->request->params['pass'][0];
+		$options['field'] = $this->request->params['pass'][1];
+		$options['size'] = Hash::get($this->request->params['pass'], 2, 'medium');
+		return $this->Download->doDownload($contentKey,$options);
 	}
 
 /**
@@ -342,50 +370,4 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 		return $result;
 	}
-
-/**
- * ファイルアップロード
- *
- * @return array
- */
-	/*
-		private function uploadFile($content){
-
-			$uploadData = array(
-				'name' => '',
-				'type' => '',
-				'tmp_name' => '',
-				'error' => UPLOAD_ERR_NO_FILE,
-				'size' => '',
-			);
-
-			$multidatabaseContentKey = $data['MultidatabaseContent']['key'];
-
-			if (!$multidatabaseContentKey) {
-				return $uploadData;
-			}
-
-
-			$UploadFile = ClassRegistry::init('Files.UploadFile');
-			$fieldName = PhotoAlbumPhoto::ATTACHMENT_FIELD_NAME;
-			$file = $UploadFile->getFile('multidatabases', $photoId, $fieldName);
-			$path = $UploadFile->getRealFilePath($file);
-
-			$Folder = new TemporaryFolder();
-			$tmpName = $Folder->path . DS . $file['UploadFile']['real_file_name'];
-			$jackeData = array(
-				'name' => $file['UploadFile']['original_name'],
-				'type' => $file['UploadFile']['mimetype'],
-				'tmp_name' => $tmpName,
-				'error' => UPLOAD_ERR_OK,
-				'size' => $file['UploadFile']['size'],
-			);
-			copy($path, $tmpName);
-
-			return $jackeData;
-		}
-
-		}
-	*/
-
 }

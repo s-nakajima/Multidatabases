@@ -71,7 +71,9 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 				'useComment' => 'multidatabaseSetting.use_comment',
 			],
 			'allow' => ['detail'],
-		]];
+		],
+		'Files.Download',
+	];
 
 /**
  * @var array 絞り込みフィルタ保持値
@@ -371,5 +373,27 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			)
 		);
 	}
+
+/**
+ * File Download
+ * ファイルダウンロード
+ *
+ * @throws NotFoundException
+ * @return void
+ */
+	public function download() {
+		$contentId = (int)$this->request->params['pass'][0];
+		$colNo = (int)$this->request->query['col_no'];
+		$field = 'value' . $colNo . '_attach';
+
+		$options = array(
+			'field' => $field,
+			'download' => true,
+			//'name' => '',
+		);
+
+		return $this->Download->doDownload($contentId, $options);
+	}
 }
+
 

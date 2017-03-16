@@ -290,8 +290,9 @@ class MultidatabaseContentEditHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderFormElementFile($name, $options = []) {
-		$options['type'] = 'file';
-		return $this->NetCommonsForm->input($name, $options);
+		$options['remove'] = false;
+		$options['filename'] = false;
+		return $this->NetCommonsForm->uploadFile($name, $options);
 	}
 
 /**
@@ -302,8 +303,9 @@ class MultidatabaseContentEditHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderFormElementImage($name, $options = []) {
-		$options['type'] = 'file';
-		return $this->NetCommonsForm->input($name, $options);
+		$options['remove'] = false;
+		$options['filename'] = false;
+		return $this->NetCommonsForm->uploadFile($name, $options);
 	}
 
 /**

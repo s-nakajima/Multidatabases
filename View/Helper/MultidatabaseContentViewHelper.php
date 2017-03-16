@@ -186,4 +186,273 @@ class MultidatabaseContentViewHelper extends AppHelper {
 		}
 		return $result;
 	}
+
+/**
+ * フォーム部品に合った表示出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param array $metadata メタデータ配列
+ * @return string HTML
+ */
+	public function renderViewElement($content, $metadata) {
+		$elementType = $metadata['type'];
+		$colNo = $metadata['col_no'];
+
+		$result = '';
+		switch ($elementType) {
+			case 'text':
+				$result .= $this->renderViewElementText($content, $colNo);
+				break;
+			case 'textarea':
+				$result .= $this->renderViewElementTextArea($content, $colNo);
+				break;
+			case 'link':
+				$result .= $this->renderViewElementLink($content, $colNo);
+				break;
+			case 'radio':
+				$result .= $this->renderViewElementRadio($content, $colNo);
+				break;
+			case 'select':
+				$result .= $this->renderViewElementSelect($content, $colNo);
+				break;
+			case 'checkbox':
+				$result .= $this->renderViewElementCheckBox($content, $colNo);
+				break;
+			case 'wysiwyg':
+				$result .= $this->renderViewElementWysiwyg($content, $colNo);
+				break;
+			case 'file':
+				$result .= $this->renderViewElementFile($content, $colNo);
+				break;
+			case 'image':
+				$result .= $this->renderViewElementImage($content, $colNo);
+				break;
+			case 'autonumber':
+				$result .= $this->renderViewElementAutoNumber($content);
+				break;
+			case 'mail':
+				$result .= $this->renderViewElementEmail($content, $colNo);
+				break;
+			case 'date':
+				$result .= $this->renderViewElementDate($content, $colNo);
+				break;
+			case 'created':
+				$result .= $this->renderViewElementCreated($content);
+				break;
+			case 'updated':
+				$result .= $this->renderViewElementUpdated($content);
+				break;
+			case 'hidden':
+				$result .= $this->renderViewElementHidden($content, $colNo);
+				break;
+			default:
+				$result .= $this->renderViewElementText($content, $colNo);
+				break;
+		}
+
+		return $result;
+	}
+
+/**
+ * テキストボックスの値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementText($content, $colNo) {
+		return $content['MultidatabaseContent']['value' . $colNo];
+	}
+
+/**
+ * WYSIWYGの値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementWysiwyg($content, $colNo) {
+		return $content['MultidatabaseContent']['value' . $colNo];
+	}
+
+/**
+ * テキストエリアの値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementTextArea($content, $colNo) {
+		return $content['MultidatabaseContent']['value' . $colNo];
+	}
+
+/**
+ * チェックボックスの値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementCheckBox($content, $colNo) {
+		return $content['MultidatabaseContent']['value' . $colNo];
+	}
+
+/**
+ * ラジオボタンの値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementRadio($content, $colNo) {
+		return $content['MultidatabaseContent']['value' . $colNo];
+	}
+
+/**
+ * セレクトボックスの値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementSelect($content, $colNo) {
+		return $content['MultidatabaseContent']['value' . $colNo];
+	}
+
+/**
+ * 日付の値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementDate($content, $colNo) {
+		return $content['MultidatabaseContent']['value' . $colNo];
+	}
+
+/**
+ * ファイルアップロードの値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementFile($content, $colNo) {
+		// Todo: アップロードされたファイルのリンクを表示＆パスワード入力ダイアログ
+		$fileUrl = $this->fileDlUrl($content,$colNo);
+		$result = '<a href="' . $fileUrl . '">' . __d('multidatabases','Download') . '</a>';
+		return $result;
+
+	}
+
+/**
+ * 画像用のファイルアップロードの値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementImage($content, $colNo) {
+		// Todo: アップロードされた画像を表示
+		$fileUrl = $this->fileDlUrl($content,$colNo);
+		$result = '<img src="' . $fileUrl . '" alt="">';
+		return $result;
+	}
+
+/**
+ * 隠し属性の値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementHidden($content, $colNo) {
+		return $content['MultidatabaseContent']['value' . $colNo];
+	}
+
+/**
+ * 作成日時の値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @return string HTML
+ */
+	public function renderViewElementCreated($content) {
+		return date("Y/m/d H:i:s", strtotime($content['MultidatabaseContent']['modified']));
+	}
+
+/**
+ * 更新日時の値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @return string HTML
+ */
+	public function renderViewElementUpdated($content) {
+		return date("Y/m/d H:i:s", strtotime($content['MultidatabaseContent']['created']));
+	}
+
+/**
+ *リンクの値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementLink($content, $colNo) {
+		$value = $content['MultidatabaseContent']['value' . $colNo];
+		$result = '<a href="' . $value . '">' . $value . '</a>';
+		return $result;
+	}
+
+/**
+ * メールアドレスの値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementEmail($content, $colNo) {
+		$value = $content['MultidatabaseContent']['value' . $colNo];
+		$result = '<a href="mailto:' . $value . '">' . $value . '</a>';
+		return $result;
+	}
+
+/**
+ * 自動採番の値を出力する
+ *
+ * @param array $content コンテンツ配列
+ * @return string HTML
+ */
+	public function renderViewElementAutoNumber($content) {
+		//Todo: 自動採番のフィールドを作成してここに表示させる
+	}
+
+/**
+ * ファイルダウンロードURLを出力する
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function fileDlUrl($content, $colNo) {
+		return $this->NetCommonsHtml->url(
+			$this->fileDlArray($content, $colNo)
+		);
+	}
+
+/**
+ * ファイルダウンロードURL出力用の配列を返す
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return array
+ */
+	public function fileDlArray($content, $colNo) {
+		return [
+			'controller' => 'multidatabase_contents',
+			'action' => 'download',
+			$content['MultidatabaseContent']['multidatabase_key'],
+			$content['MultidatabaseContent']['id'],
+			'?' => ['col_no' => $colNo]
+		];
+	}
 }

@@ -148,11 +148,37 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 /**
+ * カラムNoをKeyとしてメタデータリストを出力する
+ *
+ * @param $multidatabaseId 汎用データベースID
+ * @return array|bool
+ */
+	public function getMetadatasColNo($multidatabaseId = null) {
+		if (!$multidatabaseId) {
+			return false;
+		}
+
+		$metadatas = $this->getMetadatas($multidatabaseId);
+		$result = [];
+
+		foreach ($metadatas as $metadata) {
+			if (!isset( $metadata['MultidatabaseMetadata'])) {
+				return false;
+			}
+			$tmp = $metadata['MultidatabaseMetadata'];
+
+			$result[$tmp['col_no']] = $tmp;
+
+		}
+		return $result;
+	}
+
+/**
  * Get metadatas
  * DBよりメタデータを取得する
  *
  * @param int $multidatabaseId 汎用データベースID
- * @return array
+ * @return array|bool
  */
 	public function getMetadatas($multidatabaseId = null) {
 		if (!$multidatabaseId) {

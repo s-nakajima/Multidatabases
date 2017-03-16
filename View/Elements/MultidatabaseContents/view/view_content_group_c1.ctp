@@ -17,19 +17,7 @@
 			<tr>
 				<th class="col-xs-3 col-sm-2"><?php echo $metadata['name']; ?></th>
 				<td>
-					<?php
-					switch ($metadata['type']) {
-						case 'created':
-							echo date("Y/m/d", strtotime($gContents['MultidatabaseContent']['created']));
-							break;
-						case 'updated':
-							echo date("Y/m/d", strtotime($gContents['MultidatabaseContent']['modified']));
-							break;
-						default:
-							echo $gContents['MultidatabaseContent']['value' . $metadata['col_no']];
-							break;
-					}
-					?>
+					<?php echo $this->MultidatabaseContentView->renderViewElement($gContents, $metadata); ?>
 				</td>
 			</tr>
 		<?php endforeach; ?>
