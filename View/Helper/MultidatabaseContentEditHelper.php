@@ -30,7 +30,6 @@ class MultidatabaseContentEditHelper extends AppHelper {
 		'NetCommons.Button',
 		'NetCommons.NetCommonsHtml',
 		'NetCommons.NetCommonsForm',
-		'Form',
 	];
 
 /**

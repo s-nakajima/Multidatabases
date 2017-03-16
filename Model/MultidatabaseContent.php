@@ -270,10 +270,15 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 							break;
 						case 'file':
 						case 'image':
-							$data['MultidatabaseContent'][$key . '_attach'] =
-								$data['MultidatabaseContent'][$key];
-							$data['MultidatabaseContent'][$key] = $val['name'];
-							$attachFields[] = $key .'_attach';
+							if (empty($val['tmp_name'])) {
+								// アップロードされるファイルが無い場合の処理
+							} else {
+								// アップロードされるファイルがある場合の処理
+								$data['MultidatabaseContent'][$key . '_attach'] =
+									$data['MultidatabaseContent'][$key];
+								$attachFields[] = $key . '_attach';
+							}
+							$data['MultidatabaseContent'][$key] = '';
 							break;
 						default:
 							break;

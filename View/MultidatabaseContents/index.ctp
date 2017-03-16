@@ -31,6 +31,8 @@ echo $this->NetCommonsHtml->css([
 	<header class="clearfix">
 		<div class="pull-left">
 			<?php echo $this->DisplayNumber->dropDownToggle(); ?>
+			<?php echo $this->MultidatabaseContentView->dropDownToggleSort($multidatabaseMetadata); ?>
+			<?php echo $this->MultidatabaseContentView->dropDownToggleSelect($multidatabaseMetadata); ?>
 		</div>
 
 		<div class="pull-right">

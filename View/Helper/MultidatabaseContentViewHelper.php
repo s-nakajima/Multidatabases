@@ -434,6 +434,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function fileDlUrl($content, $colNo) {
+
 		return $this->NetCommonsHtml->url(
 			$this->fileDlArray($content, $colNo)
 		);
@@ -454,5 +455,96 @@ class MultidatabaseContentViewHelper extends AppHelper {
 			$content['MultidatabaseContent']['id'],
 			'?' => ['col_no' => $colNo]
 		];
+	}
+
+/**
+ * 単一選択・複数選択のドロップダウンを出力する
+ *
+ * @param array $metadatas メタデータ配列
+ * @return string HTML tags
+ */
+	public function dropDownToggleSelect($metadatas) {
+		$params = $this->_View->Paginator->params;
+		$named = $params['named'];
+		$url = $named;
+		$result = '';
+
+		foreach ($metadatas as $metadata) {
+			$colNo = 0;
+			$name = '';
+			$selections = [];
+
+			if (
+				$metadata['type'] === 'select' ||
+				$metadata['type'] === 'checkbox'
+			) {
+				$colNo = $metadata['col_no'];
+				$name = $metadata['name'];
+
+
+				$currentItemKey = 0;
+				if (isset($named['value' . $colNo])) {
+					$currentItemKey = $named['value' . $colNo];
+				}
+
+				$tmp = $metadata['selections'];
+				$selections[0] = $name;
+				foreach ($tmp as $val) {
+					$selections[md5($val)] = $val;
+				}
+
+				$result .= $this->_View->element(
+					'MultidatabaseContents/view/view_content_dropdown_select',
+					[
+						'dropdownCol' => 'value' . $colNo,
+						'dropdownItems' => $selections,
+						'currentItemKey' => $currentItemKey,
+						'url' => $url,
+					]
+				);
+			}
+		}
+		return $result;
+	}
+
+/**
+ * ソートのドロップダウンを出力する
+ *
+ * @param array $metadatas メタデータ配列
+ * @return string HTML tags
+ */
+	public function dropDownToggleSort($metadatas) {
+		$params = $this->_View->Paginator->params;
+		$named = $params['named'];
+		$url = $named;
+
+		$currentItemKey = 0;
+		if (isset($named['sort_col'])) {
+			$currentItemKey = $named['sort_col'];
+		}
+
+		$selections = [];
+		$selections[0] = __d('multidatabases','Sort');
+		foreach ($metadatas as $metadata) {
+			$colNo = 0;
+			$name = '';
+			if ($metadata['is_searchable']) {
+				$colNo = $metadata['col_no'];
+				$name = $metadata['name'];
+				$selections['value' . $colNo]
+					= $name . '(' . __d('multidatabases','Ascending') . ')';
+				$selections['value' . $colNo . '_desc']
+					= $name . '(' . __d('multidatabases','Descending') . ')';
+			}
+		}
+
+		return $this->_View->element(
+			'MultidatabaseContents/view/view_content_dropdown_sort',
+			[
+				'dropdownItems' => $selections,
+				'currentItemKey' => $currentItemKey,
+				'url' => $url,
+			]
+		);
 	}
 }

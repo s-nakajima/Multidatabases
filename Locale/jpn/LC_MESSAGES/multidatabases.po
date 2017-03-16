@@ -237,3 +237,15 @@ msgstr "新しい汎用データベース %s"
 
 msgid "No contents found."
 msgstr "コンテンツがありません。"
+
+msgid "Download"
+msgstr "ダウンロード"
+
+msgid "Sort"
+msgstr "並べ替え"
+
+msgid "Ascending"
+msgstr "昇順"
+
+msgid "Descending"
+msgstr "降順"

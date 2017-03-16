@@ -141,6 +141,31 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 	}
 
 /**
+ * Make sort condition
+ * 汎用データベース コンテンツ一覧ソート処理（条件設定）
+ *
+ * @return string Order句の内容
+ */
+	private function __sortList() {
+		$pagerNamed = $this->Paginator->Controller->params->named;
+		if (isset($pagerNamed['sort_col']) && $pagerNamed['sort_col'] !== '0') {
+			if (strstr($pagerNamed['sort_col'], '_desc')) {
+				$sortCol = str_replace('_desc', '', $pagerNamed['sort_col']);
+				$sortColDir = 'desc';
+			} else {
+				$sortCol = $pagerNamed['sort_col'];
+				$sortColDir = 'asc';
+			}
+		} else {
+			$sortCol = 'created';
+			$sortColDir = 'desc';
+		}
+		$sortOrder = 'MultidatabaseContent.' . $sortCol . ' ' . $sortColDir;
+
+		return $sortOrder;
+	}
+
+/**
  * Show Contents List
  * 汎用データべース コンテンツ一覧表示
  *
@@ -164,7 +189,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			[
 				'conditions' => $conditions,
 				'limit' => $this->_frameSetting['MultidatabaseFrameSetting']['content_per_page'],
-				'order' => 'MultidatabaseContent.created DESC',
+				'order' => $this->__sortList()
 			]
 		);
 
