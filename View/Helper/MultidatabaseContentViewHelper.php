@@ -525,6 +525,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
 
 		$selections = [];
 		$selections[0] = __d('multidatabases','Sort');
+
 		foreach ($metadatas as $metadata) {
 			$colNo = 0;
 			$name = '';
@@ -537,6 +538,19 @@ class MultidatabaseContentViewHelper extends AppHelper {
 					= $name . '(' . __d('multidatabases','Descending') . ')';
 			}
 		}
+
+		$selections['created']
+			= __d('multidatabases','Created date') .
+			'(' . __d('multidatabases','Ascending') . ')';
+		$selections['created_desc']
+			= __d('multidatabases','Created date') .
+			'(' . __d('multidatabases','Descending') . ')';
+		$selections['modified']
+			= __d('multidatabases','Modified date') .
+			'(' . __d('multidatabases','Ascending') . ')';
+		$selections['modified_desc']
+			= __d('multidatabases','Modified date') .
+			'(' . __d('multidatabases','Descending') . ')';
 
 		return $this->_View->element(
 			'MultidatabaseContents/view/view_content_dropdown_sort',

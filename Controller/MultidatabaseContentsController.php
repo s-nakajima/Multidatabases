@@ -148,7 +148,15 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  */
 	private function __sortList() {
 		$pagerNamed = $this->Paginator->Controller->params->named;
-		if (isset($pagerNamed['sort_col']) && $pagerNamed['sort_col'] !== '0') {
+
+		if (
+			isset($pagerNamed['sort_col']) &&
+			$pagerNamed['sort_col'] !== '0' &&
+			(
+				strstr($pagerNamed['sort_col'], 'value') <> false ||
+				in_array($pagerNamed['sort_col'], ['created', 'modified'])
+			)
+		) {
 			if (strstr($pagerNamed['sort_col'], '_desc')) {
 				$sortCol = str_replace('_desc', '', $pagerNamed['sort_col']);
 				$sortColDir = 'desc';
@@ -160,9 +168,37 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			$sortCol = 'created';
 			$sortColDir = 'desc';
 		}
+
 		$sortOrder = 'MultidatabaseContent.' . $sortCol . ' ' . $sortColDir;
 
 		return $sortOrder;
+	}
+
+	private function __limitSelect() {
+		$pagerNamed = $this->Paginator->Controller->params->named;
+		$result = [];
+
+		foreach ($this->_multidatabaseMetadata as $metadata) {
+			if (
+				$metadata['type'] === 'select' ||
+				$metadata['type'] === 'checkbox'
+			) {
+				$valueKey = 'value' . $metadata['col_no'];
+				if (
+					isset($pagerNamed[$valueKey]) &&
+					$pagerNamed[$valueKey] !== '0'
+				) {
+					foreach ($metadata['selections'] as $selection) {
+						if (md5($selection) === $pagerNamed[$valueKey]) {
+							$result['MultidatabaseContent.' . $valueKey . ' like'] = "%{$selection}%";
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		return $result;
 	}
 
 /**
@@ -182,6 +218,14 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 		if ($extraConditions) {
 			$conditions = Hash::merge($conditions, $extraConditions);
+		}
+
+		$limitSelect = $this->__limitSelect();
+
+		if (! empty($limitSelect)) {
+			$conditions = Hash::merge($conditions,
+				['and' => $limitSelect]
+			);
 		}
 
 		$this->Paginator->settings = array_merge(

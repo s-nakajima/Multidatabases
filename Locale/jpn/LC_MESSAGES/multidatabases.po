@@ -249,3 +249,9 @@ msgstr "昇順"
 
 msgid "Descending"
 msgstr "降順"
+
+msgid "Created date"
+msgstr "作成日時"
+
+msgid "Modified date"
+msgstr "更新日時"
