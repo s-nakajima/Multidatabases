@@ -76,8 +76,6 @@ title:{X-SUBJECT}
 user:{X-USER}
 date:{X-TO_DATE}
 
-{X-BODY}
-
 Click on the link below to reply to this article.
 {X-URL}
 EOM
@@ -94,12 +92,10 @@ EOM
 				'mail_fixed_phrase_body' => <<< EOM
 {X-PLUGIN_NAME}に投稿されたのでお知らせします。
 ルーム名:{X-ROOM}
-掲示板タイトル:{X-MULTIDATABASE_NAME}
-記事タイトル:{X-SUBJECT}
+汎用データベースタイトル:{X-MULTIDATABASE_NAME}
+コンテンツタイトル:{X-SUBJECT}
 投稿者:{X-USER}
 投稿日時:{X-TO_DATE}
-
-{X-BODY}
 
 この記事に返信するには、下記アドレスへ
 {X-URL}

@@ -86,15 +86,15 @@ class MultidatabaseContentEditHelper extends AppHelper {
 	}
 
 /**
- * 選択肢の値を配列に変換する
+ * メタデータ選択肢の値を配列に変換する
  *
- * @param string $selections 選択肢の値（||で区切られた文字列）
+ * @param $metaSelections メタデータの選択肢の値
  * @return array
  */
-	public function convertSelectionsToArray($selections) {
+	public function cnvMetaSelToArr($metaSelections) {
 		$result = [];
-		foreach (explode('||', $selections) as $selection) {
-			$result[md5($selection)] = $selection;
+		foreach ($metaSelections as $metaSelection) {
+			$result[md5($metaSelection)] = $metaSelection;
 		}
 		return $result;
 	}
@@ -128,16 +128,15 @@ class MultidatabaseContentEditHelper extends AppHelper {
 				$result .= $this->renderFormElementText($name, $options);
 				break;
 			case 'radio':
-				$options['options'] = $this->convertSelectionsToArray($metadata['selections']);
+				$options['options'] = $this->cnvSelToArr($metadata['selections']);
 				$result .= $this->renderFormElementRadio($name, $options);
 				break;
 			case 'select':
-				//$options['options'] = $this->convertSelectionsToArray($metadata['selections']);
-				$options['options'] = $metadata['selections'];
+				$options['options'] = $this->cnvMetaSelToArr($metadata['selections']);
 				$result .= $this->renderFormElementSelect($name, $options);
 				break;
 			case 'checkbox':
-				$options['options'] = $this->convertSelectionsToArray($metadata['selections']);
+				$options['options'] = $this->cnvMetaSelToArr($metadata['selections']);
 				$result .= $this->renderFormElementCheckBox($name, $options);
 				break;
 			case 'wysiwyg':

@@ -78,7 +78,10 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
     var value = {
       col_no: '',
       id: '',
+      is_title: '',
+      is_visible_header: '',
       is_file_dl_require_auth: '',
+      is_visible_file_dl_conter: '',
       is_require: '',
       is_searchable: '',
       is_sortable: '',

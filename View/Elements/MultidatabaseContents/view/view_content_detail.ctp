@@ -9,5 +9,8 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+?>
 
-echo $this->MultidatabaseContentView->renderContentLayout($multidatabaseContent);
+<div class="multidatabase-content-detail">
+	<?php echo $this->MultidatabaseContentView->renderContentLayout($multidatabaseContent); ?>
+</div>

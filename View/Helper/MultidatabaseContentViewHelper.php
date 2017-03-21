@@ -253,6 +253,28 @@ class MultidatabaseContentViewHelper extends AppHelper {
 		return $result;
 	}
 
+
+/**
+ * 汎用的な値出力方法
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	public function renderViewElementGeneral($content, $colNo) {
+		$value = (string)trim(h($content['MultidatabaseContent']['value' . $colNo]));
+
+		if ($value === '') {
+			return '';
+		}
+
+		if (strstr($value, '||') <> false) {
+			return str_replace('||', '<br>', $value);
+		}
+
+		return $value;
+	}
+
 /**
  * テキストボックスの値を出力する
  *
@@ -261,7 +283,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementText($content, $colNo) {
-		return $content['MultidatabaseContent']['value' . $colNo];
+		return $this->renderViewElementGeneral($content, $colNo);
 	}
 
 /**
@@ -283,7 +305,8 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementTextArea($content, $colNo) {
-		return $content['MultidatabaseContent']['value' . $colNo];
+		$value =  $this->renderViewElementGeneral($content, $colNo);
+		return nl2br($value);
 	}
 
 /**
@@ -294,7 +317,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementCheckBox($content, $colNo) {
-		return $content['MultidatabaseContent']['value' . $colNo];
+		return $this->renderViewElementGeneral($content, $colNo);
 	}
 
 /**
@@ -305,7 +328,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementRadio($content, $colNo) {
-		return $content['MultidatabaseContent']['value' . $colNo];
+		return $this->renderViewElementGeneral($content, $colNo);
 	}
 
 /**
@@ -316,7 +339,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementSelect($content, $colNo) {
-		return $content['MultidatabaseContent']['value' . $colNo];
+		return $this->renderViewElementGeneral($content, $colNo);
 	}
 
 /**
@@ -327,7 +350,38 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementDate($content, $colNo) {
-		return $content['MultidatabaseContent']['value' . $colNo];
+		$value = $this->renderViewElementGeneral($content, $colNo);
+		return date("Y/m/d H:i:s",strtotime($value));
+	}
+
+/**
+ * ダウンロードファイルが存在するかチェックする
+ *
+ * @param $content コンテンツ配列
+ * @param $colNo カラムNo
+ * @return bool
+ */
+	public function checkFileExists($content, $colNo) {
+		if (
+			empty($content['MultidatabaseContent']['id']) ||
+			empty($colNo)
+		) {
+			return false;
+		}
+
+		$UploadFile = ClassRegistry::init('Files.UploadFile');
+		$pluginKey = 'multidatabases';
+		$file = $UploadFile->getFile(
+			$pluginKey,
+			$content['MultidatabaseContent']['id'],
+			'value' . $colNo . '_attach'
+		);
+
+		if (! empty($file)) {
+			return true;
+		}
+
+		return false;
 	}
 
 /**
@@ -339,10 +393,17 @@ class MultidatabaseContentViewHelper extends AppHelper {
  */
 	public function renderViewElementFile($content, $colNo) {
 		// Todo: アップロードされたファイルのリンクを表示＆パスワード入力ダイアログ
-		$fileUrl = $this->fileDlUrl($content,$colNo);
-		$result = '<a href="' . $fileUrl . '">' . __d('multidatabases','Download') . '</a>';
-		return $result;
 
+		if (! $this->checkFileExists($content, $colNo)) {
+			return '';
+		}
+
+		$fileUrl = $this->fileDlUrl($content,$colNo);
+		$result = '<span class="glyphicon glyphicon-file text-primary"></span>&nbsp;';
+		$result .= '<a href="' . $fileUrl . '">';
+		$result .= __d('multidatabases','Download');
+		$result .= '</a>';
+		return $result;
 	}
 
 /**
@@ -354,6 +415,11 @@ class MultidatabaseContentViewHelper extends AppHelper {
  */
 	public function renderViewElementImage($content, $colNo) {
 		// Todo: アップロードされた画像を表示
+
+		if (! $this->checkFileExists($content, $colNo)) {
+			return '';
+		}
+
 		$fileUrl = $this->fileDlUrl($content,$colNo);
 		$result = '<img src="' . $fileUrl . '" alt="">';
 		return $result;
@@ -367,7 +433,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementHidden($content, $colNo) {
-		return $content['MultidatabaseContent']['value' . $colNo];
+		return $this->renderViewElementGeneral($content, $colNo);
 	}
 
 /**
@@ -398,7 +464,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementLink($content, $colNo) {
-		$value = $content['MultidatabaseContent']['value' . $colNo];
+		$value = $this->renderViewElementGeneral($content, $colNo);
 		$result = '<a href="' . $value . '">' . $value . '</a>';
 		return $result;
 	}
@@ -411,7 +477,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementEmail($content, $colNo) {
-		$value = $content['MultidatabaseContent']['value' . $colNo];
+		$value = $this->renderViewElementGeneral($content, $colNo);
 		$result = '<a href="mailto:' . $value . '">' . $value . '</a>';
 		return $result;
 	}
@@ -434,7 +500,6 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function fileDlUrl($content, $colNo) {
-
 		return $this->NetCommonsHtml->url(
 			$this->fileDlArray($content, $colNo)
 		);

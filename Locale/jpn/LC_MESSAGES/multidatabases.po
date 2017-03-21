@@ -255,3 +255,6 @@ msgstr "作成日時"
 
 msgid "Modified date"
 msgstr "更新日時"
+
+msgid "No name"
+msgstr "無題"

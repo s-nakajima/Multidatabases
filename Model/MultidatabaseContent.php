@@ -80,6 +80,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Likes.Like',
 		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
+		'Files.Attachment',
 		/*
 				'Topics.Topics' => array(
 					'fields' => array(
@@ -124,6 +125,74 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 /**
+ * 編集用のデータを取得する
+ * @param array $conditions データ取得条件
+ * @return array|bool
+ */
+	public function getEditData($conditions = []) {
+		$this->loadModels([
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+		]);
+
+		if (empty($conditions)) {
+			return false;
+		}
+
+		$options = [
+			'conditions' => $conditions,
+			'recursive' => 0,
+		];
+
+		$content = $this->find('first', $options);
+
+		if (!$content) {
+			return false;
+		}
+
+		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
+			return false;
+		}
+
+		$metadatas = $this->MultidatabaseMetadata->getEditMetadatas(
+			$multidatabase['Multidatabase']['id']
+		);
+
+		if (!$metadatas) {
+			return false;
+		}
+
+		foreach ($metadatas as $metadata) {
+			if (
+				isset($content['MultidatabaseContent']['value' . $metadata['col_no']]) &&
+				$content['MultidatabaseContent']['value' . $metadata['col_no']] <> ''
+			) {
+				$tmpValue  = $content['MultidatabaseContent']['value' . $metadata['col_no']];
+				switch ($metadata['type']) {
+					case 'radio':
+					case 'select':
+						$content['MultidatabaseContent']['value' . $metadata['col_no']]
+							= md5($tmpValue);
+						break;
+					case 'checkbox' :
+						$tmpValArr = explode('||', $tmpValue);
+						$tmpValRes = [];
+						foreach ($tmpValArr as $val) {
+							$tmpValRes[] = md5($val);
+						}
+						$content['MultidatabaseContent']['value' . $metadata['col_no']]
+							= $tmpValRes;
+						break;
+					default:
+						break;
+				}
+			}
+		}
+
+		return $content;
+	}
+
+/**
  * Get contents
  * 複数のコンテンツを取得
  *
@@ -133,6 +202,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$this->loadModels([
 			'Multidatabase' => 'Multidatabases.Multidatabase',
 		]);
+
 		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
@@ -264,20 +334,38 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				$colNo = (int)str_replace('value','',$key);
 
 				if (isset($metadatas[$colNo])) {
+					$selections = [];
+					if (isset($metadatas[$colNo]['selections'])) {
+						$selections = json_decode($metadatas[$colNo]['selections'],true);
+					}
+
 					switch ($metadatas[$colNo]['type']) {
+						case 'select':
+							$tmp = $data['MultidatabaseContent'][$key];
+							foreach ($selections as $metaSel) {
+								if (md5($metaSel) === $tmp) {
+									$data['MultidatabaseContent'][$key] = $metaSel;
+									break;
+								}
+							}
+							break;
 						case 'checkbox':
-							$data['MultidatabaseContent'][$key] = implode('||', $val);
+							$tmpArr = $data['MultidatabaseContent'][$key];
+							$tmpRes = [];
+							foreach ($selections as $metaSel) {
+								if (in_array(md5($metaSel),$tmpArr)) {
+									$tmpRes[] = $metaSel;
+								}
+							}
+							if (empty($tmpRes)) {
+								$data['MultidatabaseContent'][$key] = '';
+							} else {
+								$data['MultidatabaseContent'][$key] = implode('||', $tmpRes);
+							}
 							break;
 						case 'file':
 						case 'image':
-							if (empty($val['tmp_name'])) {
-								// アップロードされるファイルが無い場合の処理
-							} else {
-								// アップロードされるファイルがある場合の処理
-								$data['MultidatabaseContent'][$key . '_attach'] =
-									$data['MultidatabaseContent'][$key];
-								$attachFields[] = $key . '_attach';
-							}
+							$this->uploadSettings($key . '_attach');
 							$data['MultidatabaseContent'][$key] = '';
 							break;
 						default:
@@ -285,10 +373,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 					}
 				}
 			}
-		}
-
-		if (!empty($attachFields)) {
-			$this->Behaviors->load('Files.Attachment',$attachFields);
 		}
 
 		$this->begin();

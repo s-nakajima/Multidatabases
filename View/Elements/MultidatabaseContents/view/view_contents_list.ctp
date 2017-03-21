@@ -9,7 +9,11 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
-
-foreach ($multidatabaseContents as $content) {
-	echo $this->MultidatabaseContentView->renderContentLayout($content);
-}
+?>
+<div class="multidatabase-content-list">
+	<?php
+	foreach ($multidatabaseContents as $content) {
+		echo $this->MultidatabaseContentView->renderContentLayout($content);
+	}
+	?>
+</div>

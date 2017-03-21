@@ -582,7 +582,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 			'MultidatabaseMetadata' => [
 				'id' => '',
 				'key' => '',
-				'name' => '無題',
+				'name' => __d('multidatabases','No name'),
 				'language_id' => Current::read('Language.id'),
 				'position' => 0,
 				'rank' => 0,

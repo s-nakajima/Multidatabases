@@ -13,3 +13,26 @@
 	line-height: 2em;
 	padding-left: 0.5em;
 }
+
+.multidatabase-content-list-article {
+
+}
+
+.multidatabase-content-list article footer,
+.multidatabase-content-detail article footer {
+	margin-top: 0 !important;
+	padding-bottom: 20px;
+}
+
+.multidatabase-content-list article:last-child footer {
+	padding-bottom:0;
+}
+
+.multidatabase-contents table td,th {
+	padding:5px;
+}
+
+.multidatabase-contents table th {
+	text-align:center;
+	background-color:#F5F5F5;
+}

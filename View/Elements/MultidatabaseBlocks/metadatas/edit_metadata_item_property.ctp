@@ -34,6 +34,7 @@
 		       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['name']">
 	</div>
 </div>
+<?php // 項目名 ?>
 <div class="row form-group">
 	<div class="col-xs-12">
 		<label>
@@ -52,22 +53,102 @@
 		</select>
 	</div>
 </div>
+<?php // 属性 ?>
 <div ng-if="<?php echo "g${gPos}.type == 'select' || g${gPos}.type == 'checkbox'"; ?>">
 	<?php echo $this->MultidatabaseMetadataSetting->renderGroupItemPropertySelections($gPos); ?>
 </div>
 <div class="row form-group">
 	<div class="col-xs-12">
+		<?php // タイトルにする ?>
+		<div class="checkbox" ng-if="g<?php echo $gPos; ?>.type == 'text'">
+			<label class="control-label" for="MultidatabaseMetadataSettingEditIsTitle<?php echo $gPos; ?>-{{$index}}">
+				<input type="checkbox"
+				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_title]"
+				       id="MultidatabaseMetadataSettingEditIsTitle<?php echo $gPos; ?>-{{$index}}"
+				       class="MultidatabaseMetadataSettingEditIsTitle"
+				       ng-true-value="1"
+				       ng-false-value=""
+				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_title']">
+				<?php echo __d('multidatabases', 'Is content title.'); ?>
+			</label>
+		</div>
+		<?php // 入力必須項目にする ?>
 		<div class="checkbox">
 			<label class="control-label" for="MultidatabaseMetadataSettingEditIsRequire<?php echo $gPos; ?>-{{$index}}">
 				<input type="checkbox"
 				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_require]"
 				       id="MultidatabaseMetadataSettingEditIsRequire<?php echo $gPos; ?>-{{$index}}"
+				       class="MultidatabaseMetadataSettingEditIsRequire"
 				       ng-true-value="1"
 				       ng-false-value=""
 				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_require']">
 				<?php echo __d('multidatabases', 'Is require.'); ?>
 			</label>
 		</div>
+		<?php // 一覧画面に表示する項目 ?>
+		<div class="checkbox">
+			<label class="control-label"
+			       for="MultidatabaseMetadataSettingEditIsVisibleList<?php echo $gPos; ?>-{{$index}}">
+				<input type="checkbox"
+				       id="MultidatabaseMetadataSettingEditIsVisibleList<?php echo $gPos; ?>-{{$index}}"
+				       class="MultidatabaseMetadataSettingEditIsVisibleList"
+				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_visible_list]"
+				       ng-true-value="1"
+				       ng-false-value=""
+				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_list']">
+				<?php echo __d('multidatabases', 'Enable to display on list.'); ?>
+			</label>
+		</div>
+		<?php // ソートできる ?>
+		<div class="checkbox" style="margin-left:20px;" ng-if="
+				g<?php echo $gPos; ?>.type != 'file' &&
+				g<?php echo $gPos; ?>.type != 'image' &&
+				g<?php echo $gPos; ?>.type != 'textarea' &&
+				g<?php echo $gPos; ?>.type != 'wysiwyg' &&
+				g<?php echo $gPos; ?>.type != 'checkbox' &&
+				g<?php echo $gPos; ?>.is_visible_list == '1'
+		">
+			<label class="control-label"
+			       for="MultidatabaseMetadataSettingEditIsSortable<?php echo $gPos; ?>-{{$index}}">
+				<input type="checkbox"
+				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_sortable]"
+				       id="MultidatabaseMetadataSettingEditIsSortable<?php echo $gPos; ?>-{{$index}}"
+				       class="MultidatabaseMetadataSettingEditIsSortable"
+				       ng-true-value="1"
+				       ng-false-value=""
+				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_sortable']">
+				<?php echo __d('multidatabases', 'Is sortable.'); ?>
+			</label>
+		</div>
+		<?php // 詳細画面に表示する項目 ?>
+		<div class="checkbox">
+			<label class="control-label"
+			       for="MultidatabaseMetadataSettingEditIsVisibleDetail<?php echo $gPos; ?>-{{$index}}">
+				<input type="checkbox"
+				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_visible_detail]"
+				       id="MultidatabaseMetadataSettingEditIsVisibleDetail<?php echo $gPos; ?>-{{$index}}"
+				       class="MultidatabaseMetadataSettingEditIsVisibleDetail"
+				       ng-true-value="1"
+				       ng-false-value=""
+				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_detail']">
+				<?php echo __d('multidatabases', 'Enable to display on detail.'); ?>
+			</label>
+		</div>
+		<?php // 項目名を表示する ?>
+		<div class="checkbox">
+			<label class="control-label"
+			       for="MultidatabaseMetadataSettingEditIsVisibleHeader<?php echo $gPos; ?>-{{$index}}">
+				<input type="checkbox"
+				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_require]"
+				       id="MultidatabaseMetadataSettingEditIsVisibleHeader<?php echo $gPos; ?>-{{$index}}"
+				       class="MultidatabaseMetadataSettingEditIsVisibleHeader"
+				       ng-true-value="1"
+				       ng-false-value=""
+				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_header']">
+				<?php echo __d('multidatabases', 'Enable to display field header.'); ?>
+			</label>
+		</div>
+		<?php // 検索の対象に含める ?>
 		<div class="checkbox" ng-if="
 				g<?php echo $gPos; ?>.type != 'file' &&
 				g<?php echo $gPos; ?>.type != 'image' &&
@@ -81,35 +162,20 @@
 				<input type="checkbox"
 				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_searchable]"
 				       id="MultidatabaseMetadataSettingEditIsSearchable<?php echo $gPos; ?>-{{$index}}"
+				       class="MultidatabaseMetadataSettingEditIsSearchable"
 				       ng-true-value="1"
 				       ng-false-value=""
 				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_searchable']">
 				<?php echo __d('multidatabases', 'Is searchable.'); ?>
 			</label>
 		</div>
-		<div class="checkbox" ng-if="
-				g<?php echo $gPos; ?>.type != 'file' &&
-				g<?php echo $gPos; ?>.type != 'image' &&
-				g<?php echo $gPos; ?>.type != 'textarea' &&
-				g<?php echo $gPos; ?>.type != 'wysiwyg' &&
-				g<?php echo $gPos; ?>.type != 'checkbox'
-		">
-			<label class="control-label"
-			       for="MultidatabaseMetadataSettingEditIsSortable<?php echo $gPos; ?>-{{$index}}">
-				<input type="checkbox"
-				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_sortable]"
-				       id="MultidatabaseMetadataSettingEditIsSortable<?php echo $gPos; ?>-{{$index}}"
-				       ng-true-value="1"
-				       ng-false-value=""
-				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_sortable']">
-				<?php echo __d('multidatabases', 'Is sortable.'); ?>
-			</label>
-		</div>
+		<?php // ファイルのダウンロードパスワード ?>
 		<div class="checkbox" ng-if="g<?php echo $gPos; ?>.type == 'file'">
 			<label class="control-label"
 			       for="MultidatabaseMetadataSettingEditIsFileDlRequireAuth<?php echo $gPos; ?>-{{$index}}">
 				<input type="checkbox"
 				       id="MultidatabaseMetadataSettingEditIsFileDlRequireAuth<?php echo $gPos; ?>-{{$index}}"
+				       class="MultidatabaseMetadataSettingEditIsFileDlRequireAuth"
 				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_file_dl_require_auth]"
 				       ng-true-value="1"
 				       ng-false-value=""
@@ -117,28 +183,18 @@
 				<?php echo __d('multidatabases', 'Enable to set download password.'); ?>
 			</label>
 		</div>
-		<div class="checkbox">
+		<?php // ファイルのダウンロード回数を表示する ?>
+		<div class="checkbox" ng-if="g<?php echo $gPos; ?>.type == 'file'">
 			<label class="control-label"
-			       for="MultidatabaseMetadataSettingEditIsVisibleList<?php echo $gPos; ?>-{{$index}}">
+			       for="MultidatabaseMetadataSettingEditIsVisibleFileDlCounter<?php echo $gPos; ?>-{{$index}}">
 				<input type="checkbox"
-				       id="MultidatabaseMetadataSettingEditIsVisibleList<?php echo $gPos; ?>-{{$index}}"
-				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_visible_list]"
+				       id="MultidatabaseMetadataSettingEditIsVisibleFileDlCounter<?php echo $gPos; ?>-{{$index}}"
+				       class="MultidatabaseMetadataSettingEditIsVisibleFileDlCounter"
+				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_visible_file_dl_counter]"
 				       ng-true-value="1"
 				       ng-false-value=""
-				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_list']">
-				<?php echo __d('multidatabases', 'Enable to display on list.'); ?>
-			</label>
-		</div>
-		<div class="checkbox">
-			<label class="control-label"
-			       for="MultidatabaseMetadataSettingEditIsVisibleDetail<?php echo $gPos; ?>-{{$index}}">
-				<input type="checkbox"
-				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_visible_detail]"
-				       id="MultidatabaseMetadataSettingEditIsVisibleDetail<?php echo $gPos; ?>-{{$index}}"
-				       ng-true-value="1"
-				       ng-false-value=""
-				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_detail']">
-				<?php echo __d('multidatabases', 'Enable to display on detail.'); ?>
+				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_file_dl_counter']">
+				<?php echo __d('multidatabases', 'Enable to display file download counter.'); ?>
 			</label>
 		</div>
 	</div>

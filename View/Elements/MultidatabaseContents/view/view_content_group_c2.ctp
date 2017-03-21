@@ -18,7 +18,6 @@
 				<th class="col-xs-3 col-sm-4"><?php echo $metadata['name']; ?></th>
 				<td>
 					<?php echo $this->MultidatabaseContentView->renderViewElement($gContents, $metadata); ?>
-					<?php ?>
 				</td>
 			</tr>
 		<?php endforeach; ?>

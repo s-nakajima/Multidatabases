@@ -64,10 +64,6 @@ class MultidatabaseBlockRolePermissionsController extends MultidatabasesAppContr
 			],
 			'blockTabs' => [
 				'block_settings' => ['url' => ['controller' => 'multidatabase_blocks']],
-				'metadata_settings' => ['url' => [
-					'controller' => 'multidatabase_metadata_settings'],
-					'label' => ['multidatabases', 'Metadata Settings']
-				],
 				'mail_settings' => ['url' => ['controller' => 'multidatabase_mail_settings']],
 				'role_permissions' => ['url' => ['controller' => 'multidatabase_block_role_permissions']],
 			],

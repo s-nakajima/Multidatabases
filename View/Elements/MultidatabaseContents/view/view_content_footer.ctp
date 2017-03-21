@@ -10,7 +10,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 ?>
-<footer>
+<footer class="col-xs-12">
 	<div class="clearfix">
 		<div class="pull-left">
 			<?php if (!isset($viewMode) || ($viewMode <> 'detail')) : ?>
@@ -22,7 +22,9 @@
 		</div>
 		<div class="pull-right">
 			<?php echo $this->Workflow->label($content['MultidatabaseContent']['status']); ?>
-			<?php echo $this->NetCommonsHtml->handleLink($content, ['avatar' => true]); ?>&nbsp;
+			<?php if (isset($viewMode) && ($viewMode === 'detail')) : ?>
+				<?php echo $this->NetCommonsHtml->handleLink($content, ['avatar' => true]); ?>&nbsp;
+			<?php endif; ?>
 			<?php if (!isset($viewMode) || $viewMode <> 'detail') : ?>
 				<?php echo $this->NetCommonsHtml->link(
 					__d('multidatabases', 'View detail'),
@@ -31,9 +33,6 @@
 						'action' => 'detail',
 						//'frame_id' => Current::read('Frame.id'),
 						'key' => $content['MultidatabaseContent']['key'],
-					],
-					[
-						'class' => 'btn btn-default',
 					]
 				);
 				?>

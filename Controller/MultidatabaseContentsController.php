@@ -40,6 +40,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		'ContentComments.ContentComment' => [
 			'viewVarsKey' => [
 				'contentKey' => 'multidatabaseContent.MultidatabaseContent.key',
+				'contentTitleForMail' => 'multidatabaseContent.MultidatabaseContent.key',
 				'useComment' => 'multidatabaseSetting.use_comment',
 				'useCommentApproval' => 'multidatabaseSetting.use_comment_approval',
 			],
@@ -197,7 +198,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 				}
 			}
 		}
-
 		return $result;
 	}
 
@@ -312,7 +312,12 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			} else {
 				return $this->redirect($url);
 			}
+			$multidatabaseContent = $this->request->data['MultidatabaseContent'];
+		} else {
+			$multidatabaseContent = [];
 		}
+
+		$this->set('multidatabaseContent', $multidatabaseContent);
 
 		$this->render('form');
 	}
@@ -327,21 +332,23 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$this->set('isEdit', true);
 		$key = $this->params['key'];
 
-		$this->MultidatabaseContent->recursive = 0;
-		$options = [
-			'conditions' => [
-				'MultidatabaseContent.key' => $key,
-			],
-			'recursive' => 0,
-		];
+		$permission = $this->_getPermission();
 
-		$multidatabaseContent = $this->MultidatabaseContent->find('first', $options);
+		$conditions = $this->MultidatabaseContent->getConditions(
+			Current::read('Block.id'),
+			$permission
+		);
 
-		if (empty($multidatabaseContent)) {
-			return $this->throwBadRequest();
-		}
+		$conditions['MultidatabaseContent.key'] = $key;
 
-		if ($this->MultidatabaseContent->canEditWorkflowContent($multidatabaseContent) === false) {
+
+		//$multidatabaseContent = $this->MultidatabaseContent->find('first', $options);
+		$multidatabaseContent = $this->MultidatabaseContent->getEditData($conditions);
+
+		if (
+			! $multidatabaseContent ||
+			$this->MultidatabaseContent->canEditWorkflowContent($multidatabaseContent) === false
+		) {
 			return $this->throwBadRequest();
 		}
 
@@ -357,7 +364,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			$this->request->data = $multidatabaseContent;
 		}
 
-		$this->set('multidatabaseContent', $multidatabaseContent);
+		$this->set('multidatabaseContent', $multidatabaseContent['MultidatabaseContent']);
 		$this->set('isDeletable',
 			$this->MultidatabaseContent->canDeleteWorkflowContent($multidatabaseContent)
 		);

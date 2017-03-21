@@ -16,17 +16,7 @@ echo $this->NetCommonsHtml->css([
 ]);
 ?>
 
-<article class="multidatabaseContents">
-	<style>
-		.multidatabaseContents td,th {
-			padding:5px;
-		}
-
-		.multidatabaseContents th {
-			text-align:center;
-			background-color:#F5F5F5;
-		}
-	</style>
+<article class="multidatabase-contents">
 	<?php echo $this->NetCommonsHtml->blockTitle($multidatabase['Multidatabase']['name']); ?>
 	<header class="clearfix">
 		<div class="pull-left">
@@ -43,10 +33,8 @@ echo $this->NetCommonsHtml->css([
 	</header>
 
 	<?php if ($multidatabaseContents) : ?>
-		<div>
-			<?php echo $this->MultidatabaseContentView->renderContentsList($multidatabaseContents); ?>
-			<?php echo $this->element('NetCommons.paginator'); ?>
-		</div>
+		<?php echo $this->MultidatabaseContentView->renderContentsList($multidatabaseContents); ?>
+		<?php echo $this->element('NetCommons.paginator'); ?>
 	<?php else : ?>
 		<article class="nc-not-found">
 			<?php echo __d('multidatabases', 'No contents found.') ?>
