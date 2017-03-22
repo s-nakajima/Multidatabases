@@ -79,7 +79,7 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
       col_no: '',
       id: '',
       is_title: '',
-      is_visible_header: '',
+      is_visible_field_name: '',
       is_file_dl_require_auth: '',
       is_visible_file_dl_conter: '',
       is_require: '',
@@ -182,12 +182,7 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
   $scope.addSelection = function(positionNo, parentIndex) {
     var currentMetadatas = getGroup(positionNo);
     var currentMetadata = currentMetadatas[parentIndex];
-
-    var selection = {
-      id: null,
-      value: ''
-    };
-
+    var selection = '';
     currentMetadata.selections.push(selection);
   };
 
@@ -239,4 +234,46 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
     $event.preventDefault();
     $event.stopPropagation();
   };
+
+  $scope.checkIsTitle = function(positionNo, index) {
+	  //console.log(positionNo);
+	  //console.log(index);
+  	/*
+	  angular.forEach($scope.metadataGroup0, function(metadata, i){
+	  	if (
+		    metadata.position == positionNo &&
+		    i == index
+	    ) {
+		    console.log(positionNo);
+		    console.log(index);
+	    } else {
+		    $scope.metadataGroup0[i]['is_title'] = '';
+	    }
+	  });
+
+	  angular.forEach($scope.metadataGroup1, function(metadata, i){
+		  if (
+			  metadata.position == positionNo &&
+			  i == index
+		  ) {
+			  console.log(positionNo);
+			  console.log(index);
+		  } else {
+			  $scope.metadataGroup0[i]['is_title'] = '';
+		  }
+	  });
+
+	  angular.forEach($scope.metadataGroup2, function(metadata, i){
+		  if (
+			  metadata.position == positionNo &&
+			  i == index
+		  ) {
+
+		  } else {
+			  $scope.metadataGroup0[i]['is_title'] = '';
+		  }
+	  });
+	  */
+  };
+
 }]);

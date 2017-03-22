@@ -22,7 +22,7 @@
 				        ng-disabled="metadataGroup<?php echo $gPos; ?>.length < 2"
 				        ng-click="delete($event, <?php echo $gPos; ?>,
 				            $index,
-				            '<?php echo __d('multidatabases', 'Do you want to delete this metadata?'); ?>'
+				            '<?php echo __d('multidatabases', 'Do you want to delete this metadata field?'); ?>'
 				            )">
 					<span class="glyphicon glyphicon-remove"> </span>
 				</button>

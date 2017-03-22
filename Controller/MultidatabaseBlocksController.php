@@ -148,7 +148,6 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 			if ($this->Multidatabase->saveMultidatabase($this->data)) {
 				return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
 			}
-
 			return;
 		}
 

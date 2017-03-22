@@ -470,6 +470,10 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 		return $this->Download->doDownload($contentId, $options);
 	}
+
+	public function search() {
+		$this->render('search');
+	}
 }
 
 

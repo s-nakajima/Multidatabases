@@ -222,7 +222,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
 				$result .= $this->renderViewElementWysiwyg($content, $colNo);
 				break;
 			case 'file':
-				$result .= $this->renderViewElementFile($content, $colNo);
+				$result .= $this->renderViewElementFile($content, $colNo, $metadata['is_visible_file_dl_counter']);
 				break;
 			case 'image':
 				$result .= $this->renderViewElementImage($content, $colNo);
@@ -361,7 +361,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @param $colNo カラムNo
  * @return bool
  */
-	public function checkFileExists($content, $colNo) {
+	public function getFileInfo($content, $colNo) {
 		if (
 			empty($content['MultidatabaseContent']['id']) ||
 			empty($colNo)
@@ -378,7 +378,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
 		);
 
 		if (! empty($file)) {
-			return true;
+			return $file;
 		}
 
 		return false;
@@ -391,10 +391,10 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @param int $colNo カラムNo
  * @return string HTML
  */
-	public function renderViewElementFile($content, $colNo) {
+	public function renderViewElementFile($content, $colNo, $showCounter = 0) {
 		// Todo: アップロードされたファイルのリンクを表示＆パスワード入力ダイアログ
 
-		if (! $this->checkFileExists($content, $colNo)) {
+		if (! $fileInfo = $this->getFileInfo($content, $colNo)) {
 			return '';
 		}
 
@@ -403,6 +403,13 @@ class MultidatabaseContentViewHelper extends AppHelper {
 		$result .= '<a href="' . $fileUrl . '">';
 		$result .= __d('multidatabases','Download');
 		$result .= '</a>';
+
+		if ((int)$showCounter === 1) {
+			$result .= '&nbsp;<span class="badge">';
+			$result .= $fileInfo['UploadFile']['download_count'];
+			$result .= '</span>';
+		}
+
 		return $result;
 	}
 
@@ -416,7 +423,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
 	public function renderViewElementImage($content, $colNo) {
 		// Todo: アップロードされた画像を表示
 
-		if (! $this->checkFileExists($content, $colNo)) {
+		if (! $this->getFileInfo($content, $colNo)) {
 			return '';
 		}
 
@@ -528,7 +535,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @param array $metadatas メタデータ配列
  * @return string HTML tags
  */
-	public function dropDownToggleSelect($metadatas) {
+	public function dropDownToggleSelect($metadatas, $viewType = 'index') {
 		$params = $this->_View->Paginator->params;
 		$named = $params['named'];
 		$url = $named;
@@ -553,20 +560,38 @@ class MultidatabaseContentViewHelper extends AppHelper {
 				}
 
 				$tmp = $metadata['selections'];
-				$selections[0] = $name;
+				if ($viewType === 'search') {
+					$selections[0] = __d('multidatabases','All');
+				} else {
+					$selections[0] = $name;
+				}
 				foreach ($tmp as $val) {
 					$selections[md5($val)] = $val;
 				}
 
-				$result .= $this->_View->element(
-					'MultidatabaseContents/view/view_content_dropdown_select',
-					[
-						'dropdownCol' => 'value' . $colNo,
-						'dropdownItems' => $selections,
-						'currentItemKey' => $currentItemKey,
-						'url' => $url,
-					]
-				);
+				if ($viewType === 'search') {
+					$metaKey = 'value' . $metadata['col_no'];
+
+					$options = [
+						'type' => 'select',
+						'label' => $metadata['name'],
+						'options' => $selections
+					];
+
+					$result .= '<div>';
+					$result .= $this->NetCommonsForm->input($metaKey, $options);
+					$result .= '</div>';
+				} else {
+					$result .= $this->_View->element(
+						'MultidatabaseContents/view/view_content_dropdown_select',
+						[
+							'dropdownCol' => 'value' . $colNo,
+							'dropdownItems' => $selections,
+							'currentItemKey' => $currentItemKey,
+							'url' => $url,
+						]
+					);
+				}
 			}
 		}
 		return $result;
@@ -578,7 +603,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @param array $metadatas メタデータ配列
  * @return string HTML tags
  */
-	public function dropDownToggleSort($metadatas) {
+	public function dropDownToggleSort($metadatas, $viewType = 'index') {
 		$params = $this->_View->Paginator->params;
 		$named = $params['named'];
 		$url = $named;
@@ -594,7 +619,11 @@ class MultidatabaseContentViewHelper extends AppHelper {
 		foreach ($metadatas as $metadata) {
 			$colNo = 0;
 			$name = '';
-			if ($metadata['is_searchable']) {
+			if (
+				(int)$metadata['is_searchable'] === 1 &&
+				$metadata['type'] <> 'created' &&
+				$metadata['type'] <> 'updated'
+			) {
 				$colNo = $metadata['col_no'];
 				$name = $metadata['name'];
 				$selections['value' . $colNo]
@@ -617,13 +646,29 @@ class MultidatabaseContentViewHelper extends AppHelper {
 			= __d('multidatabases','Modified date') .
 			'(' . __d('multidatabases','Descending') . ')';
 
-		return $this->_View->element(
-			'MultidatabaseContents/view/view_content_dropdown_sort',
-			[
-				'dropdownItems' => $selections,
-				'currentItemKey' => $currentItemKey,
-				'url' => $url,
-			]
-		);
+		$result = '';
+		if ($viewType === 'search') {
+			$result .= '<div>';
+			$result .= '<label for="sort" class="control-label">';
+			$result .= __d('multidatabases','Sort order');
+			$result .= '</label>';
+			$metaKey = 'sort';
+			$options = [
+				'type' => 'select',
+				'options' => $selections
+			];
+			$result .= $this->NetCommonsForm->input($metaKey, $options);
+			$result .= '</div>';
+			return $result;
+		} else {
+			return $this->_View->element(
+				'MultidatabaseContents/view/view_content_dropdown_sort',
+				[
+					'dropdownItems' => $selections,
+					'currentItemKey' => $currentItemKey,
+					'url' => $url,
+				]
+			);
+		}
 	}
 }

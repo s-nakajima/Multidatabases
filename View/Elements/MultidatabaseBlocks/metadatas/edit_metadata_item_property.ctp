@@ -66,6 +66,7 @@
 				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_title]"
 				       id="MultidatabaseMetadataSettingEditIsTitle<?php echo $gPos; ?>-{{$index}}"
 				       class="MultidatabaseMetadataSettingEditIsTitle"
+				       ng-checked="checkIsTitle(<?php echo $gPos; ?>, {{$index}})"
 				       ng-true-value="1"
 				       ng-false-value=""
 				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_title']">
@@ -137,15 +138,15 @@
 		<?php // 項目名を表示する ?>
 		<div class="checkbox">
 			<label class="control-label"
-			       for="MultidatabaseMetadataSettingEditIsVisibleHeader<?php echo $gPos; ?>-{{$index}}">
+			       for="MultidatabaseMetadataSettingEditIsVisibleFieldName<?php echo $gPos; ?>-{{$index}}">
 				<input type="checkbox"
-				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_require]"
-				       id="MultidatabaseMetadataSettingEditIsVisibleHeader<?php echo $gPos; ?>-{{$index}}"
-				       class="MultidatabaseMetadataSettingEditIsVisibleHeader"
+				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_visible_field_name]"
+				       id="MultidatabaseMetadataSettingEditIsVisibleFieldName<?php echo $gPos; ?>-{{$index}}"
+				       class="MultidatabaseMetadataSettingEditIsVisibleFieldName"
 				       ng-true-value="1"
 				       ng-false-value=""
-				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_header']">
-				<?php echo __d('multidatabases', 'Enable to display field header.'); ?>
+				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_visible_field_name']">
+				<?php echo __d('multidatabases', 'Enable to display field name.'); ?>
 			</label>
 		</div>
 		<?php // 検索の対象に含める ?>

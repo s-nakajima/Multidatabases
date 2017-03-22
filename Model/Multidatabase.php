@@ -187,7 +187,6 @@ class Multidatabase extends MultidatabasesAppModel {
 		if (isset($this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']) &&
 			!$this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']['id']
 		) {
-
 			if (!$this->MultidatabaseFrameSetting->save(null, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
@@ -277,8 +276,10 @@ class Multidatabase extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
 	public function saveMultidatabase($data) {
+
 		//トランザクションBegin
 		$this->begin();
+
 
 		//バリデーション
 		$this->set($data);

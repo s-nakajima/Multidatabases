@@ -26,8 +26,17 @@ echo $this->NetCommonsHtml->css([
 		</div>
 
 		<div class="pull-right">
+			<?php echo $this->Button->searchLink(
+				'',
+				null,
+				['tooltip' => __d('multidatabases', 'Search content')]
+			); ?>
 			<?php if (Current::permission('content_creatable')) : ?>
-				<?php echo $this->Button->addLink('', null, array('tooltip' => __d('multidatabases', 'Create content'))); ?>
+				<?php echo $this->Button->addLink(
+					'',
+					null,
+					['tooltip' => __d('multidatabases', 'Create content')]
+				); ?>
 			<?php endif; ?>
 		</div>
 	</header>
