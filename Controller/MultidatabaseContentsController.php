@@ -64,6 +64,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			'allow' => [
 				'add,edit,delete' => 'content_creatable',
 				'approve' => 'content_comment_publishable',
+
 			],
 		],
 		'ContentComments.ContentComments' => [
@@ -145,24 +146,32 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * Make sort condition
  * 汎用データベース コンテンツ一覧ソート処理（条件設定）
  *
+ * @param string $sort_col ソート対象の
  * @return string Order句の内容
  */
-	private function __sortList() {
-		$pagerNamed = $this->Paginator->Controller->params->named;
+	private function __sortList($sort_col = '') {
+		if (empty($sort_col)) {
+			$pagerNamed = $this->Paginator->Controller->params->named;
+			if (!isset($pagerNamed['sort_col'])) {
+				$sort_col = 0;
+			} else {
+				$sort_col = $pagerNamed['sort_col'];
+			}
+		}
 
 		if (
-			isset($pagerNamed['sort_col']) &&
-			$pagerNamed['sort_col'] !== '0' &&
+			isset($sort_col) &&
+			(int)$sort_col !== 0 &&
 			(
-				strstr($pagerNamed['sort_col'], 'value') <> false ||
-				in_array($pagerNamed['sort_col'], ['created', 'modified'])
+				strstr($sort_col, 'value') <> false ||
+				in_array($sort_col, ['created', 'modified'])
 			)
 		) {
-			if (strstr($pagerNamed['sort_col'], '_desc')) {
-				$sortCol = str_replace('_desc', '', $pagerNamed['sort_col']);
+			if (strstr($sort_col, '_desc')) {
+				$sortCol = str_replace('_desc', '', $sort_col);
 				$sortColDir = 'desc';
 			} else {
-				$sortCol = $pagerNamed['sort_col'];
+				$sortCol = $sort_col;
 				$sortColDir = 'asc';
 			}
 		} else {
@@ -472,8 +481,19 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 	}
 
 	public function search() {
-		$this->render('search');
+		if ($this->request->is(['post', 'put'])) {
+			var_dump($pagerNamed = $this->Paginator->Controller->params->named);
+			//$this->Paginator->url()
+			var_dump($this->request->data);
+			exit;
+		}
+		$this->set('cancelUrl', NetCommonsUrl::backToIndexUrl());
 	}
+
+	public function searchResult() {
+
+	}
+
 }
 
 

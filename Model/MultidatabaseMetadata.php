@@ -156,8 +156,8 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @param $multidatabaseId 汎用データベースID
  * @return array|bool
  */
-	public function getMetadatasColNo($multidatabaseId = null) {
-		if (!$multidatabaseId) {
+	public function getMetadatasColNo($multidatabaseId = 0) {
+		if (empty($multidatabaseId)) {
 			return false;
 		}
 
@@ -181,14 +181,22 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * DBよりメタデータを取得する
  *
  * @param int $multidatabaseId 汎用データベースID
+ * @param array $extraConditions 追加条件
  * @return array|bool
  */
-	public function getMetadatas($multidatabaseId = null) {
-		if (!$multidatabaseId) {
-			return false;
+	public function getMetadatas($multidatabaseId = 0, $extraConditions = []) {
+		if (empty($multidatabaseId)) {
+			if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
+				return false;
+			}
+			$multidatabaseId = $multidatabase['Multidatabase']['id'];
 		}
 
 		$conditions['multidatabase_id'] = $multidatabaseId;
+
+		if (!empty($conditions)) {
+			$conditions += $extraConditions;
+		}
 
 		$orders = [
 			'MultidatabaseMetadata.position ASC',
@@ -594,6 +602,36 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 
 		return $result;
 	}
+
+/**
+ * 検索対象のメタデータフィールド一覧を取得する
+ *
+ * @param null $multidatabaseId
+ * @return array|bool
+ */
+	public function getSearchMetadatas($multidatabaseId = null) {
+		if (is_null($multidatabaseId)) {
+			$multidatabaseId = 0;
+		}
+
+		if (! $metadatas = $this->getMetadatas(
+				$multidatabaseId,
+				[
+					'is_searchable' => 1
+				]
+			)) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		$result = [];
+		foreach ($metadatas as $metadata) {
+			$result[] = 'value' . $metadata['MultidatabaseMetadata']['col_no'];
+		}
+
+		return $result;
+
+	}
+
 
 /**
  * Get empty metadata

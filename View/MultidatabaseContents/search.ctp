@@ -18,7 +18,7 @@ echo $this->NetCommonsHtml->css([
 <div class="multidatabase-contents-search form">
 	<article>
 		<?php echo $this->NetCommonsHtml->blockTitle($multidatabase['Multidatabase']['name']); ?>
-		<?php echo $this->NetCommonsForm->create('MultidatabaseContentSearch', ['type' => 'get']);?>
+		<?php echo $this->NetCommonsForm->create('MultidatabaseContentSearch');?>
 		<div class="panel panel-default">
 			<div class="panel-body">
 					<div>
@@ -55,12 +55,25 @@ echo $this->NetCommonsHtml->css([
 						<label for="create_date_range" class="control-label">
 							<?php echo __d('multidatabases','Create date', $options); ?>
 						</label>
-						<?php
-							$options = [
-								'type' => 'datetime',
-							];
-							echo $this->NetCommonsForm->input('create_date', $options);
-						?>
+						<div class="form-group">
+							<div class="form-inline">
+								<?php
+								$options = [
+									'type' => 'datetime',
+									'value' => ''
+								];
+								echo $this->NetCommonsForm->input('create_date_begin', $options);
+								?>
+								&nbsp;-&nbsp;
+								<?php
+								$options = [
+									'type' => 'datetime',
+									'value' => ''
+								];
+								echo $this->NetCommonsForm->input('create_date_end', $options);
+								?>
+							</div>
+						</div>
 					</div>
 					<?php echo $this->MultidatabaseContentView->dropDownToggleSelect($multidatabaseMetadata, 'search'); ?>
 
@@ -81,9 +94,11 @@ echo $this->NetCommonsHtml->css([
 					<?php echo $this->MultidatabaseContentView->dropDownToggleSort($multidatabaseMetadata, 'search'); ?>
 			</div>
 			<div class="panel-footer text-center">
-				<?php echo $this->Button->cancel(__d('net_commons', 'Cancel'), '', []); ?>
-				<a href="" class="btn btn-default"><?php echo __d('multidatabases', 'Cancel'); ?></a>
-				<button class="btn btn-primary" type="submit"><?php echo __d('multidatabases', 'Search'); ?></button>
+				<?php echo $this->Button->cancel(__d('net_commons', 'Cancel'), $cancelUrl, []); ?>
+				<button class="btn btn-primary" type="submit">
+					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+					<span><?php echo __d('net_commons', 'Search'); ?></span>
+				</button>
 			</div>
 		</div>
 		<?php echo $this->NetCommonsForm->end() ?>

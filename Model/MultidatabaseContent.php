@@ -81,28 +81,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
 		'Files.Attachment',
-		/*
-				'Topics.Topics' => array(
-					'fields' => array(
-						'title' => 'title',
-						'summary' => 'body1',
-						'path' => '/:plugin_key/multidatabase_contents/view/:block_id/:content_key',
-					),
-					'search_contents' => array('body2')
-				),
-				'Mails.MailQueue' => array(
-					'embedTags' => array(
-						'X-SUBJECT' => 'BlogEntry.title',
-						'X-BODY' => 'BlogEntry.body1',
-						'X-URL' => [
-							'controller' => 'blog_entries'
-						]
-					),
-				),
-				'Wysiwyg.Wysiwyg' => array(
-					'fields' => array('body1', 'body2'),
-				),
-		*/
 	];
 
 /**
@@ -111,6 +89,42 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	protected $_filter = [
 		'status' => 0,
 	];
+
+/**
+ * MultidatabaseContent constructor.
+ *
+ * @param array|bool|int|string $request
+ * @param null|string $response
+ * @return void
+ */
+	public function __construct() {
+		parent::__construct();
+
+		$this->loadModels([
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+		]);
+
+		$searchContents = $this->MultidatabaseMetadata->getSearchMetadatas();
+
+		$this->Behaviors->load('Topics.Topics',[
+			'fields' => [
+				'title' => 'MultidatabaseContent.value1',
+				'summary' => 'MultidatabaseContent.value1',
+				'path' => '/:plugin_key/multidatabase_contents/detail/:block_id/:content_key',
+			],
+			'search_contents' => $searchContents
+		]);
+
+		$this->Behaviors->load('Mails.MailQueue',[
+			'embedTags' => [
+				'X-SUBJECT' => 'MultidatabaseContent.value1',
+				'X-BODY' => 'MUltidatabaseContent.value1',
+				'X-URL' => [
+					'controller' => 'multidatabase_contents'
+				]
+			],
+		]);
+	}
 
 /**
  * Before validate
@@ -350,6 +364,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 							}
 							break;
 						case 'checkbox':
+							if (empty($tmpArr)) {
+								$data['MultidatabaseContent'][$key] = '';
+								break;
+							}
 							$tmpArr = $data['MultidatabaseContent'][$key];
 							$tmpRes = [];
 							foreach ($selections as $metaSel) {
