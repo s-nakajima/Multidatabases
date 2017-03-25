@@ -29,7 +29,7 @@ echo $this->NetCommonsHtml->css([
 	<article>
 		<h1><?php echo h($multidatabase['Multidatabase']['name']) ?></h1>
 		<div class="panel panel-default">
-			<?php echo $this->NetCommonsForm->create('MultidatabaseContent',['type' => 'file']);?>
+			<?php echo $this->NetCommonsForm->create('MultidatabaseContent', ['type' => 'file']);?>
 			<div class="panel-body">
 				<fieldset>
 				<?php echo $this->NetCommonsForm->hidden('key'); ?>

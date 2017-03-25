@@ -222,7 +222,8 @@ class MultidatabaseContentViewHelper extends AppHelper {
 				$result .= $this->renderViewElementWysiwyg($content, $colNo);
 				break;
 			case 'file':
-				$result .= $this->renderViewElementFile($content, $colNo, $metadata['is_visible_file_dl_counter']);
+				$result .= $this->renderViewElementFile($content, $colNo,
+					$metadata['is_visible_file_dl_counter']);
 				break;
 			case 'image':
 				$result .= $this->renderViewElementImage($content, $colNo);
@@ -249,10 +250,8 @@ class MultidatabaseContentViewHelper extends AppHelper {
 				$result .= $this->renderViewElementText($content, $colNo);
 				break;
 		}
-
 		return $result;
 	}
-
 
 /**
  * 汎用的な値出力方法
@@ -305,7 +304,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementTextArea($content, $colNo) {
-		$value =  $this->renderViewElementGeneral($content, $colNo);
+		$value = $this->renderViewElementGeneral($content, $colNo);
 		return nl2br($value);
 	}
 
@@ -351,14 +350,14 @@ class MultidatabaseContentViewHelper extends AppHelper {
  */
 	public function renderViewElementDate($content, $colNo) {
 		$value = $this->renderViewElementGeneral($content, $colNo);
-		return date("Y/m/d H:i:s",strtotime($value));
+		return date("Y/m/d H:i:s", strtotime($value));
 	}
 
 /**
  * ダウンロードファイルが存在するかチェックする
  *
- * @param $content コンテンツ配列
- * @param $colNo カラムNo
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
  * @return bool
  */
 	public function getFileInfo($content, $colNo) {
@@ -389,19 +388,20 @@ class MultidatabaseContentViewHelper extends AppHelper {
  *
  * @param array $content コンテンツ配列
  * @param int $colNo カラムNo
+ * @param int $showCounter カウンターを表示するか 1:表示する
  * @return string HTML
  */
 	public function renderViewElementFile($content, $colNo, $showCounter = 0) {
-		// Todo: アップロードされたファイルのリンクを表示＆パスワード入力ダイアログ
+		// アップロードされたファイルのリンクを表示＆パスワード入力ダイアログ
 
 		if (! $fileInfo = $this->getFileInfo($content, $colNo)) {
 			return '';
 		}
 
-		$fileUrl = $this->fileDlUrl($content,$colNo);
+		$fileUrl = $this->fileDlUrl($content, $colNo);
 		$result = '<span class="glyphicon glyphicon-file text-primary"></span>&nbsp;';
 		$result .= '<a href="' . $fileUrl . '">';
-		$result .= __d('multidatabases','Download');
+		$result .= __d('multidatabases', 'Download');
 		$result .= '</a>';
 
 		if ((int)$showCounter === 1) {
@@ -421,13 +421,13 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementImage($content, $colNo) {
-		// Todo: アップロードされた画像を表示
+		// アップロードされた画像を表示
 
 		if (! $this->getFileInfo($content, $colNo)) {
 			return '';
 		}
 
-		$fileUrl = $this->fileDlUrl($content,$colNo);
+		$fileUrl = $this->fileDlUrl($content, $colNo);
 		$result = '<img src="' . $fileUrl . '" alt="">';
 		return $result;
 	}
@@ -496,7 +496,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * @return string HTML
  */
 	public function renderViewElementAutoNumber($content) {
-		//Todo: 自動採番のフィールドを作成してここに表示させる
+		// 自動採番のフィールドを作成してここに表示させる
 	}
 
 /**
@@ -533,6 +533,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * 単一選択・複数選択のドロップダウンを出力する
  *
  * @param array $metadatas メタデータ配列
+ * @param string $viewType 表示形式
  * @return string HTML tags
  */
 	public function dropDownToggleSelect($metadatas, $viewType = 'index') {
@@ -553,7 +554,6 @@ class MultidatabaseContentViewHelper extends AppHelper {
 				$colNo = $metadata['col_no'];
 				$name = $metadata['name'];
 
-
 				$currentItemKey = 0;
 				if (isset($named['value' . $colNo])) {
 					$currentItemKey = $named['value' . $colNo];
@@ -561,7 +561,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
 
 				$tmp = $metadata['selections'];
 				if ($viewType === 'search') {
-					$selections[0] = __d('multidatabases','All');
+					$selections[0] = __d('multidatabases', 'All');
 				} else {
 					$selections[0] = $name;
 				}
@@ -601,6 +601,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
  * ソートのドロップダウンを出力する
  *
  * @param array $metadatas メタデータ配列
+ * @param string $viewType 表示形式
  * @return string HTML tags
  */
 	public function dropDownToggleSort($metadatas, $viewType = 'index') {
@@ -614,7 +615,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
 		}
 
 		$selections = [];
-		$selections[0] = __d('multidatabases','Sort');
+		$selections[0] = __d('multidatabases', 'Sort');
 
 		foreach ($metadatas as $metadata) {
 			$colNo = 0;
@@ -627,30 +628,30 @@ class MultidatabaseContentViewHelper extends AppHelper {
 				$colNo = $metadata['col_no'];
 				$name = $metadata['name'];
 				$selections['value' . $colNo]
-					= $name . '(' . __d('multidatabases','Ascending') . ')';
+					= $name . '(' . __d('multidatabases', 'Ascending') . ')';
 				$selections['value' . $colNo . '_desc']
-					= $name . '(' . __d('multidatabases','Descending') . ')';
+					= $name . '(' . __d('multidatabases', 'Descending') . ')';
 			}
 		}
 
 		$selections['created']
-			= __d('multidatabases','Created date') .
-			'(' . __d('multidatabases','Ascending') . ')';
+			= __d('multidatabases', 'Created date') .
+			'(' . __d('multidatabases', 'Ascending') . ')';
 		$selections['created_desc']
-			= __d('multidatabases','Created date') .
-			'(' . __d('multidatabases','Descending') . ')';
+			= __d('multidatabases', 'Created date') .
+			'(' . __d('multidatabases', 'Descending') . ')';
 		$selections['modified']
-			= __d('multidatabases','Modified date') .
-			'(' . __d('multidatabases','Ascending') . ')';
+			= __d('multidatabases', 'Modified date') .
+			'(' . __d('multidatabases', 'Ascending') . ')';
 		$selections['modified_desc']
-			= __d('multidatabases','Modified date') .
-			'(' . __d('multidatabases','Descending') . ')';
+			= __d('multidatabases', 'Modified date') .
+			'(' . __d('multidatabases', 'Descending') . ')';
 
 		$result = '';
 		if ($viewType === 'search') {
 			$result .= '<div>';
 			$result .= '<label for="sort" class="control-label">';
-			$result .= __d('multidatabases','Sort order');
+			$result .= __d('multidatabases', 'Sort order');
 			$result .= '</label>';
 			$metaKey = 'sort';
 			$options = [

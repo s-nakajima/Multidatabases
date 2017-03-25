@@ -88,7 +88,7 @@ class MultidatabaseContentEditHelper extends AppHelper {
 /**
  * メタデータ選択肢の値を配列に変換する
  *
- * @param $metaSelections メタデータの選択肢の値
+ * @param array $metaSelections メタデータの選択肢の値
  * @return array
  */
 	public function cnvMetaSelToArr($metaSelections) {

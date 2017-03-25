@@ -145,7 +145,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 					$conditions['status'] = 1;
 					break;
 				case 'unpub':
-					$conditions['or'] =[
+					$conditions['or'] = [
 						['status' => 2],
 						['status' => 3]
 					];
@@ -169,7 +169,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$conditions += $this->getCondKeywords($query);
 
 		$result = [
-			'conditions'=> $conditions,
+			'conditions' => $conditions,
 			'order' => $this->getCondSortOrder()
 		];
 
@@ -178,6 +178,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 /**
  * 編集用のデータを取得する
+ *
  * @param array $conditions データ取得条件
  * @return array|bool
  */
@@ -213,7 +214,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				isset($content['MultidatabaseContent']['value' . $metadata['col_no']]) &&
 				$content['MultidatabaseContent']['value' . $metadata['col_no']] <> ''
 			) {
-				$tmpValue  = $content['MultidatabaseContent']['value' . $metadata['col_no']];
+				$tmpValue = $content['MultidatabaseContent']['value' . $metadata['col_no']];
 				switch ($metadata['type']) {
 					case 'radio':
 					case 'select':
@@ -242,6 +243,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * Get contents
  * 複数のコンテンツを取得
  *
+ * @param array $conditions 条件
  * @return array|bool
  */
 	public function getMultidatabaseContents($conditions = []) {
@@ -335,6 +337,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 /**
  * 複数選択、単一選択の絞込条件出力
+ *
  * @param array $values 値
  * @return array
  */
@@ -540,13 +543,13 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 		$multidatabaseContent = $data['MultidatabaseContent'];
 		foreach ($multidatabaseContent as $key => $val) {
-			if (strstr($key,'value') <> false) {
-				$colNo = (int)str_replace('value','',$key);
+			if (strstr($key, 'value') <> false) {
+				$colNo = (int)str_replace('value', '', $key);
 
 				if (isset($metadatas[$colNo])) {
 					$selections = [];
 					if (isset($metadatas[$colNo]['selections'])) {
-						$selections = json_decode($metadatas[$colNo]['selections'],true);
+						$selections = json_decode($metadatas[$colNo]['selections'], true);
 					}
 
 					switch ($metadatas[$colNo]['type']) {
@@ -568,7 +571,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 							$tmpArr = $data['MultidatabaseContent'][$key];
 							$tmpRes = [];
 							foreach ($selections as $metaSel) {
-								if (in_array(md5($metaSel),$tmpArr)) {
+								if (in_array(md5($metaSel), $tmpArr)) {
 									$tmpRes[] = $metaSel;
 								}
 							}
@@ -598,7 +601,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
-			$this->Behaviors->load('Topics.Topics',[
+			$this->Behaviors->load('Topics.Topics', [
 				'fields' => [
 					'title' => 'MultidatabaseContent.value1',
 					'summary' => 'MultidatabaseContent.value1',
@@ -607,7 +610,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				'search_contents' => $searchContents
 			]);
 
-			$this->Behaviors->load('Mails.MailQueue',[
+			$this->Behaviors->load('Mails.MailQueue', [
 				'embedTags' => [
 					'X-SUBJECT' => 'MultidatabaseContent.value1',
 					'X-URL' => [
@@ -624,8 +627,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			$this->rollback($e);
 		}
 
-
-
 		return $savedData;
 	}
 
@@ -635,11 +636,11 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  *
  * @return void
  */
-	function getFileURL() {
+	public function getFileURL() {
 		$contentKey = $this->request->params['pass'][0];
 		$options['field'] = $this->request->params['pass'][1];
 		$options['size'] = Hash::get($this->request->params['pass'], 2, 'medium');
-		return $this->Download->doDownload($contentKey,$options);
+		return $this->Download->doDownload($contentKey, $options);
 	}
 
 /**

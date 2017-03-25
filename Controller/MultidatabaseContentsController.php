@@ -237,7 +237,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 		$conditions['MultidatabaseContent.key'] = $key;
 
-
 		//$multidatabaseContent = $this->MultidatabaseContent->find('first', $options);
 		$multidatabaseContent = $this->MultidatabaseContent->getEditData($conditions);
 
@@ -384,7 +383,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			'status',
 			'sort'
 		] as $key) {
-			if(! is_null($this->request->query($key))) {
+			if (!is_null($this->request->query($key))) {
 				$query[$key]['type'] = 'search';
 				$query[$key]['field'] = null;
 				$query[$key]['value'] = $this->request->query($key);
@@ -396,7 +395,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 				case 'checkbox':
 				case 'radio':
 				case 'select':
-					if(! is_null($this->request->query('value' . $metadata['col_no']))) {
+					if (!is_null($this->request->query('value' . $metadata['col_no']))) {
 						$field = 'value' . $metadata['col_no'];
 						$query[$field]['type'] = $metadata['type'];
 						$query[$field]['field'] = $field;
@@ -427,7 +426,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		} else {
 			$this->render('search');
 		}
-
 	}
 
 /**
@@ -480,7 +478,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		}
 
 		return $conditions;
-
 	}
 
 /**
@@ -491,7 +488,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * @return void
  */
 	private function __list($extraConditions = []) {
-
 		$conditions = $this->__listBase($extraConditions);
 
 		$limitSelect = $this->__condSelect();
@@ -518,9 +514,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$this->MultidatabaseContent->recursive = -1;
 
 		$this->set('viewMode', 'list');
-
 	}
-
 }
 
 

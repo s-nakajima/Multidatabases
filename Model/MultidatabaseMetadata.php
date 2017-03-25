@@ -153,7 +153,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 /**
  * カラムNoをKeyとしてメタデータリストを出力する
  *
- * @param $multidatabaseId 汎用データベースID
+ * @param int $multidatabaseId 汎用データベースID
  * @return array|bool
  */
 	public function getMetadatasColNo($multidatabaseId = 0) {
@@ -425,13 +425,9 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 					case 'select':
 					case 'checkbox':
 						$currentColNo = $colNos['col_no_t'];
-						echo "a";
-					var_dump($currentColNo);
-					var_dump($colNos);
 						$colNos['col_no_t']++;
 						break;
 					default:
-						echo "b";
 						$currentColNo = $colNos['col_no'];
 						$colNos['col_no']++;
 						break;
@@ -614,14 +610,11 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 /**
  * 検索対象のメタデータフィールド一覧を取得する
  *
- * @param null $multidatabaseId
+ * @param int $multidatabaseId 汎用データベースID
  * @return array|bool
+ * @throws InternalErrorException
  */
-	public function getSearchMetadatas($multidatabaseId = null) {
-		if (is_null($multidatabaseId)) {
-			$multidatabaseId = 0;
-		}
-
+	public function getSearchMetadatas($multidatabaseId = 0) {
 		if (! $metadatas = $this->getMetadatas(
 				$multidatabaseId,
 				[
@@ -637,9 +630,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		}
 
 		return $result;
-
 	}
-
 
 /**
  * Get empty metadata
@@ -652,7 +643,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 			'MultidatabaseMetadata' => [
 				'id' => '',
 				'key' => '',
-				'name' => __d('multidatabases','No name'),
+				'name' => __d('multidatabases', 'No name'),
 				'language_id' => Current::read('Language.id'),
 				'position' => 0,
 				'rank' => 0,

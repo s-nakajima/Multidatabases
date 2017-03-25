@@ -149,7 +149,7 @@ class Multidatabase extends MultidatabasesAppModel {
 				}
 		*/
 		if (isset($this->data['MultidatabaseMetadata'])) {
-			//TODO:SecurityComponentを除外したため、ここにMetadataのチェックを記述する
+			// SecurityComponentを除外したため、ここにMetadataのチェックを記述する
 			$metadatas = $this->data['MultidatabaseMetadata'];
 			$metadatas = $this->MultidatabaseMetadata->mergeGroupToMetadatas($metadatas);
 
@@ -276,10 +276,8 @@ class Multidatabase extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
 	public function saveMultidatabase($data) {
-
 		//トランザクションBegin
 		$this->begin();
-
 
 		//バリデーション
 		$this->set($data);

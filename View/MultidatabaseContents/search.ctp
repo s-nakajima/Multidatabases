@@ -28,7 +28,7 @@ echo $this->NetCommonsHtml->css([
 				<div>
 					<?php
 						$options = [
-							'label' => __d('multidatabases','Keywords')
+							'label' => __d('multidatabases', 'Keywords')
 						];
 						echo $this->NetCommonsForm->input('keywords', $options);
 					?>
@@ -39,11 +39,11 @@ echo $this->NetCommonsHtml->css([
 						$options = [
 							'type' => 'select',
 							'options' => [
-								'and' => __d('multidatabases','And search'),
+								'and' => __d('multidatabases', 'And search'),
 								'or' => __d('multidatabases', 'Or search'),
 								'phrase' => __d('multidatabases', 'Phrase search')
 							],
-							'label' => __d('multidatabases','Search type')
+							'label' => __d('multidatabases', 'Search type')
 						];
 						echo $this->NetCommonsForm->input('type', $options);
 					?>
@@ -52,7 +52,7 @@ echo $this->NetCommonsHtml->css([
 				<div>
 					<?php
 						$options = [
-							'label' => __d('multidatabases','Create user')
+							'label' => __d('multidatabases', 'Create user')
 						];
 						echo $this->NetCommonsForm->input('create_user', $options);
 					?>
@@ -61,7 +61,7 @@ echo $this->NetCommonsHtml->css([
 				<div>
 					<div class="form-group">
 						<label for="create_date_range" class="control-label">
-							<?php echo __d('multidatabases','Create date'); ?>
+							<?php echo __d('multidatabases', 'Create date'); ?>
 						</label>
 						<div class="form-inline">
 							<div class="input-group">
@@ -98,11 +98,11 @@ echo $this->NetCommonsHtml->css([
 					$options = [
 						'type' => 'select',
 						'options' => [
-							'0' => __d('multidatabases','All'),
-							'pub' => __d('multidatabases','Published'),
+							'0' => __d('multidatabases', 'All'),
+							'pub' => __d('multidatabases', 'Published'),
 							'unpub' => __d('multidatabases', 'Unpublished')
 						],
-						'label' => __d('multidatabases','Status')
+						'label' => __d('multidatabases', 'Status')
 					];
 					echo $this->NetCommonsForm->input('status', $options);
 					?>

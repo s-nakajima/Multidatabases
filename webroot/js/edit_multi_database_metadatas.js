@@ -234,46 +234,4 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
     $event.preventDefault();
     $event.stopPropagation();
   };
-
-  $scope.checkIsTitle = function(positionNo, index) {
-	  //console.log(positionNo);
-	  //console.log(index);
-  	/*
-	  angular.forEach($scope.metadataGroup0, function(metadata, i){
-	  	if (
-		    metadata.position == positionNo &&
-		    i == index
-	    ) {
-		    console.log(positionNo);
-		    console.log(index);
-	    } else {
-		    $scope.metadataGroup0[i]['is_title'] = '';
-	    }
-	  });
-
-	  angular.forEach($scope.metadataGroup1, function(metadata, i){
-		  if (
-			  metadata.position == positionNo &&
-			  i == index
-		  ) {
-			  console.log(positionNo);
-			  console.log(index);
-		  } else {
-			  $scope.metadataGroup0[i]['is_title'] = '';
-		  }
-	  });
-
-	  angular.forEach($scope.metadataGroup2, function(metadata, i){
-		  if (
-			  metadata.position == positionNo &&
-			  i == index
-		  ) {
-
-		  } else {
-			  $scope.metadataGroup0[i]['is_title'] = '';
-		  }
-	  });
-	  */
-  };
-
 }]);
