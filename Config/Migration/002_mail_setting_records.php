@@ -67,11 +67,11 @@ class MultidatabaseMailSettingRecords extends MailsMigration {
 				'block_key' => null,
 				'type_key' => 'contents',
 				'mail_fixed_phrase_subject'
-					=> '[{X-SITE_NAME}-{X-PLUGIN_NAME}]{X-SUBJECT}({X-ROOM} {X-MULTIDATABASE_NAME})',
+					=> '[{X-SITE_NAME}-{X-PLUGIN_NAME}]{X-SUBJECT}({X-ROOM} {X-BLOCK_NAME})',
 				'mail_fixed_phrase_body' => <<< EOM
 You are receiving this email because a message was posted to MULTIDATABASE.
 Room's name:{X-ROOM}
-MULTIDATABASE title:{X-MULTIDATABASE_NAME}
+MULTIDATABASE title:{X-BLOCK_NAME}
 title:{X-SUBJECT}
 user:{X-USER}
 date:{X-TO_DATE}
@@ -88,11 +88,11 @@ EOM
 				'block_key' => null,
 				'type_key' => 'contents',
 				'mail_fixed_phrase_subject'
-					=> '[{X-SITE_NAME}-{X-PLUGIN_NAME}]{X-SUBJECT}({X-ROOM} {X-MULTIDATABASE_NAME})',
+					=> '[{X-SITE_NAME}-{X-PLUGIN_NAME}]{X-SUBJECT}({X-ROOM} {X-BLOCK_NAME})',
 				'mail_fixed_phrase_body' => <<< EOM
 {X-PLUGIN_NAME}に投稿されたのでお知らせします。
 ルーム名:{X-ROOM}
-汎用データベースタイトル:{X-MULTIDATABASE_NAME}
+汎用データベースタイトル:{X-BLOCK_NAME}
 コンテンツタイトル:{X-SUBJECT}
 投稿者:{X-USER}
 投稿日時:{X-TO_DATE}

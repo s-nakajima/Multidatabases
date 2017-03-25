@@ -91,42 +91,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	];
 
 /**
- * MultidatabaseContent constructor.
- *
- * @param array|bool|int|string $request
- * @param null|string $response
- * @return void
- */
-	public function __construct() {
-		parent::__construct();
-
-		$this->loadModels([
-			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
-		]);
-
-		$searchContents = $this->MultidatabaseMetadata->getSearchMetadatas();
-
-		$this->Behaviors->load('Topics.Topics',[
-			'fields' => [
-				'title' => 'MultidatabaseContent.value1',
-				'summary' => 'MultidatabaseContent.value1',
-				'path' => '/:plugin_key/multidatabase_contents/detail/:block_id/:content_key',
-			],
-			'search_contents' => $searchContents
-		]);
-
-		$this->Behaviors->load('Mails.MailQueue',[
-			'embedTags' => [
-				'X-SUBJECT' => 'MultidatabaseContent.value1',
-				'X-BODY' => 'MUltidatabaseContent.value1',
-				'X-URL' => [
-					'controller' => 'multidatabase_contents'
-				]
-			],
-		]);
-	}
-
-/**
  * Before validate
  *
  * @param array $options オプション
@@ -136,6 +100,80 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$this->validate = $this->makeValidation();
 
 		return parent::beforeValidate($options);
+	}
+
+/**
+ * 検索結果を出力するための条件設定を行う
+ *
+ * @param array $query クエリ(GETより取得)
+ * @return bool|array
+ */
+	public function getSearchConds($query = []) {
+		$this->loadModels([
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+		]);
+
+		if (empty($query)) {
+			//throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			return false;
+		}
+
+		$conditions = [];
+
+		// 開始日時、終了日時の条件設定
+		if (
+			!empty($query['start_dt']['value']) &&
+			!empty($query['end_dt']['value'])
+		) {
+			$conditions['MultidatabaseContent.created between ? and ?'] = [
+				$query['start_dt']['value'],
+				$query['end_dt']['value']
+			];
+		} else {
+			if (!empty($query['start_dt']['value'])) {
+				$conditions['MultidatabaseContent.created <='] = $query['start_dt']['value'];
+			}
+			if (!empty($query['end_dt']['value'])) {
+				$conditions['MultidatabaseContent.created >='] = $query['end_dt']['value'];
+			}
+		}
+
+		// ステータス条件設定
+		if (!empty($query['status']['value'])) {
+			switch ($query['status']['value']) {
+				case 'pub':
+					$conditions['status'] = 1;
+					break;
+				case 'unpub':
+					$conditions['or'] =[
+						['status' => 2],
+						['status' => 3]
+					];
+					break;
+			}
+		}
+
+		// チェックボックスの値を取得して条件設定
+		foreach ($query as $val) {
+			switch($val['type']) {
+				case 'checkbox':
+				case 'radio':
+				case 'select':
+					$selVal[$val['field']] = $val['value'];
+					break;
+			}
+		}
+		$conditions += $this->getCondSelect($selVal);
+
+		// キーワード検索条件設定
+		$conditions += $this->getCondKeywords($query);
+
+		$result = [
+			'conditions'=> $conditions,
+			'order' => $this->getCondSortOrder()
+		];
+
+		return $result;
 	}
 
 /**
@@ -164,13 +202,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			return false;
 		}
 
-		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
-			return false;
-		}
-
-		$metadatas = $this->MultidatabaseMetadata->getEditMetadatas(
-			$multidatabase['Multidatabase']['id']
-		);
+		$metadatas = $this->MultidatabaseMetadata->getEditMetadatas();
 
 		if (!$metadatas) {
 			return false;
@@ -212,7 +244,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  *
  * @return array|bool
  */
-	public function getMultidatabaseContents() {
+	public function getMultidatabaseContents($conditions = []) {
 		$this->loadModels([
 			'Multidatabase' => 'Multidatabases.Multidatabase',
 		]);
@@ -221,14 +253,178 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			return false;
 		}
 
+		if (empty($conditions)) {
+			$conditions = [];
+		}
+
+		$conditions += [
+			'multidatabase_key' => $multidatabase['Multidatabase']['key']
+		];
+
 		$result = $this->find('all', [
 			'recursive' => 0,
-			'conditions' => [
-				'multidatabase_key' => $multidatabase['Multidatabase']['key'],
-			],
+			'conditions' => $conditions
 		]);
 
 		return $result;
+	}
+
+/**
+ * キーワード検索条件の出力
+ *
+ * @param array $query クエリ(GETより取得)
+ * @return array
+ */
+	public function getCondKeywords($query = []) {
+		$this->loadModels([
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+		]);
+
+		if (empty($query)) {
+			return [];
+		}
+
+		// 検索対象のメタデータを取得
+		$searchMetadatas = $this->MultidatabaseMetadata->getSearchMetadatas();
+
+		// キーワード検索時の検索の種類を設定
+		$condType = 'and';
+
+		if (isset($query['type']['value'])) {
+			$condType = $query['type']['value'];
+		}
+
+		// キーワードの値を取得して条件設定
+		$keywords = '';
+		if (isset($query['keywords']['value'])) {
+			$keywords = trim($query['keywords']['value']);
+			if ($condType !== 'phrase') {
+				$keywords = str_replace('　', ' ', $keywords);
+			}
+		}
+
+		$arrKeywords = [];
+		if (!empty($keywords)) {
+			$arrKeywords = explode(' ', $keywords);
+		}
+
+		$result = [];
+		if (!empty($arrKeywords)) {
+			foreach ($searchMetadatas as $metaField) {
+				$tmpConds = [];
+				if (
+					$condType === 'phrase' ||
+					count($arrKeywords) === 1
+				) {
+					$tmpConds = [
+						$metaField . ' like' => '%' . $keywords . '%'
+					];
+				} else {
+					foreach ($arrKeywords as $keyword) {
+						$tmpConds[$condType][] = [
+							$metaField . ' like' => '%' . $keyword . '%'
+						];
+					}
+				}
+				$result['or'][] = $tmpConds;
+			}
+		}
+
+		return $result;
+	}
+
+/**
+ * 複数選択、単一選択の絞込条件出力
+ * @param array $values 値
+ * @return array
+ */
+	public function getCondSelect($values = []) {
+		if (empty($values)) {
+			return [];
+		}
+
+		$this->loadModels([
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+		]);
+
+		$metadatas = $this->MultidatabaseMetadata->getEditMetadatas();
+		$result = [];
+		$valueKey = null;
+		foreach ($metadatas as $metadata) {
+			switch ($metadata['type']) {
+				case 'select':
+				case 'checkbox':
+					$valueKey = 'value' . $metadata['col_no'];
+					break;
+			}
+
+			if (
+				! is_null($valueKey) &&
+				isset($values[$valueKey]) &&
+				$values[$valueKey] !== '0'
+			) {
+				switch ($metadata['type']) {
+					case 'select':
+						foreach ($metadata['selections'] as $selection) {
+							if (md5($selection) === $values[$valueKey]) {
+								$result['MultidatabaseContent.' . $valueKey] = "{$selection}";
+								break;
+							}
+						}
+						break;
+					case 'checkbox':
+						foreach ($metadata['selections'] as $selection) {
+							if (md5($selection) === $values[$valueKey]) {
+								$result['or'] = [
+									['MultidatabaseContent.' . $valueKey => "{$selection}"],
+									['MultidatabaseContent.' . $valueKey . ' like' => "%{$selection}||%"],
+									['MultidatabaseContent.' . $valueKey . ' like' => "%||{$selection}%"],
+								];
+								break;
+							}
+						}
+						break;
+				}
+			}
+		}
+
+		return $result;
+	}
+
+/**
+ * ソート条件出力
+ *
+ * @param string $sortCol ソートするカラム
+ * @return string
+ */
+	public function getCondSortOrder($sortCol = '') {
+		if (empty($sortCol)) {
+			$sortCol = null;
+		}
+
+		if (
+			isset($sortCol) &&
+			!is_null($sortCol) &&
+			(
+				strstr($sortCol, 'value') <> false ||
+				in_array($sortCol, ['created', 'modified'])
+			)
+		) {
+			if (strstr($sortCol, '_desc')) {
+				$sortCol = str_replace('_desc', '', $sortCol);
+				$sortColDir = 'desc';
+			} else {
+				$sortCol = $sortCol;
+				$sortColDir = 'asc';
+			}
+		} else {
+			$sortCol = 'created';
+			$sortColDir = 'desc';
+		}
+
+		$sortOrder = 'MultidatabaseContent.' . $sortCol . ' ' . $sortColDir;
+
+		return $sortOrder;
 	}
 
 /**
@@ -364,6 +560,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 							}
 							break;
 						case 'checkbox':
+							$tmpArr = $data['MultidatabaseContent'][$key];
 							if (empty($tmpArr)) {
 								$data['MultidatabaseContent'][$key] = '';
 								break;
@@ -396,6 +593,29 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$this->begin();
 		try {
 			//$this->create();
+
+			if (! $searchContents = $this->MultidatabaseMetadata->getSearchMetadatas()) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			$this->Behaviors->load('Topics.Topics',[
+				'fields' => [
+					'title' => 'MultidatabaseContent.value1',
+					'summary' => 'MultidatabaseContent.value1',
+					'path' => '/:plugin_key/multidatabase_contents/detail/:block_id/:content_key',
+				],
+				'search_contents' => $searchContents
+			]);
+
+			$this->Behaviors->load('Mails.MailQueue',[
+				'embedTags' => [
+					'X-SUBJECT' => 'MultidatabaseContent.value1',
+					'X-URL' => [
+						'controller' => 'multidatabase_contents'
+					]
+				],
+			]);
+
 			if (($savedData = $this->save($data, false)) === false) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
@@ -403,6 +623,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		} catch (Exception $e) {
 			$this->rollback($e);
 		}
+
+
 
 		return $savedData;
 	}

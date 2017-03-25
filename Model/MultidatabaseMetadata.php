@@ -414,6 +414,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 			}
 
 			// カラムNoが未設定の場合は、カラムNoを付与する
+			var_dump($metadata['col_no']);
 			if (!isset($metadata['col_no']) || empty($metadata['col_no'])) {
 				// 空きカラムNoの取得
 				$colNos = $this->getFreeColNo($metadatas, $colNos);
@@ -424,9 +425,13 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 					case 'select':
 					case 'checkbox':
 						$currentColNo = $colNos['col_no_t'];
+						echo "a";
+					var_dump($currentColNo);
+					var_dump($colNos);
 						$colNos['col_no_t']++;
 						break;
 					default:
+						echo "b";
 						$currentColNo = $colNos['col_no'];
 						$colNos['col_no']++;
 						break;
@@ -548,9 +553,12 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @param int|null $multidatabaseId 汎用データベースID
  * @return array|bool
  */
-	public function getEditMetadatas($multidatabaseId = null) {
-		if (is_null($multidatabaseId)) {
-			return false;
+	public function getEditMetadatas($multidatabaseId = 0) {
+		if (empty($multidatabaseId)) {
+			if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
+				return false;
+			}
+			$multidatabaseId = $multidatabase['Multidatabase']['id'];
 		}
 
 		$multidatabaseMetadatas = $this->getMetadatas($multidatabaseId);
@@ -748,7 +756,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'language_id' => Current::read('Language.id'),
 				'position' => 0,
 				'rank' => 3,
-				'col_no' => 81,
+				'col_no' => 80,
 				'type' => 'wysiwyg',
 				'selections' => '',
 				'is_require' => 1,
@@ -768,7 +776,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				'language_id' => Current::read('Language.id'),
 				'position' => 1,
 				'rank' => 0,
-				'col_no' => 82,
+				'col_no' => 81,
 				'type' => 'textarea',
 				'selections' => '',
 				'is_require' => 0,

@@ -40,7 +40,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		'ContentComments.ContentComment' => [
 			'viewVarsKey' => [
 				'contentKey' => 'multidatabaseContent.MultidatabaseContent.key',
-				'contentTitleForMail' => 'multidatabaseContent.MultidatabaseContent.key',
+				'contentTitleForMail' => 'multidatabaseContent.MultidatabaseContent.value1',
 				'useComment' => 'multidatabaseSetting.use_comment',
 				'useCommentApproval' => 'multidatabaseSetting.use_comment_approval',
 			],
@@ -140,119 +140,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$conditions = [];
 		// 一覧を表示する
 		$this->__list($conditions);
-	}
-
-/**
- * Make sort condition
- * 汎用データベース コンテンツ一覧ソート処理（条件設定）
- *
- * @param string $sort_col ソート対象の
- * @return string Order句の内容
- */
-	private function __sortList($sort_col = '') {
-		if (empty($sort_col)) {
-			$pagerNamed = $this->Paginator->Controller->params->named;
-			if (!isset($pagerNamed['sort_col'])) {
-				$sort_col = 0;
-			} else {
-				$sort_col = $pagerNamed['sort_col'];
-			}
-		}
-
-		if (
-			isset($sort_col) &&
-			(int)$sort_col !== 0 &&
-			(
-				strstr($sort_col, 'value') <> false ||
-				in_array($sort_col, ['created', 'modified'])
-			)
-		) {
-			if (strstr($sort_col, '_desc')) {
-				$sortCol = str_replace('_desc', '', $sort_col);
-				$sortColDir = 'desc';
-			} else {
-				$sortCol = $sort_col;
-				$sortColDir = 'asc';
-			}
-		} else {
-			$sortCol = 'created';
-			$sortColDir = 'desc';
-		}
-
-		$sortOrder = 'MultidatabaseContent.' . $sortCol . ' ' . $sortColDir;
-
-		return $sortOrder;
-	}
-
-	private function __limitSelect() {
-		$pagerNamed = $this->Paginator->Controller->params->named;
-		$result = [];
-
-		foreach ($this->_multidatabaseMetadata as $metadata) {
-			if (
-				$metadata['type'] === 'select' ||
-				$metadata['type'] === 'checkbox'
-			) {
-				$valueKey = 'value' . $metadata['col_no'];
-				if (
-					isset($pagerNamed[$valueKey]) &&
-					$pagerNamed[$valueKey] !== '0'
-				) {
-					foreach ($metadata['selections'] as $selection) {
-						if (md5($selection) === $pagerNamed[$valueKey]) {
-							$result['MultidatabaseContent.' . $valueKey . ' like'] = "%{$selection}%";
-							break;
-						}
-					}
-				}
-			}
-		}
-		return $result;
-	}
-
-/**
- * Show Contents List
- * 汎用データべース コンテンツ一覧表示
- *
- * @param array $extraConditions 追加条件
- * @return void
- */
-	private function __list($extraConditions = []) {
-		$permission = $this->_getPermission();
-
-		$conditions = $this->MultidatabaseContent->getConditions(
-			Current::read('Block.id'),
-			$permission
-		);
-
-		if ($extraConditions) {
-			$conditions = Hash::merge($conditions, $extraConditions);
-		}
-
-		$limitSelect = $this->__limitSelect();
-
-		if (! empty($limitSelect)) {
-			$conditions = Hash::merge($conditions,
-				['and' => $limitSelect]
-			);
-		}
-
-		$this->Paginator->settings = array_merge(
-			$this->Paginator->settings,
-			[
-				'conditions' => $conditions,
-				'limit' => $this->_frameSetting['MultidatabaseFrameSetting']['content_per_page'],
-				'order' => $this->__sortList()
-			]
-		);
-
-		$this->MultidatabaseContent->recursive = 0;
-		$this->MultidatabaseContent->Behaviors->load('ContentComments.ContentComment');
-		$this->set('multidatabaseContents', $this->Paginator->paginate());
-		$this->MultidatabaseContent->Behaviors->unload('ContentComments.ContentComment');
-		$this->MultidatabaseContent->recursive = -1;
-
-		$this->set('viewMode', 'list');
 	}
 
 /**
@@ -480,17 +367,157 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		return $this->Download->doDownload($contentId, $options);
 	}
 
+/**
+ * Search
+ * 検索
+ *
+ * @return void
+ */
 	public function search() {
-		if ($this->request->is(['post', 'put'])) {
-			var_dump($pagerNamed = $this->Paginator->Controller->params->named);
-			//$this->Paginator->url()
-			var_dump($this->request->data);
-			exit;
+		// クエリを取得する
+		$query = [];
+		foreach ([
+			'keywords',
+			'type',
+			'start_dt',
+			'end_dt',
+			'status',
+			'sort'
+		] as $key) {
+			if(! is_null($this->request->query($key))) {
+				$query[$key]['type'] = 'search';
+				$query[$key]['field'] = null;
+				$query[$key]['value'] = $this->request->query($key);
+			}
 		}
+
+		foreach ($this->_multidatabaseMetadata as $metadata) {
+			switch($metadata['type']) {
+				case 'checkbox':
+				case 'radio':
+				case 'select':
+					if(! is_null($this->request->query('value' . $metadata['col_no']))) {
+						$field = 'value' . $metadata['col_no'];
+						$query[$field]['type'] = $metadata['type'];
+						$query[$field]['field'] = $field;
+						$query[$field]['value'] = $this->request->query($field);
+					}
+					break;
+			}
+		}
+
+		$searchConds = $this->MultidatabaseContent->getSearchConds($query);
+		$conditions = $this->__listBase($searchConds['conditions']);
+
+		// paginatorへ渡すための条件を取得する
+		$this->Paginator->settings = array_merge(
+			$this->Paginator->settings,
+			[
+				'conditions' => $conditions,
+				'limit' => $this->_frameSetting['MultidatabaseFrameSetting']['content_per_page'],
+				'order' => $searchConds['order'],
+			]
+		);
+
 		$this->set('cancelUrl', NetCommonsUrl::backToIndexUrl());
+		$this->set('multidatabaseContents', $this->Paginator->paginate());
+		$this->set('viewMode', 'list');
+		if (!empty($query)) {
+			$this->render('search_results');
+		} else {
+			$this->render('search');
+		}
+
 	}
 
-	public function searchResult() {
+/**
+ * Make sort condition
+ * 汎用データベース コンテンツ一覧ソート処理（条件設定）
+ *
+ * @param string $sortCol ソート対象の
+ * @return string Order句の内容
+ */
+	private function __condSortOrder($sortCol = '') {
+		if (empty($sortCol)) {
+			$pagerNamed = $this->Paginator->Controller->params->named;
+			if (empty($pagerNamed['sort_col'])) {
+				$sortCol = null;
+			} else {
+				$sortCol = $pagerNamed['sort_col'];
+			}
+		}
+
+		return $this->MultidatabaseContent->getCondSortOrder($sortCol);
+	}
+
+/**
+ * 一覧表示における複数選択、単一選択の絞込条件取得
+ *
+ * @return mixed
+ */
+	private function __condSelect() {
+		$pagerNamed = $this->Paginator->Controller->params->named;
+		return $this->MultidatabaseContent->getCondSelect($pagerNamed);
+	}
+
+/**
+ * Show Contents List
+ * 汎用データべース コンテンツ一覧表示（ベース）
+ *
+ * @param array $extraConditions 追加条件
+ * @return void
+ */
+	private function __listBase($extraConditions = []) {
+		$permission = $this->_getPermission();
+
+		$conditions = $this->MultidatabaseContent->getConditions(
+			Current::read('Block.id'),
+			$permission
+		);
+
+		if ($extraConditions) {
+			$conditions = Hash::merge($conditions, $extraConditions);
+		}
+
+		return $conditions;
+
+	}
+
+/**
+ * Show Contents List
+ * 汎用データべース コンテンツ一覧表示（インデックス用）
+ *
+ * @param array $extraConditions 追加条件
+ * @return void
+ */
+	private function __list($extraConditions = []) {
+
+		$conditions = $this->__listBase($extraConditions);
+
+		$limitSelect = $this->__condSelect();
+
+		if (! empty($limitSelect)) {
+			$conditions = Hash::merge($conditions,
+				['and' => $limitSelect]
+			);
+		}
+
+		$this->Paginator->settings = array_merge(
+			$this->Paginator->settings,
+			[
+				'conditions' => $conditions,
+				'limit' => $this->_frameSetting['MultidatabaseFrameSetting']['content_per_page'],
+				'order' => $this->__condSortOrder()
+			]
+		);
+
+		$this->MultidatabaseContent->recursive = 0;
+		$this->MultidatabaseContent->Behaviors->load('ContentComments.ContentComment');
+		$this->set('multidatabaseContents', $this->Paginator->paginate());
+		$this->MultidatabaseContent->Behaviors->unload('ContentComments.ContentComment');
+		$this->MultidatabaseContent->recursive = -1;
+
+		$this->set('viewMode', 'list');
 
 	}
 

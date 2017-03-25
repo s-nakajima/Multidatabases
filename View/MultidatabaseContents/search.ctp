@@ -18,80 +18,97 @@ echo $this->NetCommonsHtml->css([
 <div class="multidatabase-contents-search form">
 	<article>
 		<?php echo $this->NetCommonsHtml->blockTitle($multidatabase['Multidatabase']['name']); ?>
-		<?php echo $this->NetCommonsForm->create('MultidatabaseContentSearch');?>
+		<?php echo $this->NetCommonsForm->create('MultidatabaseContentSearch', [
+			'type' => 'get',
+		]);?>
+		<?php echo $this->NetCommonsForm->hidden('frame_id', ['value' => Current::read('Frame.id')]); ?>
 		<div class="panel panel-default">
 			<div class="panel-body">
-					<div>
-						<?php
-							$options = [
-								'label' => __d('multidatabases','Keywords')
-							];
-							echo $this->NetCommonsForm->input('keywords', $options);
-						?>
-					</div>
-					<div>
-						<?php
-							$options = [
-								'type' => 'select',
-								'options' => [
-									'and' => __d('multidatabases','And search'),
-									'or' => __d('multidatabases', 'Or search'),
-									'phrase' => __d('multidatabases', 'Phrase search')
-								],
-								'label' => __d('multidatabases','Search type')
-							];
-							echo $this->NetCommonsForm->input('search_type', $options);
-						?>
-					</div>
-					<div>
-						<?php
-							$options = [
-								'label' => __d('multidatabases','Create user')
-							];
-							echo $this->NetCommonsForm->input('create_user', $options);
-						?>
-					</div>
-					<div>
-						<label for="create_date_range" class="control-label">
-							<?php echo __d('multidatabases','Create date', $options); ?>
-						</label>
-						<div class="form-group">
-							<div class="form-inline">
-								<?php
-								$options = [
-									'type' => 'datetime',
-									'value' => ''
-								];
-								echo $this->NetCommonsForm->input('create_date_begin', $options);
-								?>
-								&nbsp;-&nbsp;
-								<?php
-								$options = [
-									'type' => 'datetime',
-									'value' => ''
-								];
-								echo $this->NetCommonsForm->input('create_date_end', $options);
-								?>
-							</div>
-						</div>
-					</div>
-					<?php echo $this->MultidatabaseContentView->dropDownToggleSelect($multidatabaseMetadata, 'search'); ?>
-
-					<div>
-						<?php
+				<?php // キーワード ?>
+				<div>
+					<?php
+						$options = [
+							'label' => __d('multidatabases','Keywords')
+						];
+						echo $this->NetCommonsForm->input('keywords', $options);
+					?>
+				</div>
+				<?php // 検索の種類 ?>
+				<div>
+					<?php
 						$options = [
 							'type' => 'select',
 							'options' => [
-								'0' => __d('multidatabases','All'),
-								'pub' => __d('multidatabases','Published'),
-								'unpub' => __d('multidatabases', 'Unpublished')
+								'and' => __d('multidatabases','And search'),
+								'or' => __d('multidatabases', 'Or search'),
+								'phrase' => __d('multidatabases', 'Phrase search')
 							],
-							'label' => __d('multidatabases','Status')
+							'label' => __d('multidatabases','Search type')
 						];
-						echo $this->NetCommonsForm->input('status', $options);
-						?>
+						echo $this->NetCommonsForm->input('type', $options);
+					?>
+				</div>
+				<?php // 作成者（ハンドル） ?>
+				<div>
+					<?php
+						$options = [
+							'label' => __d('multidatabases','Create user')
+						];
+						echo $this->NetCommonsForm->input('create_user', $options);
+					?>
+				</div>
+				<?php // 作成日時 ?>
+				<div>
+					<div class="form-group">
+						<label for="create_date_range" class="control-label">
+							<?php echo __d('multidatabases','Create date'); ?>
+						</label>
+						<div class="form-inline">
+							<div class="input-group">
+								<?php echo $this->NetCommonsForm->input('start_dt', array(
+									'type' => 'datetime',
+									'label' => false,
+									'class' => 'form-control',
+									'placeholder' => 'yyyy-mm-dd hh:nn',
+									'div' => false,
+									'error' => false,
+									'default' => false,
+								)); ?>
+								<span class="input-group-addon">
+									<span class="glyphicon glyphicon-minus"></span>
+								</span>
+								<?php echo $this->NetCommonsForm->input('end_dt', array(
+									'type' => 'datetime',
+									'label' => false,
+									'class' => 'form-control',
+									'placeholder' => 'yyyy-mm-dd hh:nn',
+									'div' => false,
+									'error' => false,
+									'default' => false,
+								)); ?>
+							</div>
+						</div>
 					</div>
-					<?php echo $this->MultidatabaseContentView->dropDownToggleSort($multidatabaseMetadata, 'search'); ?>
+				</div>
+				<?php // 選択項目 ?>
+				<?php echo $this->MultidatabaseContentView->dropDownToggleSelect($multidatabaseMetadata, 'search'); ?>
+				<?php // 状態 ?>
+				<div>
+					<?php
+					$options = [
+						'type' => 'select',
+						'options' => [
+							'0' => __d('multidatabases','All'),
+							'pub' => __d('multidatabases','Published'),
+							'unpub' => __d('multidatabases', 'Unpublished')
+						],
+						'label' => __d('multidatabases','Status')
+					];
+					echo $this->NetCommonsForm->input('status', $options);
+					?>
+				</div>
+				<?php // 表示順 ?>
+				<?php echo $this->MultidatabaseContentView->dropDownToggleSort($multidatabaseMetadata, 'search'); ?>
 			</div>
 			<div class="panel-footer text-center">
 				<?php echo $this->Button->cancel(__d('net_commons', 'Cancel'), $cancelUrl, []); ?>
