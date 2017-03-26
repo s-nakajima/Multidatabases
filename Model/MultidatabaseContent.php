@@ -583,7 +583,15 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 							break;
 						case 'file':
 						case 'image':
-							$this->uploadSettings($key . '_attach');
+							if (empty($data['MultidatabaseContent'][$key]['name'])) {
+								// 未アップロードの場合は既存ファイルを保持する
+								$this->uploadSettings($key . '_attach');
+							} else {
+								$data['MultidatabaseContent'][$key . '_attach'] =
+									$data['MultidatabaseContent'][$key];
+								$data['MultidatabaseContent'][$key] = $val['name'];
+								$attachFields[] = $key .'_attach';
+							}
 							$data['MultidatabaseContent'][$key] = '';
 							break;
 						default:
@@ -591,6 +599,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 					}
 				}
 			}
+		}
+
+		if (!empty($attachFields)) {
+			$this->Behaviors->load('Files.Attachment',$attachFields);
 		}
 
 		$this->begin();
