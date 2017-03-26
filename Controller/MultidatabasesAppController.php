@@ -54,7 +54,7 @@ class MultidatabasesAppController extends AppController {
 /**
  * @var array 汎用DBブロック設定
  */
-	protected $_multidatabaseSetting;
+	protected $_setting;
 
 /**
  * @var array 汎用DB設定
@@ -64,7 +64,7 @@ class MultidatabasesAppController extends AppController {
 /**
  * @var array 汎用DB メタデータ設定
  */
-	protected $_multidatabaseMetadata;
+	protected $_metadata;
 
 /**
  * prepare
@@ -103,13 +103,13 @@ class MultidatabasesAppController extends AppController {
 		}
 
 		// メタデータを取得
-		if (!$multidatabaseMetadata = $this->MultidatabaseMetadata->getEditMetadatas(
+		if (!$metadata = $this->MultidatabaseMetadata->getEditMetadatas(
 			$multidatabase['Multidatabase']['id'])
 		) {
 			return $this->throwBadRequest();
 		}
 
-		if (!$multidatabaseMetadataGroups = $this->MultidatabaseMetadata->getMetadataGroups(
+		if (!$metadataGroups = $this->MultidatabaseMetadata->getMetadataGroups(
 			$multidatabase['Multidatabase']['id'])
 		) {
 			return $this->throwBadRequest();
@@ -117,8 +117,8 @@ class MultidatabasesAppController extends AppController {
 
 		$this->_multidatabaseTitle = $multidatabase['Multidatabase']['name'];
 		$this->set('multidatabase', $multidatabase);
-		$this->set('multidatabaseMetadata', $multidatabaseMetadata);
-		$this->set('multidatabaseMetadataGroups', $multidatabaseMetadataGroups);
+		$this->set('multidatabaseMetadata', $metadata);
+		$this->set('multidatabaseMetadataGroups', $metadataGroups);
 
 		if (!$multidatabaseSetting = $this->MultidatabaseSetting->getMultidatabaseSetting()) {
 			$multidatabaseSetting = $this->MultidatabaseSetting->createBlockSetting();
@@ -129,8 +129,8 @@ class MultidatabasesAppController extends AppController {
 		}
 
 		$this->_multidatabase = $multidatabase;
-		$this->_multidatabaseMetadata = $multidatabaseMetadata;
-		$this->_multidatabaseSetting = $multidatabaseSetting;
+		$this->_metadata = $metadata;
+		$this->_setting = $multidatabaseSetting;
 		$this->set('multidatabaseSetting', $multidatabaseSetting['MultidatabaseSetting']);
 		$this->set('userId', (int)$this->Auth->user('id'));
 

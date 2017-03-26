@@ -21,7 +21,7 @@
 					<?php endif; ?>
 				</th>
 				<td>
-					<?php echo $this->MultidatabaseContentView->renderViewElement($gContents, $metadata); ?>
+					<?php echo $this->MultidatabaseContentViewElement->renderViewElement($gContents, $metadata); ?>
 				</td>
 			</tr>
 		<?php endforeach; ?>

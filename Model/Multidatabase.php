@@ -11,6 +11,7 @@
  */
 
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
+App::uses('MultidatabasesMetadataEditModel', 'MultidatabaseMetadataEdit.Model');
 
 /**
  * Multidatabase Model
@@ -177,6 +178,10 @@ class Multidatabase extends MultidatabasesAppModel {
  * @see Model::save()
  */
 	public function afterSave($created, $options = []) {
+		$this->loadModels([
+			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
+		]);
+
 		//MultidatabaseSetting登録
 		if (isset($this->MultidatabaseSetting->data['MultidatabaseSetting'])) {
 			$this->MultidatabaseSetting->set($this->MultidatabaseSetting->data['MultidatabaseSetting']);
@@ -203,14 +208,14 @@ class Multidatabase extends MultidatabasesAppModel {
 			$this->MultidatabaseMetadata->getDeleteMetadatas(
 				$this->data['Multidatabase']['id'], $metadatas, 'id'
 			);
-
+		/*
 		$delMetadataColNos =
 			$this->MultidatabaseMetadata->getDeleteMetadatas(
 				$this->data['Multidatabase']['id'], $metadatas, 'col_no'
 			);
-
+		*/
 		// MultidatabaseMetadata登録
-		$metadatas = $this->MultidatabaseMetadata->makeSaveData(
+		$metadatas = $this->MultidatabaseMetadataEdit->makeSaveData(
 			$this->data,
 			$metadatas
 		);

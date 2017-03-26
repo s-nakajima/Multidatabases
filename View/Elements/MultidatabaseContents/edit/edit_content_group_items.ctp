@@ -13,6 +13,6 @@
 
 <?php foreach ($metadatas as $metadata): ?>
 	<div>
-		<?php echo $this->MultidatabaseContentEdit->renderFormElement($metadata); ?>
+		<?php echo $this->MultidatabaseContentEditElement->renderFormElement($metadata); ?>
 	</div>
 <?php endforeach;

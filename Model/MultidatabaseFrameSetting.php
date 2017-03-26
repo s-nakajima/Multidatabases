@@ -100,19 +100,19 @@ class MultidatabaseFrameSetting extends MultidatabasesAppModel {
 			'frame_key' => Current::read('Frame.key'),
 		];
 
-		$multidatabaseFrameSetting = $this->find('first', [
+		$frameSetting = $this->find('first', [
 				'recursive' => -1,
 				'conditions' => $conditions,
 			]
 		);
 
-		if (!$multidatabaseFrameSetting) {
-			$multidatabaseFrameSetting = $this->create([
+		if (!$frameSetting) {
+			$frameSetting = $this->create([
 				'frame_key' => Current::read('Frame.key'),
 			]);
 		}
 
-		return $multidatabaseFrameSetting;
+		return $frameSetting;
 	}
 
 /**

@@ -25,6 +25,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  */
 	public $uses = [
 		'Multidatabases.MultidatabaseContent',
+		'Multidatabases.MultidatabaseContentSearch',
 		'Workflow.WorkflowComment',
 		'Categories.Category',
 		'NetCommons.NetCommonsTime',
@@ -121,8 +122,8 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			return false;
 		}
 
-		$multidatabaseFrameSetting = $this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true);
-		$this->set('multidatabaseFrameSetting', $multidatabaseFrameSetting['MultidatabaseFrameSetting']);
+		$frameSetting = $this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true);
+		$this->set('multidatabaseFrameSetting', $frameSetting['MultidatabaseFrameSetting']);
 
 		// ゲストアクセスOKのアクションを設定
 		$this->Auth->allow('index', 'detail');
@@ -174,13 +175,13 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		if ($multidatabaseContent) {
 			$this->set('multidatabaseContent', $multidatabaseContent);
 			$this->set('viewMode', 'detail');
-			if ($this->_multidatabaseSetting['MultidatabaseSetting']['use_comment']) {
+			if ($this->_setting['MultidatabaseSetting']['use_comment']) {
 				if ($this->request->is('post')) {
-					$multidatabaseContentKey
+					$contentKey
 						= $multidatabaseContent['MultidatabaseContent']['key'];
 					$useCommentApproval
-						= $this->_multidatabaseSetting['MultidatabaseSetting']['use_comment_approval'];
-					if (!$this->ContentComments->comment('multidatabases', $multidatabaseContentKey,
+						= $this->_setting['MultidatabaseSetting']['use_comment_approval'];
+					if (!$this->ContentComments->comment('multidatabases', $contentKey,
 						$useCommentApproval)
 					) {
 						return $this->throwBadRequest();
@@ -279,7 +280,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  */
 	private function __save() {
 		$this->request->data['MultidatabaseContent']['multidatabase_key'] =
-			$this->_multidatabaseSetting['MultidatabaseSetting']['multidatabase_key'];
+			$this->_setting['MultidatabaseSetting']['multidatabase_key'];
 
 		$status = $this->Workflow->parseStatus();
 		$this->request->data['MultidatabaseContent']['block_id'] = Current::read('Block.id');
@@ -390,7 +391,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			}
 		}
 
-		foreach ($this->_multidatabaseMetadata as $metadata) {
+		foreach ($this->_metadata as $metadata) {
 			switch($metadata['type']) {
 				case 'checkbox':
 				case 'radio':
@@ -405,7 +406,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			}
 		}
 
-		$searchConds = $this->MultidatabaseContent->getSearchConds($query);
+		$searchConds = $this->MultidatabaseContentSearch->getSearchConds($query);
 		$conditions = $this->__listBase($searchConds['conditions']);
 
 		// paginatorへ渡すための条件を取得する
@@ -445,7 +446,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			}
 		}
 
-		return $this->MultidatabaseContent->getCondSortOrder($sortCol);
+		return $this->MultidatabaseContentSearch->getCondSortOrder($sortCol);
 	}
 
 /**
@@ -455,7 +456,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  */
 	private function __condSelect() {
 		$pagerNamed = $this->Paginator->Controller->params->named;
-		return $this->MultidatabaseContent->getCondSelect($pagerNamed);
+		return $this->MultidatabaseContentSearch->getCondSelect($pagerNamed);
 	}
 
 /**
