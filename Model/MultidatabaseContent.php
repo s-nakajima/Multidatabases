@@ -590,7 +590,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 								$data['MultidatabaseContent'][$key . '_attach'] =
 									$data['MultidatabaseContent'][$key];
 								$data['MultidatabaseContent'][$key] = $val['name'];
-								$attachFields[] = $key .'_attach';
+								$attachFields[] = $key . '_attach';
 							}
 							$data['MultidatabaseContent'][$key] = '';
 							break;
@@ -602,7 +602,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		}
 
 		if (!empty($attachFields)) {
-			$this->Behaviors->load('Files.Attachment',$attachFields);
+			$this->Behaviors->load('Files.Attachment', $attachFields);
 		}
 
 		$this->begin();
