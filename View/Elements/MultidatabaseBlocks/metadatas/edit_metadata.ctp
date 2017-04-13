@@ -19,7 +19,12 @@ echo $this->NetCommonsHtml->script([
 <?php echo $this->NetCommonsForm->unlockField('MultidatabaseMetadata'); ?>
 
 <div ng-controller="MultidatabaseMetadata"
-     ng-init="initialize(<?php echo h(json_encode(['multidatabaseMetadata' => $multidatabaseMetadata])); ?>)">
+     ng-init="initialize(<?php
+        echo h(json_encode([
+        	'multidatabaseMetadata' => $metadatas,
+	        'multidatabaseMetadataDefault' => $metadataDefault
+        ]));
+     ?>)">
 	<div class="panel panel-default">
 		<div class="panel-heading clearfix">
 			<div class="pull-left">

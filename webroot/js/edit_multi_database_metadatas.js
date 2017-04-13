@@ -15,14 +15,16 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
   $scope.metadataGroup2 = [];
   $scope.metadataGroup3 = [];
   $scope.metadataEdit = {};
+  var metadataDefault = [];
 
-  /**
+	/**
      * initialize
      *
      * @param {Object} data
      * @type {Object}
      */
   $scope.initialize = function(data) {
+    metadataDefault = data.multidatabaseMetadataDefault;
     angular.forEach(data.multidatabaseMetadata, function(value) {
       switch (value.position) {
         case 0:
@@ -75,26 +77,9 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
      */
   $scope.add = function(positionNo, last) {
     var nextRank = last + 1;
-    var value = {
-      col_no: '',
-      id: '',
-      is_title: '',
-      is_visible_field_name: '',
-      is_file_dl_require_auth: '',
-      is_visible_file_dl_conter: '',
-      is_require: '',
-      is_searchable: '',
-      is_sortable: '',
-      is_visible_detail: '',
-      is_visible_list: '',
-      key: '',
-      language_id: '',
-      name: 'No title',
-      position: positionNo,
-      rank: nextRank,
-      selections: '',
-      type: 'text'
-    };
+    var value = metadataDefault;
+    value['position'] = positionNo;
+    value['rank'] = nextRank;
     var currentMetadatas = getGroup(positionNo);
     currentMetadatas.push(value);
   };

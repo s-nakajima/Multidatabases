@@ -172,7 +172,7 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 		}
 
 		$fileUrl = $this->__fileDlUrl($content, $colNo);
-		$result = '<img src="' . $fileUrl . '" alt="">';
+		$result = '<img src="' . $fileUrl . '" alt="" style="width:100%">';
 		return $result;
 	}
 

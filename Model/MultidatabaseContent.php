@@ -206,7 +206,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 						break;
 					default:
 						$tmp['rule'][] = 'notBlank';
-						$tmp['allowEmpty'] = false;
+						$tmp['message'] = sprintf(
+							__d('net_commons', 'Please input %s.'),
+							$metadata['name']
+						);
 						break;
 				}
 				$tmp['required'] = true;

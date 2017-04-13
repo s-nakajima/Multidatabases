@@ -266,7 +266,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
 			$colNo = 0;
 			$name = '';
 			if (
-				(int)$metadata['is_searchable'] === 1 &&
+				(int)$metadata['is_sortable'] === 1 &&
 				$metadata['type'] <> 'created' &&
 				$metadata['type'] <> 'updated'
 			) {

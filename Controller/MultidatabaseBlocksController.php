@@ -35,6 +35,7 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 	public $uses = [
 		'Multidatabases.MultidatabaseFrameSetting',
 		'Multidatabases.MultidatabaseMetadata',
+		'Multidatabases.MultidatabaseMetadataEdit',
 		'DataTypes.DataTypeChoice',
 		'Blocks.Block',
 	];
@@ -133,7 +134,8 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 			$this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true)
 		);
 
-		$this->set('multidatabaseMetadata', $multidatabases['MultidatabaseMetadata']);
+		$this->set('metadataDefault', $this->MultidatabaseMetadataEdit->getEmptyMetadata());
+		$this->set('metadatas', $multidatabases['MultidatabaseMetadata']);
 		$this->request->data['Frame'] = Current::read('Frame');
 	}
 
@@ -171,7 +173,8 @@ class MultidatabaseBlocksController extends MultidatabasesAppController {
 			$this->MultidatabaseFrameSetting->getMultidatabaseFrameSetting(true)
 		);
 
-		$this->set('multidatabaseMetadata', $multidatabases['MultidatabaseMetadata']);
+		$this->set('metadataDefault', $this->MultidatabaseMetadataEdit->getEmptyMetadata());
+		$this->set('metadatas', $multidatabases['MultidatabaseMetadata']);
 		$this->request->data['Frame'] = Current::read('Frame');
 	}
 
