@@ -22,10 +22,4 @@
 	],
 ]);
 
-echo $this->DisplayNumber->select('MultidatabaseFrameSetting.content_per_page', [
-	'label' => __d('multidatabases', 'Show contents sort type'),
-	'unit' => [
-		'single' => __d('multidatabases', '%s article'),
-		'multiple' => __d('multidatabases', '%s articles'),
-	],
-]);
+echo $this->MultidatabaseContentView->dropDownToggleSort($multidatabaseMetadata,'frame_setting');

@@ -255,10 +255,11 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * コンテンツを保存する
  *
  * @param array $data 保存するコンテンツデータ
+ * @param bool $isUpdate 更新処理であるか(true:更新,false:新規)
  * @return bool|array
  * @throws InternalErrorException
  */
-	public function saveContent($data) {
+	public function saveContent($data, $isUpdate = false) {
 		$this->loadModels([
 			'MultidatabaseContentEdit' => 'Multidatabases.MultidatabaseContentEdit',
 		]);
@@ -273,7 +274,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			return false;
 		}
 
-		$result = $this->MultidatabaseContentEdit->makeSaveData($data, $metadatas);
+		$result = $this->MultidatabaseContentEdit->makeSaveData($data, $metadatas, $isUpdate);
 
 		return $this->__saveContent(
 			$result['data'], $result['attachFields'], $result['skipAttaches']

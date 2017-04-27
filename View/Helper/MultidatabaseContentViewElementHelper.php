@@ -61,7 +61,7 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 			case 'image':
 				return $this->__renderViewElementImage($content, $colNo);
 			case 'autonumber':
-				return $this->__renderViewElementAutoNumber($content);
+				return $this->__renderViewElementAutoNumber($content, $colNo);
 			case 'mail':
 				return $this->__renderViewElementEmail($content, $colNo);
 			case 'hidden':
@@ -219,8 +219,9 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
  * @param array $content コンテンツ配列
  * @return string HTML
  */
-	private function __renderViewElementAutoNumber($content) {
+	private function __renderViewElementAutoNumber($content, $colNo) {
 		// 自動採番のフィールドを作成してここに表示させる
+		return $this->__renderViewElementGeneral($content, $colNo);
 	}
 
 /**

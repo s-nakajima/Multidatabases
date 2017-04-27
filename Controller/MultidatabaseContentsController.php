@@ -249,7 +249,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		}
 
 		if ($this->request->is(['post', 'put'])) {
-			$url = $this->__save();
+			$url = $this->__save(true);
 			if (!$url) {
 				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
 			} else {
@@ -276,9 +276,10 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * Save Content
  * データを保存する
  *
+ * @param bool $isUpdate 更新処理であるか(true:更新,false:新規)
  * @return bool|string
  */
-	private function __save() {
+	private function __save($isUpdate = false) {
 		$this->request->data['MultidatabaseContent']['multidatabase_key'] =
 			$this->_setting['MultidatabaseSetting']['multidatabase_key'];
 
@@ -291,7 +292,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 		unset($data['MultidatabaseContent']['id']);
 
-		if ($result = $this->MultidatabaseContent->saveContent($data)) {
+		if ($result = $this->MultidatabaseContent->saveContent($data,$isUpdate)) {
 			$url = NetCommonsUrl::actionUrl(
 				[
 					'controller' => 'multidatabase_contents',
@@ -440,7 +441,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		if (empty($sortCol)) {
 			$pagerNamed = $this->Paginator->Controller->params->named;
 			if (empty($pagerNamed['sort_col'])) {
-				$sortCol = null;
+				$sortCol = $this->_frameSetting['MultidatabaseFrameSetting']['default_sort_type'];
 			} else {
 				$sortCol = $pagerNamed['sort_col'];
 			}

@@ -19,6 +19,7 @@
 		<div uib-accordion-heading>
 			<div class="pull-right">
 				<button class="btn btn-xs btn-danger" type="button"
+				        ng-if="<?php echo "g${gPos}.is_title != 1"; ?>"
 				        ng-disabled="metadataGroup<?php echo $gPos; ?>.length < 2"
 				        ng-click="delete($event, <?php echo $gPos; ?>,
 				            $index,

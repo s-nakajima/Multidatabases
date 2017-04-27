@@ -35,6 +35,7 @@ class MultidatabaseFrameSettingsController extends MultidatabasesAppController {
  */
 	public $uses = [
 		'Multidatabases.MultidatabaseFrameSetting',
+		'Multidatabases.MultidatabaseContentSearch',
 	];
 
 /**
@@ -82,6 +83,7 @@ class MultidatabaseFrameSettingsController extends MultidatabasesAppController {
  * @return void
  */
 	public function edit() {
+		$this->_prepare();
 		if ($this->request->is('put') || $this->request->is('post')) {
 			if ($this->MultidatabaseFrameSetting->saveMultidatabaseFrameSetting($this->data)) {
 				$this->redirect(NetCommonsUrl::backToPageUrl(true));

@@ -13,6 +13,7 @@
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
 App::uses('MultidatabaseModel', 'Multidatabase.Model');
 App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
+App::uses('MultidatabaseContentModel', 'MultidatabaseContent.Model');
 
 /**
  * MultidatabaseContentEdit Model
@@ -70,6 +71,14 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 		) {
 			return false;
 		}
+
+
+		foreach ($metadatas as $key => $metadata) {
+			if ($metadata['type'] === 'autonumber') {
+				//$currentNum =
+			}
+		}
+
 
 		return $metadatas;
 	}
@@ -136,18 +145,29 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
  *
  * @param array $data データ配列
  * @param array $metadatas メタデータ配列
+ * @param boolean $isUpdate 更新処理であるか(true:更新,false:新規)
  * @return array
  */
-	public function makeSaveData($data, $metadatas) {
+	public function makeSaveData($data, $metadatas, $isUpdate = false) {
+		$this->loadModels([
+			'MultidatabaseContent' => 'Multidatabases.MultidatabaseContent',
+		]);
+
+
 		$multidatabaseContent = $data['MultidatabaseContent'];
 		$skipAttaches = [];
 		$attachFields = [];
+
+		$dataOrg = $this->MultidatabaseContent->getEditData(
+				[
+					'MultidatabaseContent.key'=> $data['MultidatabaseContent']['key']
+				]
+			);
 
 		foreach ($multidatabaseContent as $key => $val) {
 			if ($colNo = $this->prGetColNo($metadatas, $key)) {
 
 				$selections = $this->prSaveContentGetSel($metadatas, $colNo);
-
 				switch ($metadatas[$colNo]['type']) {
 					case 'select':
 						$data['MultidatabaseContent'][$key] =
@@ -180,6 +200,23 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 			}
 		}
 
+		foreach ($metadatas as $metadata) {
+			$key = 'value' . $metadata['col_no'];
+			switch ($metadata['type']) {
+				case 'autonumber':
+					if (! $isUpdate) {
+						$data['MultidatabaseContent'][$key] =
+							$this->MultidatabaseMetadata->MultidatabaseMetadataSetting
+								->updateAutoNum($metadata['id']);
+					} else {
+						$data['MultidatabaseContent'][$key] =
+							$dataOrg['MultidatabaseContent'][$key];
+					}
+					break;
+				default:
+					break;
+			}
+		}
 		$result = [
 			'data' => $data,
 			'attachFields' => $attachFields,

@@ -133,7 +133,6 @@ class MultidatabasesAppController extends AppController {
 		$this->_setting = $multidatabaseSetting;
 		$this->set('multidatabaseSetting', $multidatabaseSetting['MultidatabaseSetting']);
 		$this->set('userId', (int)$this->Auth->user('id'));
-
 		return true;
 	}
 

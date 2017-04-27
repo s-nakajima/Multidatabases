@@ -13,6 +13,7 @@
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
 App::uses('MultidatabasesMetadataInitModel', 'MultidatabaseMetadataInit.Model');
 App::uses('MultidatabasesMetadataEditModel', 'MultidatabaseMetadataEdit.Model');
+App::uses('MultidatabasesMetadataSettingModel', 'MultidatabaseMetadataSetting.Model');
 App::uses('CakeSession', 'Model/Datasourse');
 
 /**
@@ -38,6 +39,21 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @var array
  */
 	public $validate = [];
+
+/**
+ * hasOne associations
+ *
+ * @var array
+ */
+	public $hasOne = [
+		'MultidatabaseMetadataSetting' => [
+			'className' => 'Multidatabases.MultidatabaseMetadataSetting',
+			'foreignKey'=> 'id',
+			'conditions'=> '',
+			'fields' => '',
+			'order'=> ''
+		]
+	];
 
 /**
  * belongsTo associations
@@ -176,7 +192,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 
 		$metadatas = $this->find('all', [
 			'conditions' => $conditions,
-			'recursive' => -1,
 			'order' => $orders,
 		]);
 
@@ -409,7 +424,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 			'MultidatabaseMetadataInit' => 'Multidatabases.MultidatabaseMetadataInit',
 		]);
 
-		$initMetadatas = $this->MultidatabaseMetadataInit->initMetadatas;
+		$initMetadatas = $this->MultidatabaseMetadataInit->initMetadatas();
 		$result = [];
 		foreach ($initMetadatas as $key => $initMetadata) {
 			$result[$key] = $initMetadata;

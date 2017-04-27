@@ -28,14 +28,14 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 	public $useTable = false;
 
 /**
- * Init Metadatas
+ * Init Metadata Values
  * @var array
  */
-	public $initMetadatas = [
-		[
+	private $initMetadataValues = [
+		// タイトル
+		0 => [
 			'id' => '',
 			'key' => '',
-			'name' => 'タイトル',
 			'position' => 0,
 			'rank' => 0,
 			'col_no' => 1,
@@ -51,10 +51,10 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 1,
 			'is_visible_detail' => 1,
 		],
-		[
+		// ふりがな
+		1 => [
 			'id' => '',
 			'key' => '',
-			'name' => 'ふりがな',
 			'position' => 0,
 			'rank' => 1,
 			'col_no' => 2,
@@ -70,24 +70,14 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 0,
 			'is_visible_detail' => 1,
 		],
-		[
+		// カテゴリ
+		2 => [
 			'id' => '',
 			'key' => '',
-			'name' => 'カテゴリ',
 			'position' => 0,
 			'rank' => 2,
 			'col_no' => 3,
 			'type' => 'select',
-			'selections' => [
-				'国語',
-				'算数',
-				'理科',
-				'社会',
-				'総合',
-				'音楽',
-				'図工',
-				'体育'
-			],
 			'is_require' => 1,
 			'is_title' => 0,
 			'is_searchable' => 1,
@@ -98,10 +88,10 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 1,
 			'is_visible_detail' => 1,
 		],
-		[
+		// 概要
+		3 => [
 			'id' => '',
 			'key' => '',
-			'name' => '概要',
 			'position' => 0,
 			'rank' => 3,
 			'col_no' => 80,
@@ -117,10 +107,10 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 1,
 			'is_visible_detail' => 1,
 		],
-		[
+		// 連絡先
+		4 => [
 			'id' => '',
 			'key' => '',
-			'name' => '連絡先',
 			'position' => 1,
 			'rank' => 0,
 			'col_no' => 81,
@@ -136,10 +126,10 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 0,
 			'is_visible_detail' => 1,
 		],
-		[
+		// 担当者
+		5 => [
 			'id' => '',
 			'key' => '',
-			'name' => '担当者',
 			'position' => 1,
 			'rank' => 1,
 			'col_no' => 4,
@@ -155,10 +145,10 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 0,
 			'is_visible_detail' => 1,
 		],
-		[
+		// ホームページ
+		6 => [
 			'id' => '',
 			'key' => '',
-			'name' => 'ホームページ',
 			'position' => 1,
 			'rank' => 2,
 			'col_no' => 5,
@@ -174,19 +164,14 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 0,
 			'is_visible_detail' => 1,
 		],
-		[
+		// 対象
+		7 => [
 			'id' => '',
 			'key' => '',
-			'name' => '対象',
 			'position' => 1,
 			'rank' => 3,
 			'col_no' => 6,
 			'type' => 'select',
-			'selections' => [
-				'小学校',
-				'中学校',
-				'高校'
-			],
 			'is_require' => 0,
 			'is_title' => 0,
 			'is_searchable' => 1,
@@ -197,10 +182,10 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 0,
 			'is_visible_detail' => 1,
 		],
-		[
+		// 資料
+		8 => [
 			'id' => '',
 			'key' => '',
-			'name' => '資料',
 			'position' => 1,
 			'rank' => 4,
 			'col_no' => 7,
@@ -216,10 +201,10 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 0,
 			'is_visible_detail' => 1,
 		],
-		[
+		// コメント
+		9 => [
 			'id' => '',
 			'key' => '',
-			'name' => 'コメント',
 			'position' => 2,
 			'rank' => 0,
 			'col_no' => 82,
@@ -235,10 +220,10 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 0,
 			'is_visible_detail' => 1,
 		],
-		[
+		// 検索キーワード
+		10 => [
 			'id' => '',
 			'key' => '',
-			'name' => '検索キーワード',
 			'position' => 2,
 			'rank' => 1,
 			'col_no' => 8,
@@ -254,10 +239,10 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_list' => 0,
 			'is_visible_detail' => 0,
 		],
-		[
+		// 画像
+		11 => [
 			'id' => '',
 			'key' => '',
-			'name' => '画像',
 			'position' => 3,
 			'rank' => 0,
 			'col_no' => 9,
@@ -274,5 +259,43 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 			'is_visible_detail' => 1,
 		],
 	];
+
+/**
+ * Init Metadatas
+ * @return array
+ */
+	public function initMetadatas() {
+		$metadataValues = $this->initMetadataValues;
+
+		$metadataValues[0]['name'] = __d('multidatabases', 'Title');
+		$metadataValues[1]['name'] = __d('multidatabases', 'Phonetic');
+		$metadataValues[2]['name'] = __d('multidatabases', 'Category');
+		$metadataValues[2]['selections'] = [
+			__d('multidatabases', 'National language'),
+			__d('multidatabases', 'Mathematic'),
+			__d('multidatabases', 'Science'),
+			__d('multidatabases', 'Society'),
+			__d('multidatabases', 'General'),
+			__d('multidatabases', 'Music'),
+			__d('multidatabases', 'Arts and crafts'),
+			__d('multidatabases', 'Sports'),
+		];
+		$metadataValues[3]['name'] = __d('multidatabases', 'Brief');
+		$metadataValues[4]['name'] = __d('multidatabases', 'Contact');
+		$metadataValues[5]['name'] = __d('multidatabases', 'Contact person name');
+		$metadataValues[6]['name'] = __d('multidatabases', 'Home page');
+		$metadataValues[7]['name'] = __d('multidatabases', 'Target');
+		$metadataValues[7]['selections'] = [
+				__d('multidatabases', 'Junior school'),
+				__d('multidatabases', 'Junior high school'),
+				__d('multidatabases', 'High school'),
+			];
+		$metadataValues[8]['name'] = __d('multidatabases', 'Reference');
+		$metadataValues[9]['name'] = __d('multidatabases', 'Comment');
+		$metadataValues[10]['name'] = __d('multidatabases', 'Search keywords');
+		$metadataValues[11]['name'] = __d('multidatabases', 'Image');
+
+		return $metadataValues;
+	}
 }
 

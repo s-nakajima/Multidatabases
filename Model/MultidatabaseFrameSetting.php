@@ -53,33 +53,10 @@ class MultidatabaseFrameSetting extends MultidatabasesAppModel {
 
 			],
 			'default_sort_type' => [
-				'numeric' => [
-					'rule' => ['numeric'],
-					//'message' => 'Your custom message here',
-					//'allowEmpty' => false,
-					//'required' => false,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				],
-			],
-			'default_sort_order' => [
-				'boolean' => [
-					'rule' => ['boolean'],
-					//'message' => 'Your custom message here',
-					//'allowEmpty' => false,
-					//'required' => false,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				],
-			],
-			'multidatabase_metadata_sort_id' => [
-				'numeric' => [
-					'rule' => ['numeric'],
-					//'message' => 'Your custom message here',
-					//'allowEmpty' => false,
-					//'required' => false,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
+				'notBlank' => [
+					'rule' => ['notBlank'],
+					'message' => __d('net_commons', 'Invalid request.'),
+					'required' => true,
 				],
 			],
 		];

@@ -293,28 +293,41 @@ class MultidatabaseContentViewHelper extends AppHelper {
 			'(' . __d('multidatabases', 'Descending') . ')';
 
 		$result = '';
-		if ($viewType === 'search') {
-			$result .= '<div>';
-			$result .= '<label for="sort" class="control-label">';
-			$result .= __d('multidatabases', 'Sort order');
-			$result .= '</label>';
-			$metaKey = 'sort';
-			$options = [
-				'type' => 'select',
-				'options' => $selections
-			];
-			$result .= $this->NetCommonsForm->input($metaKey, $options);
-			$result .= '</div>';
-			return $result;
-		} else {
-			return $this->_View->element(
-				'MultidatabaseContents/view/view_content_dropdown_sort',
-				[
-					'dropdownItems' => $selections,
-					'currentItemKey' => $currentItemKey,
-					'url' => $url,
-				]
-			);
+
+		switch ($viewType) {
+			case 'search':
+				$result .= '<div>';
+				$result .= '<label for="sort" class="control-label">';
+				$result .= __d('multidatabases', 'Sort order');
+				$result .= '</label>';
+				$metaKey = 'sort';
+				$options = [
+					'type' => 'select',
+					'options' => $selections
+				];
+				$result .= $this->NetCommonsForm->input($metaKey, $options);
+				$result .= '</div>';
+				return $result;
+				break;
+			case 'frame_setting':
+				$selections[0] = __d('multidatabases', 'Unspecified');
+				$options = [
+						'type' => 'select',
+						'label' => __d('multidatabases', 'Sort order'),
+						'options' => $selections
+					];
+				return $this->NetCommonsForm->input('MultidatabaseFrameSetting.default_sort_type',$options);
+				break;
+			default:
+				return $this->_View->element(
+					'MultidatabaseContents/view/view_content_dropdown_sort',
+					[
+						'dropdownItems' => $selections,
+						'currentItemKey' => $currentItemKey,
+						'url' => $url,
+					]
+				);
+				break;
 		}
 	}
 }

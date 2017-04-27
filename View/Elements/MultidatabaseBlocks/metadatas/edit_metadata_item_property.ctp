@@ -21,6 +21,7 @@
        value="{{g<?php echo $gPos; ?>.position}}">
 <input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][col_no]" type="text" class="hidden"
        value="{{g<?php echo $gPos; ?>.col_no}}">
+<?php // 項目名 ?>
 <div class="row form-group">
 	<div class="col-xs-12">
 		<label for="multidatabaseMetadataSettingEditName<?php echo $gPos; ?>-{{$index}}" class="control-label">
@@ -34,8 +35,8 @@
 		       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['name']">
 	</div>
 </div>
-<?php // 項目名 ?>
-<div class="row form-group">
+<?php // 属性 ?>
+<div class="row form-group" ng-if="<?php echo "g${gPos}.is_title != 1"; ?>">
 	<div class="col-xs-12">
 		<label>
 			<?php echo __d('multidatabases', 'Field type'); ?>
@@ -53,28 +54,14 @@
 		</select>
 	</div>
 </div>
-<?php // 属性 ?>
+<?php // 選択肢 ?>
 <div ng-if="<?php echo "g${gPos}.type == 'select' || g${gPos}.type == 'checkbox'"; ?>">
 	<?php echo $this->MultidatabaseMetadataSetting->renderGroupItemPropertySelections($gPos); ?>
 </div>
 <div class="row form-group">
 	<div class="col-xs-12">
-		<?php // タイトルにする ?>
-		<div class="checkbox" ng-if="g<?php echo $gPos; ?>.type == 'text'">
-			<label class="control-label" for="MultidatabaseMetadataSettingEditIsTitle<?php echo $gPos; ?>-{{$index}}">
-				<input type="checkbox"
-				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_title]"
-				       id="MultidatabaseMetadataSettingEditIsTitle<?php echo $gPos; ?>-{{$index}}"
-				       class="MultidatabaseMetadataSettingEditIsTitle"
-				       ng-checked="checkIsTitle(<?php echo $gPos; ?>, {{$index}})"
-				       ng-true-value="1"
-				       ng-false-value=""
-				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_title']">
-				<?php echo __d('multidatabases', 'Is content title.'); ?>
-			</label>
-		</div>
 		<?php // 入力必須項目にする ?>
-		<div class="checkbox">
+		<div class="checkbox" ng-if="<?php echo "g${gPos}.is_title != 1"; ?>">
 			<label class="control-label" for="MultidatabaseMetadataSettingEditIsRequire<?php echo $gPos; ?>-{{$index}}">
 				<input type="checkbox"
 				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_require]"

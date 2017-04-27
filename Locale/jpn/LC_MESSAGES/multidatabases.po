@@ -297,3 +297,72 @@ msgstr "表示順"
 
 msgid "No title"
 msgstr "無題"
+
+msgid "Phonetic"
+msgstr "ふりがな"
+
+msgid "Category"
+msgstr "カテゴリ"
+
+msgid "National language"
+msgstr "国語"
+
+msgid "Mathematic"
+msgstr "算数"
+
+msgid "Science"
+msgstr "理科"
+
+msgid "Society"
+msgstr "社会"
+
+msgid "General"
+msgstr "総合"
+
+msgid "Music"
+msgstr "音楽"
+
+msgid "Arts and crafts"
+msgstr "図工"
+
+msgid "Sports"
+msgstr "体育"
+
+msgid "Brief"
+msgstr "概要"
+
+msgid "Contact"
+msgstr "連絡先"
+
+msgid "Contact person name"
+msgstr "担当者"
+
+msgid "Home page"
+msgstr "ホームページ"
+
+msgid "Target"
+msgstr "対象"
+
+msgid "Junior school"
+msgstr "小学校"
+
+msgid "Junior high school"
+msgstr "中学校"
+
+msgid "High school"
+msgstr "高校"
+
+msgid "Reference"
+msgstr "資料"
+
+msgid "Comment"
+msgstr "コメント"
+
+msgid "Search keywords"
+msgstr "検索キーワード"
+
+msgid "Image"
+msgstr "画像"
+
+msgid "Unspecified"
+msgstr "指定なし"
