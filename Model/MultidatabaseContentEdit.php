@@ -72,14 +72,6 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 			return false;
 		}
 
-
-		foreach ($metadatas as $key => $metadata) {
-			if ($metadata['type'] === 'autonumber') {
-				//$currentNum =
-			}
-		}
-
-
 		return $metadatas;
 	}
 

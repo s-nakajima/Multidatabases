@@ -1,24 +1,23 @@
 <?php
 /**
- * MultidatabaseBlockRolePermissionsController Controller
- * 汎用データベース 権限設定コントローラー
+ *  [[changeme]] [Controller|Model|View]
  *
- * @author Noriko Arai <arai@nii.ac.jp>
- * @author Tomoyuki Ohno (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
- * @link http://www.netcommons.org NetCommons Project
- * @license http://www.netcommons.org/license.txt NetCommons License
- * @copyright Copyright 2014, NetCommons Project
+ *  @author Noriko Arai <arai@nii.ac.jp>
+ *  @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ *  @link http://www.netcommons.org NetCommons Project
+ *  @license http://www.netcommons.org/license.txt NetCommons License
+ *  @copyright Copyright 2014, NetCommons Project
  */
 
 App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
 
 /**
- * MultidatabaseBlockRolePermissionsController Controller
+ * MultidatabaseContentImportsController Controller
  *
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Controller
  */
-class MultidatabaseBlockRolePermissionsController extends MultidatabasesAppController {
+class MultidatabaseContentExportsController extends MultidatabasesAppController {
 
 /**
  * layout
@@ -34,6 +33,7 @@ class MultidatabaseBlockRolePermissionsController extends MultidatabasesAppContr
  */
 	public $uses = [
 		'Multidatabases.Multidatabase',
+		'Multidatabases.MultidatabaseContent',
 	];
 
 /**
@@ -48,6 +48,8 @@ class MultidatabaseBlockRolePermissionsController extends MultidatabasesAppContr
 				'edit' => 'block_permission_editable',
 			],
 		],
+		'Files.Download',
+		'Files.FileUpload',
 	];
 
 /**
@@ -98,21 +100,65 @@ class MultidatabaseBlockRolePermissionsController extends MultidatabasesAppContr
 		);
 		$this->set('roles', $permissions['Roles']);
 
-		if ($this->request->is('post')) {
-			if ($this->MultidatabaseSetting->saveMultidatabaseSetting($this->request->data)) {
-				return $this->redirect(NetCommonsUrl::backToIndexUrl('default_setting_action'));
-			}
-			$this->NetCommons->handleValidationError($this->MultidatabaseSetting->validationErrors);
-			$this->request->data['BlockRolePermission'] = Hash::merge(
-				$permissions['BlockRolePermissions'],
-				$this->request->data['BlockRolePermission']
-			);
-
+		if (Hash::check($this->request->query, 'save')) {
+			return $this->__export($this->request->query['pass']);
 		} else {
-			$this->request->data['MultidatabaseSetting'] = $multidatabase['MultidatabaseSetting'];
-			$this->request->data['Block'] = $multidatabase['Block'];
-			$this->request->data['BlockRolePermission'] = $permissions['BlockRolePermissions'];
-			$this->request->data['Frame'] = Current::read('Frame');
 		}
 	}
+
+/**
+ * CSV Export
+ *
+ * @param
+ * @return void
+ */
+	private function __export($pass = '') {
+		$this->_prepare();
+
+		set_time_limit(1800);
+
+		App::uses('CsvFileWriter', 'Files.Utility');
+		$csvWriter = new CsvFileWriter();
+
+		$conditions = [
+			'is_active' => true,
+			'is_latest' => true
+		];
+
+		$multidatabaseContents = $this->MultidatabaseContent->getMultidatabaseContents($conditions);
+
+		foreach ($this->_metadata as $metadata) {
+			$metadataTitles['value' . $metadata['col_no']] = $metadata['name'];
+		}
+
+		$cnt = 1;
+		foreach ($multidatabaseContents as $content) {
+			foreach ($metadataTitles as $key => $metadataTitle) {
+				if ($cnt == 1) {
+					$tmpHeader[$key] = $metadataTitle;
+				}
+				$tmp[$key] = $content['MultidatabaseContent'][$key];
+			}
+
+			if ($cnt == 1) {
+				$header = $tmpHeader;
+				$csvWriter->add($header);
+			}
+
+			$csvWriter->add($tmp);
+			$cnt++;
+		}
+		$csvWriter->close();
+
+		if (! $csvWriter) {
+			$this->NetCommons->handleValidationError();
+			return;
+		}
+
+		return $csvWriter->zipDownload(
+			'export_multidatabases.zip', 'export_multidatabases.csv', $pass
+		);
+	}
 }
+
+

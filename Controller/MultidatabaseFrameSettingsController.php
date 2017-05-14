@@ -66,12 +66,16 @@ class MultidatabaseFrameSettingsController extends MultidatabasesAppController {
 			],
 			'blockTabs' => [
 				'block_settings' => ['url' => ['controller' => 'multidatabase_blocks']],
-				'metadata_settings' => ['url' => [
-					'controller' => 'multidatabase_metadata_settings'],
-					'label' => ['multidatabases', 'Metadata Settings']
-				],
 				'mail_settings' => ['url' => ['controller' => 'multidatabase_mail_settings']],
 				'role_permissions' => ['url' => ['controller' => 'multidatabase_block_role_permissions']],
+				'content_imports' => [
+					'url' => ['controller' => 'multidatabase_content_imports'],
+					'label' => ['multidatabases', 'Import contents']
+				],
+				'content_exports' => [
+					'url' => ['controller' => 'multidatabase_content_exports'],
+					'label' => ['multidatabases', 'Export contents']
+				],
 			],
 		],
 		'NetCommons.DisplayNumber',

@@ -81,7 +81,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Likes.Like',
 		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
-		'Files.Attachment',
+		//'Files.Attachment',
 	];
 
 /**
@@ -140,9 +140,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * 複数のコンテンツを取得
  *
  * @param array $conditions 条件
+ * @param int $recursive recursive
  * @return array|bool
  */
-	public function getMultidatabaseContents($conditions = []) {
+	public function getMultidatabaseContents($conditions = [], $recursive = 0) {
 		$this->loadModels([
 			'Multidatabase' => 'Multidatabases.Multidatabase',
 		]);
@@ -160,7 +161,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		];
 
 		$result = $this->find('all', [
-			'recursive' => 0,
+			'recursive' => $recursive,
 			'conditions' => $conditions
 		]);
 
@@ -256,6 +257,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  *
  * @param array $data 保存するコンテンツデータ
  * @param bool $isUpdate 更新処理であるか(true:更新,false:新規)
+ * @param bool $skipValidate バリデーションをスキップするか(true:スキップする,false:スキップしない)
  * @return bool|array
  * @throws InternalErrorException
  */
@@ -270,7 +272,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 		$this->set($data);
 
-		if (!$this->validates()) {
+		if (! $this->validates()) {
 			return false;
 		}
 
@@ -279,6 +281,27 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		return $this->__saveContent(
 			$result['data'], $result['attachFields'], $result['skipAttaches']
 		);
+	}
+
+/**
+ * Save content for Import
+ * コンテンツを保存する(インポート用)
+ *
+ * @param array $data 保存するコンテンツデータ
+ * @return bool|array
+*/
+	public function saveContentForImport($data) {
+		$this->begin();
+		try {
+			if (($savedData = $this->save($data, false)) === false) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$this->commit();
+		} catch (Exception $e) {
+			$this->rollback($e);
+		}
+
+		return true;
 	}
 
 /**

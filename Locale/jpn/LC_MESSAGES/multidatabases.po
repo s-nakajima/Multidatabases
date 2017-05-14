@@ -366,3 +366,37 @@ msgstr "画像"
 
 msgid "Unspecified"
 msgstr "指定なし"
+
+msgid "Import contents"
+msgstr "インポート"
+
+msgid "Export contents"
+msgstr "エクスポート"
+
+msgid "Import description"
+msgstr "指定の形式保存されているデータを汎用データベースに一括アップロードします。"
+"<br>"
+"メタデータの属性が「ファイル」,「画像」,「登録日時」,「更新日時」のデータは無視されます。"
+"<br>"
+"メタデータの属性が「自動採番」のデータは番号が振り直されます。"
+
+msgid "If you do not want to assign a password, please leave it blank."
+msgstr "パスワードを付与しない場合、空欄にしてください。"
+
+msgid "Password"
+msgstr "ZIPファイルのパスワード"
+
+msgid "Format file download"
+msgstr "インポートファイルフォーマットのダウンロード"
+
+msgid "Import file"
+msgstr "インポートファイルの指定"
+
+msgid "Successfully saved."
+msgstr "正常にインポートしました。"
+
+msgid "Incorrect file format."
+msgstr "インポートファイルフォーマットが正しくありません。"
+
+msgid "Invalid data."
+msgstr "インポートファイルのデータが正しくありません。"
