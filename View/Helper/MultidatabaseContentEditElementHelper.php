@@ -61,6 +61,7 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
 				$options['rows'] = 12;
 				return $this->__renderFormElementWysiwyg($name, $options);
 			case 'file':
+			case 'image':
 				return $this->__renderFormElementFile($name, $options, $elementType);
 			case 'date':
 				return $this->__renderFormElementDate($name, $options);

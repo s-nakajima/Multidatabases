@@ -81,7 +81,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Likes.Like',
 		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
-		//'Files.Attachment',
+		'Files.Attachment',
 	];
 
 /**
@@ -385,13 +385,14 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
 	private function __saveContent($data, $attachFields = [], $skipAttaches = []) {
-		if (!empty($attachFields)) {
+		if (! empty($attachFields)) {
 			$this->Behaviors->load('Files.Attachment', $attachFields);
 		}
 
-		if (!empty($skipAttaches)) {
+		// 未アップロードの場合は既存ファイルを保持する
+		if (! empty($skipAttaches)) {
 			foreach ($skipAttaches as $val) {
-				$this->uploadSettings($val . '_attach');
+				$this->uploadSettings($val);
 			}
 		}
 
