@@ -238,7 +238,6 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 		$conditions['MultidatabaseContent.key'] = $key;
 
-		//$multidatabaseContent = $this->MultidatabaseContent->find('first', $options);
 		$multidatabaseContent = $this->MultidatabaseContent->getEditData($conditions);
 
 		if (

@@ -149,6 +149,7 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 		$multidatabaseContent = $data['MultidatabaseContent'];
 		$skipAttaches = [];
 		$attachFields = [];
+		$removeAttachFlds = [];
 
 		$dataOrg = $this->MultidatabaseContent->getEditData(
 				[
@@ -156,9 +157,32 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 				]
 			);
 
+		// 添付ファイル削除フラグを立てる
+		$tmp = $multidatabaseContent;
+		foreach ($tmp as $key => $val) {
+			if ($colNo = $this->prGetColNo($metadatas, $key)) {
+				if (
+					(
+						$metadatas[$colNo]['type'] == 'file' ||
+						$metadatas[$colNo]['type'] == 'image'
+					) &&
+					isset($data['MultidatabaseContent'][$key . '_attach_del'])
+				) {
+					if (
+						isset($data['MultidatabaseContent'][$key . '_attach_del'][0]) &&
+						$data['MultidatabaseContent'][$key . '_attach_del'][0] == '1'
+					) {
+						$attachDelFlg[$key] = true;
+					} else {
+						$attachDelFlg[$key] = false;
+					}
+					unset($multidatabaseContent[$key . '_attach_del']);
+				}
+			}
+		}
+
 		foreach ($multidatabaseContent as $key => $val) {
 			if ($colNo = $this->prGetColNo($metadatas, $key)) {
-
 				$selections = $this->prSaveContentGetSel($metadatas, $colNo);
 				switch ($metadatas[$colNo]['type']) {
 					case 'select':
@@ -178,8 +202,12 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 					case 'file':
 					case 'image':
 						if (empty($data['MultidatabaseContent'][$key]['name'])) {
-							// 未アップロードの場合は既存ファイルを保持する
-							$skipAttaches[] = $key . '_attach';
+							if (isset($attachDelFlg[$key]) && $attachDelFlg[$key]) {
+								$attachFields[] = $key . '_attach';
+								$removeAttachFlds[] = $key;
+							} else {
+								$skipAttaches[] = $key . '_attach';
+							}
 						} else {
 							$data['MultidatabaseContent'][$key . '_attach'] =
 								$data['MultidatabaseContent'][$key];
@@ -192,6 +220,7 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 			}
 		}
 
+		// 自動採番を行う
 		foreach ($metadatas as $metadata) {
 			$key = 'value' . $metadata['col_no'];
 			switch ($metadata['type']) {
@@ -209,10 +238,12 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 					break;
 			}
 		}
+
 		$result = [
 			'data' => $data,
 			'attachFields' => $attachFields,
-			'skipAttaches' => $skipAttaches
+			'skipAttaches' => $skipAttaches,
+			'removeAttachFields' => $removeAttachFlds
 		];
 
 		return $result;

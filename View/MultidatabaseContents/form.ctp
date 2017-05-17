@@ -10,7 +10,6 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-
 echo $this->NetCommonsHtml->script([
 	'/multidatabases/js/edit_multi_database_contents.js',
 ]);
@@ -19,7 +18,6 @@ echo $this->NetCommonsHtml->css([
 	'/multidatabases/css/style.css',
 ]);
 ?>
-
 
 <div class="multidatabaseContents form" ng-controller="MultidatabaseContentEdit" ng-init="initialize(<?php
 	echo h(json_encode([

@@ -37,9 +37,10 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
  *
  * @param array $metadata メタデータ
  * @param array $options オプション
+ * @param null|array $content コンテンツデータ
  * @return string HTML
  */
-	public function renderFormElement($metadata, $options = []) {
+	public function renderFormElement($metadata, $options = [], $content = []) {
 		$name = 'MultidatabaseContent.value' . $metadata['col_no'];
 		$options['id'] = $name;
 		$options['label'] = $metadata['name'];
@@ -62,7 +63,7 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
 				return $this->__renderFormElementWysiwyg($name, $options);
 			case 'file':
 			case 'image':
-				return $this->__renderFormElementFile($name, $options, $elementType);
+				return $this->__renderFormElementFile($name, $options, $metadata, $content);
 			case 'date':
 				return $this->__renderFormElementDate($name, $options);
 			case 'hidden':
@@ -173,13 +174,15 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
  *
  * @param string $name フィールド名(key)
  * @param array $options オプション
- * @param string $type 種別(file, image)
+ * @param array $metadata メタデータ配列
+ * @param array $content コンテンツ配列
  * @return string HTML
  */
-	private function __renderFormElementFile($name, $options = [], $type = 'file') {
+	private function __renderFormElementFile($name, $options = [], $metadata =[], $content = []) {
 		$options['remove'] = false;
 		$options['filename'] = false;
-		return $this->NetCommonsForm->uploadFile($name, $options);
+		$result = $this->NetCommonsForm->uploadFile($name, $options);
+		return $result;
 	}
 
 /**
@@ -207,5 +210,4 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
 		}
 		return $result;
 	}
-
 }

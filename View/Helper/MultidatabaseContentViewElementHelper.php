@@ -38,10 +38,13 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
  *
  * @param array $content コンテンツ配列
  * @param array $metadata メタデータ配列
+ * @param string $elementType 部品タイプ
  * @return string HTML
  */
-	public function renderViewElement($content, $metadata) {
-		$elementType = $metadata['type'];
+	public function renderViewElement($content, $metadata, $elementType = null) {
+		if (is_null($elementType)) {
+			$elementType = $metadata['type'];
+		}
 		$colNo = $metadata['col_no'];
 
 		if (
@@ -144,7 +147,7 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 
 		$fileUrl = $this->__fileDlUrl($content, $colNo);
 		$result = '<span class="glyphicon glyphicon-file text-primary"></span>&nbsp;';
-		$result .= '<a href="' . $fileUrl . '">';
+		$result .= '<a href="' . $fileUrl . '" target="_blank">';
 		$result .= __d('multidatabases', 'Download');
 		$result .= '</a>';
 

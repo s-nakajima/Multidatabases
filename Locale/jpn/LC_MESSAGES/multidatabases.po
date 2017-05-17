@@ -400,3 +400,6 @@ msgstr "インポートファイルフォーマットが正しくありません
 
 msgid "Invalid data."
 msgstr "インポートファイルのデータが正しくありません。"
+
+msgid "Delete file"
+msgstr "登録済みのファイルを削除する"
