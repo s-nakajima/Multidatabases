@@ -145,18 +145,45 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 			return '';
 		}
 
+		/*
 		$fileUrl = $this->__fileDlUrl($content, $colNo);
 		$result = '<span class="glyphicon glyphicon-file text-primary"></span>&nbsp;';
 		$result .= '<a href="' . $fileUrl . '" target="_blank">';
 		$result .= __d('multidatabases', 'Download');
 		$result .= '</a>';
-
+		*/
+		$result = $this->__renderViewElementFileReqAuth($content, $colNo);
 		if ((int)$showCounter === 1) {
 			$result .= '&nbsp;<span class="badge">';
 			$result .= $fileInfo['UploadFile']['download_count'];
 			$result .= '</span>';
 		}
 
+		return $result;
+	}
+
+/**
+ * ファイルアップロードの値を出力する（認証が必要な場合）
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return string HTML
+ */
+	private function __renderViewElementFileReqAuth($content, $colNo) {
+		// 認証キー必要
+		$result = '<span class="glyphicon glyphicon-file text-primary"></span>&nbsp;';
+		$result .= $this->NetCommonsHtml->link(
+			__d('multidatabases', 'Download'),
+			'#',
+			[
+				'authorization-keys-popup-link',
+				'url' => $this->__fileDlUrl($content, $colNo),
+				'popup-title' => __d('authorization_keys', 'Authorization key confirm dialog'),
+				'popup-label' => __d('authorization_keys', 'Authorization key'),
+				'popup-placeholder' =>
+					__d('authorization_keys', 'Please input authorization key'),
+			]
+		);
 		return $result;
 	}
 
@@ -238,7 +265,7 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 		return [
 			'controller' => 'multidatabase_contents',
 			'action' => 'download',
-			$content['MultidatabaseContent']['multidatabase_key'],
+			$content['MultidatabaseContent']['key'],
 			$content['MultidatabaseContent']['id'],
 			'?' => ['col_no' => $colNo]
 		];

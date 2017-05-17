@@ -403,3 +403,6 @@ msgstr "インポートファイルのデータが正しくありません。"
 
 msgid "Delete file"
 msgstr "登録済みのファイルを削除する"
+
+msgid "Set download password"
+msgstr "ダウンロードパスワードを設定する"

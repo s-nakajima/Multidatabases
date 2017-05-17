@@ -10,6 +10,15 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
+echo $this->Html->script(
+	'/AuthorizationKeys/js/authorization_keys.js',
+	array(
+		'plugin' => false,
+		'once' => true,
+		'inline' => false
+	)
+);
+
 echo $this->NetCommonsHtml->css([
 	'/multidatabases/css/style.css',
 	'/likes/css/style.css',

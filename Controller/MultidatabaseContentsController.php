@@ -11,6 +11,8 @@
  */
 
 App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
+App::uses('ZipDownloader', 'Files.Utility');
+App::uses('TemporaryFolder', 'Files.Utility');
 
 /**
  * MultidatabaseContentsController Controller
@@ -76,6 +78,11 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			'allow' => ['detail'],
 		],
 		'Files.Download',
+		'AuthorizationKeys.AuthorizationKey' => [
+			'operationType' => 'popup',
+			'targetAction' => 'download',
+			'model' => 'MultidatabaseContent',
+		],
 	];
 
 /**
@@ -354,15 +361,42 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * @return void
  */
 	public function download() {
-		$contentId = (int)$this->request->params['pass'][0];
-		$colNo = (int)$this->request->query['col_no'];
-		$field = 'value' . $colNo . '_attach';
 
-		$options = array(
-			'field' => $field,
+		$key = $this->params['key'];
+
+		$permission = $this->_getPermission();
+
+		$conditions = $this->MultidatabaseContent->getConditions(
+			Current::read('Block.id'),
+			$permission
+		);
+
+		$conditions['MultidatabaseContent.key'] = $key;
+
+		$options = [
+			'conditions' => $conditions,
+			'recursive' => 0,
+		];
+
+		$content = $this->MultidatabaseContent->find('first', $options);
+
+		if(! $content) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		$contentId = $content['MultidatabaseContent']['id'];
+		$colNo = (int)$this->request->query['col_no'];
+		$field = 'value' . $colNo;
+		$fieldAttach = $field . '_attach';
+
+		$content['AuthorizationKey'] = $this->MultidatabaseContent->getAuthKey($contentId, $field);
+		$this->AuthorizationKey->guard('popup', 'MultidatabaseContent', $content, $field);
+
+		$options = [
+			'field' => $fieldAttach,
 			'download' => true,
 			//'name' => '',
-		);
+		];
 
 		return $this->Download->doDownload($contentId, $options);
 	}

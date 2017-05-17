@@ -112,7 +112,7 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
  * @param array $selections 選択肢配列
  * @return string
  */
-	public function prSaveConentCheck($data, $selections) {
+	public function prSaveContentCheck($data, $selections) {
 		$tmpArr = $data;
 		$tmpRes = [];
 
@@ -130,6 +130,77 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 		} else {
 			return implode('||', $tmpRes);
 		}
+	}
+
+	/**
+	 * 添付ファイル削除フラグを立てる
+	 *
+	 * @param array $content コンテンツ配列
+	 * @param array $metadatas メタデータ配列
+	 * @return array
+	 */
+	public function getAttachDelFlg($content, $metadatas) {
+		// 添付ファイル削除フラグを立てる
+		$result = [];
+		$tmp = $content;
+		foreach ($tmp as $key => $val) {
+			if ($colNo = $this->prGetColNo($metadatas, $key)) {
+				if (
+					(
+						$metadatas[$colNo]['type'] == 'file' ||
+						$metadatas[$colNo]['type'] == 'image'
+					) &&
+					isset($tmp[$key . '_attach_del'])
+				) {
+					if (
+						isset($tmp[$key . '_attach_del'][0]) &&
+						$tmp[$key . '_attach_del'][0] == '1'
+					) {
+						$result[$key] = true;
+					} else {
+						$result[$key] = false;
+					}
+					unset($content[$key . '_attach_del']);
+				}
+			}
+		}
+
+		return [
+			'attachDelFlg' => $result,
+			'content' => $content
+		];
+	}
+
+/**
+ * 添付ファイル削除フラグを立てる
+ *
+ * @param array $content コンテンツ配列
+ * @param array $metadatas メタデータ配列
+ * @return array
+ */
+	public function getAttachPasswords($content, $metadatas) {
+		// 添付ファイル削除フラグを立てる
+		$result = [];
+		$tmp = $content;
+		foreach ($tmp as $key => $val) {
+			if ($colNo = $this->prGetColNo($metadatas, $key)) {
+				if ($metadatas[$colNo]['type'] == 'file' &&
+					isset($tmp[$key . '_attach_pw'])
+				) {
+					$tmpPw = trim($tmp[$key . '_attach_pw']);
+
+					if (! empty($tmpPw)) {
+						$result['value' . $colNo] = $tmpPw;
+					}
+					unset($content[$key . '_attach_pw']);
+				}
+			}
+		}
+
+		return [
+			'attachPasswords' => $result,
+			'content' => $content
+		];
 	}
 
 /**
@@ -150,6 +221,7 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 		$skipAttaches = [];
 		$attachFields = [];
 		$removeAttachFlds = [];
+		$attachPasswords = [];
 
 		$dataOrg = $this->MultidatabaseContent->getEditData(
 				[
@@ -158,28 +230,14 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 			);
 
 		// 添付ファイル削除フラグを立てる
-		$tmp = $multidatabaseContent;
-		foreach ($tmp as $key => $val) {
-			if ($colNo = $this->prGetColNo($metadatas, $key)) {
-				if (
-					(
-						$metadatas[$colNo]['type'] == 'file' ||
-						$metadatas[$colNo]['type'] == 'image'
-					) &&
-					isset($data['MultidatabaseContent'][$key . '_attach_del'])
-				) {
-					if (
-						isset($data['MultidatabaseContent'][$key . '_attach_del'][0]) &&
-						$data['MultidatabaseContent'][$key . '_attach_del'][0] == '1'
-					) {
-						$attachDelFlg[$key] = true;
-					} else {
-						$attachDelFlg[$key] = false;
-					}
-					unset($multidatabaseContent[$key . '_attach_del']);
-				}
-			}
-		}
+		$tmp = $this->getAttachDelFlg($multidatabaseContent, $metadatas);
+		$multidatabaseContent = $tmp['content'];
+		$attachDelFlg = $tmp['attachDelFlg'];
+
+		// パスワードを取得する
+		$tmp = $this->getAttachPasswords($multidatabaseContent, $metadatas);
+		$multidatabaseContent = $tmp['content'];
+		$attachPasswords = $tmp['attachPasswords'];
 
 		foreach ($multidatabaseContent as $key => $val) {
 			if ($colNo = $this->prGetColNo($metadatas, $key)) {
@@ -194,7 +252,7 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 						break;
 					case 'checkbox':
 						$data['MultidatabaseContent'][$key] =
-							$this->prSaveConentCheck(
+							$this->prSaveContentCheck(
 								$data['MultidatabaseContent'][$key],
 								$selections
 							);
@@ -243,7 +301,8 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 			'data' => $data,
 			'attachFields' => $attachFields,
 			'skipAttaches' => $skipAttaches,
-			'removeAttachFields' => $removeAttachFlds
+			'removeAttachFields' => $removeAttachFlds,
+			'attachPasswords' => $attachPasswords
 		];
 
 		return $result;

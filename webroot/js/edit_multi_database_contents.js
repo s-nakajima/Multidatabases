@@ -27,8 +27,11 @@ NetCommonsApp.controller('MultidatabaseContentEdit',
       $scope.initialize = function(data) {
         if (data.multidatabaseContent) {
           $scope.multidatabaseContent = data.multidatabaseContent;
+          console.log(data.multidatabaseContent);
         }
+      };
 
+      $scope.enableFilePassword = function(id) {
 
       };
 

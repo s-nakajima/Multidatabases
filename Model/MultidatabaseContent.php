@@ -252,6 +252,68 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 /**
+ * パスワードを設定する
+ *
+ * @param int $content_id  コンテンツID
+ * @param array $passwords パスワード配列
+ * @return bool
+ */
+	public function saveAuthKey($content_id, $passwords) {
+		$this->loadModels([
+			'AuthorizationKeys' => 'AuthorizationKeys.AuthorizationKey',
+		]);
+
+		$baseDat = [
+			'model' => 'MultidatabaseContent',
+			'content_id' => $content_id
+		];
+
+		foreach ($passwords as $key => $val) {
+			if(! $this->AuthorizationKeys->saveAuthorizationKey(
+				$baseDat['model'],
+				$baseDat['content_id'],
+				$val,
+				$key
+			)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		}
+
+		return true;
+	}
+
+/**
+ * 認証情報を取得する
+ *
+ * @param int $content_id  コンテンツID
+ * @param string $field パスワードフィールド
+ * @return bool
+ */
+	public function getAuthKey($content_id, $field) {
+		$this->loadModels([
+			'AuthorizationKeys' => 'AuthorizationKeys.AuthorizationKey',
+		]);
+
+		$options = [
+			'conditions' => [
+				'model' => 'MultidatabaseContent',
+				'content_id' => $content_id,
+				'additional_id' => $field
+			],
+			'recursive' => 0,
+		];
+
+		$authKey = $this->AuthorizationKeys->find('first', $options);
+
+		if (! isset($authKey['AuthorizationKey'])) {
+			return false;
+		}
+
+		return $authKey['AuthorizationKey'];
+	}
+
+
+/**
  * Save content
  * コンテンツを保存する
  *
@@ -279,7 +341,11 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$result = $this->MultidatabaseContentEdit->makeSaveData($data, $metadatas, $isUpdate);
 
 		return $this->__saveContent(
-			$result['data'], $result['attachFields'], $result['skipAttaches'], $result['removeAttachFields']
+				$result['data'],
+				$result['attachFields'],
+				$result['skipAttaches'],
+				$result['removeAttachFields'],
+				$result['attachPasswords']
 		);
 	}
 
@@ -531,10 +597,12 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @param array $attachFields 添付ファイルフィールド配列
  * @param array $skipAttaches 添付ファイル除外フィールド配列
  * @param array $removeAttachFields 添付ファイル削除フィールド配列
+ * @param array $attachPasswords 添付ファイルパスワード配列
  * @return array|bool
  * @throws InternalErrorException
  */
-	private function __saveContent($data, $attachFields = [], $skipAttaches = [], $removeAttachFields = []) {
+	private function __saveContent(
+		$data, $attachFields = [], $skipAttaches = [], $removeAttachFields = [], $attachPasswords = []) {
 		if (! empty($attachFields)) {
 			$this->Behaviors->load('Files.Attachment', $attachFields);
 		}
@@ -546,7 +614,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			}
 		}
 
-
 		$this->begin();
 		try {
 
@@ -554,6 +621,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
+			// 新着情報を登録
 			$this->Behaviors->load('Topics.Topics', [
 				'fields' => [
 					'title' => 'MultidatabaseContent.value1',
@@ -563,6 +631,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				'search_contents' => $searchContents
 			]);
 
+			// メールキューを登録
 			$this->Behaviors->load('Mails.MailQueue', [
 				'embedTags' => [
 					'X-SUBJECT' => 'MultidatabaseContent.value1',
@@ -575,6 +644,13 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			if (($savedData = $this->save($data, false)) === false) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
+
+			// パスワードを登録
+			$this->saveAuthKey(
+				$savedData['MultidatabaseContent']['id'],
+				$attachPasswords
+			);
+
 			$this->commit();
 
 			// ファイルを削除する
@@ -589,7 +665,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		} catch (Exception $e) {
 			$this->rollback($e);
 		}
-
 		return $savedData;
 	}
 }
