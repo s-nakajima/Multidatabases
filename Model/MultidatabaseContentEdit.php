@@ -316,8 +316,11 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
  * @return array
  */
 	public function makeEditData($content, $metadatas) {
-		$result = $content;
+		$this->loadModels([
+			'MultidatabaseContent' => 'Multidatabases.MultidatabaseContent',
+		]);
 
+		$result = $content;
 		foreach ($metadatas as $metadata) {
 			if (
 				isset($content['MultidatabaseContent']['value' . $metadata['col_no']]) &&
@@ -341,6 +344,21 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 						break;
 					default:
 						break;
+				}
+			}
+
+			if ($metadata['type'] == 'file') {
+				$authPw = $this->MultidatabaseContent->getAuthKey(
+					$result['MultidatabaseContent']['id'], 'value' . $metadata['col_no']);
+
+				if (! $authPw) {
+					$result['MultidatabaseContent']['value' . $metadata['col_no'] . '_attach_pw_flg']
+						= 0;
+				} else {
+					$result['MultidatabaseContent']['value' . $metadata['col_no'] . '_attach_pw']
+						= $authPw['authorization_key'];
+					$result['MultidatabaseContent']['value' . $metadata['col_no'] . '_attach_pw_flg']
+						= 1;
 				}
 			}
 		}

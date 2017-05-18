@@ -305,6 +305,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 		$authKey = $this->AuthorizationKeys->find('first', $options);
 
+		if (! $authKey) {
+			return false;
+		}
+
 		if (! isset($authKey['AuthorizationKey'])) {
 			return false;
 		}

@@ -15,6 +15,37 @@
 	<div>
 		<?php echo $this->MultidatabaseContentEditElement->renderFormElement($metadata); ?>
 		<div>
+			<?php // パスワード設定 ?>
+			<?php if ($metadata['type'] === 'file'): ?>
+				<div class="nc-checkbox">
+					<label>
+						<?php
+							$pw_flg_field = 'value' . $metadata['col_no'] . '_attach_pw_flg';
+							if (isset($multidatabaseContent[$pw_flg_field]) && $multidatabaseContent[$pw_flg_field] == 1) {
+								$pw_flg_value = 1;
+							} else{
+								$pw_flg_value = 0;
+							}
+						?>
+						<input type="checkbox"
+						       name="<?php echo $pw_flg_field; ?>"
+						       ng-init="<?php echo $pw_flg_field; ?> = <?php echo $pw_flg_value; ?>"
+						       ng-true-value="1"
+						       ng-false-value=""
+						       ng-model="<?php echo $pw_flg_field; ?>"
+						>
+						<?php echo __d('multidatabases', 'Set download password'); ?>
+					</label>
+				</div>
+				<div ng-if="<?php echo $pw_flg_field; ?> == 1">
+					<?php
+					$options = [
+					];
+					echo $this->NetCommonsForm->input(
+						'value' . $metadata['col_no'] . '_attach_pw', $options);
+					?>
+				</div>
+			<?php endif; ?>
 			<?php
 			// ファイル削除＆登録済ファイルのリンク
 			if ($isEdit && ($metadata['type'] === 'file' || $metadata['type'] === 'image')):
@@ -28,38 +59,18 @@
 					);
 				?>
 				<?php if (! empty($tmpVal)): ?>
+				<div class="nc-checkbox">
+					<label>
+						<input type="checkbox"
+						       name="value<?php echo $metadata['col_no']; ?>_attach_del">
+						<?php echo __d('multidatabases', 'Delete file'); ?>
+					</label>
+				</div>
+				<div style="margin-bottom:10px;">
 					<?php
-						$options = [
-							'type' => 'select',
-							'multiple' => 'checkbox',
-							'options' => ['1' => __d('multidatabases', 'Delete file')],
-							'class' => 'checkbox-inline nc-checkbox',
-						];
-						echo $tmpVal;
-						echo $this->NetCommonsForm->input('value' . $metadata['col_no'] . '_attach_del', $options);
+					echo $tmpVal;
 					?>
-				<?php else: ?>
-					<?php // パスワード設定 ?>
-					<?php if ($metadata['type'] === 'file'): ?>
-						<div class="checkbox-inline nc-checkbox">
-							<label>
-								<input type="checkbox"
-								       name="value<?php echo $metadata['col_no']; ?>_attach_pw_flg"
-								       ng-true-value="1"
-								       ng-false-value=""
-								       ng-model="value<?php echo $metadata['col_no']; ?>_attach_pw_flg">
-								<?php echo __d('multidatabases', 'Set download password'); ?>
-							</label>
-						</div>
-						<div ng-if="value<?php echo $metadata['col_no']; ?>_attach_pw_flg">
-							<?php
-							$options = [
-							];
-							echo $this->NetCommonsForm->input(
-								'value' . $metadata['col_no'] . '_attach_pw', $options);
-							?>
-						</div>
-					<?php endif; ?>
+				</div>
 				<?php endif; ?>
 			<?php endif; ?>
 		</div>

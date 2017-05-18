@@ -145,18 +145,21 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 			return '';
 		}
 
-		/*
-		$fileUrl = $this->__fileDlUrl($content, $colNo);
-		$result = '<span class="glyphicon glyphicon-file text-primary"></span>&nbsp;';
-		$result .= '<a href="' . $fileUrl . '" target="_blank">';
-		$result .= __d('multidatabases', 'Download');
-		$result .= '</a>';
-		*/
-		$result = $this->__renderViewElementFileReqAuth($content, $colNo);
-		if ((int)$showCounter === 1) {
-			$result .= '&nbsp;<span class="badge">';
-			$result .= $fileInfo['UploadFile']['download_count'];
-			$result .= '</span>';
+		$MultidatabaseContent = ClassRegistry::init('Multidatabases.MultidatabaseContent');
+
+		if (! $MultidatabaseContent->getAuthKey($content['MultidatabaseContent']['id'], 'value' . $colNo)) {
+			$fileUrl = $this->__fileDlUrl($content, $colNo);
+			$result = '<span class="glyphicon glyphicon-file text-primary"></span>&nbsp;';
+			$result .= '<a href="' . $fileUrl . '" target="_blank">';
+			$result .= __d('multidatabases', 'Download');
+			$result .= '</a>';
+		} else {
+			$result = $this->__renderViewElementFileReqAuth($content, $colNo);
+			if ((int)$showCounter === 1) {
+				$result .= '&nbsp;<span class="badge">';
+				$result .= $fileInfo['UploadFile']['download_count'];
+				$result .= '</span>';
+			}
 		}
 
 		return $result;

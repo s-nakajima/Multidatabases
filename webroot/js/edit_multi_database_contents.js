@@ -11,6 +11,9 @@
 NetCommonsApp.controller('MultidatabaseContentEdit',
     ['$scope', 'NetCommonsWysiwyg', function($scope, NetCommonsWysiwyg) {
 
+	    $scope.multidatabaseContent = [];
+	    $scope.multidatabaseMetadata = [];
+
       /**
      * tinymce
      *
@@ -26,13 +29,21 @@ NetCommonsApp.controller('MultidatabaseContentEdit',
      */
       $scope.initialize = function(data) {
         if (data.multidatabaseContent) {
-          $scope.multidatabaseContent = data.multidatabaseContent;
-          console.log(data.multidatabaseContent);
+	        $scope.multidatabaseContent = data.multidatabaseContent;
+	        $scope.multidatabaseMetadata = data.multidatabaseMetadata;
         }
       };
-
-      $scope.enableFilePassword = function(id) {
-
-      };
-
+/*
+      $scope.togglePwField = function(field) {
+      	console.log(field);
+	      console.log($scope.multidatabaseContent[field]);
+      	if ($scope.multidatabaseContent[field] == 1) {
+	        $scope.multidatabaseContent[field] = 0;
+        } else {
+	        $scope.multidatabaseContent[field] = 1;
+        }
+	        $scope.$apply();
+        console.log($scope.multidatabaseContent[field]);
+      }
+*/
     }]);

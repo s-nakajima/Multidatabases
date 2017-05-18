@@ -157,20 +157,6 @@
 				<?php echo __d('multidatabases', 'Is searchable.'); ?>
 			</label>
 		</div>
-		<?php // ファイルのダウンロードパスワード ?>
-		<div class="checkbox" ng-if="g<?php echo $gPos; ?>.type == 'file'">
-			<label class="control-label"
-			       for="MultidatabaseMetadataSettingEditIsFileDlRequireAuth<?php echo $gPos; ?>-{{$index}}">
-				<input type="checkbox"
-				       id="MultidatabaseMetadataSettingEditIsFileDlRequireAuth<?php echo $gPos; ?>-{{$index}}"
-				       class="MultidatabaseMetadataSettingEditIsFileDlRequireAuth"
-				       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_file_dl_require_auth]"
-				       ng-true-value="1"
-				       ng-false-value=""
-				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_file_dl_require_auth']">
-				<?php echo __d('multidatabases', 'Enable to set download password.'); ?>
-			</label>
-		</div>
 		<?php // ファイルのダウンロード回数を表示する ?>
 		<div class="checkbox" ng-if="g<?php echo $gPos; ?>.type == 'file'">
 			<label class="control-label"
