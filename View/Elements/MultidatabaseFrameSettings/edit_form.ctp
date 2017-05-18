@@ -22,4 +22,4 @@
 	],
 ]);
 
-echo $this->MultidatabaseContentView->dropDownToggleSort($multidatabaseMetadata,'frame_setting');
+echo $this->MultidatabaseContentView->dropDownToggleSort($multidatabaseMetadata, 'frame_setting');

@@ -48,10 +48,10 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	public $hasOne = [
 		'MultidatabaseMetadataSetting' => [
 			'className' => 'Multidatabases.MultidatabaseMetadataSetting',
-			'foreignKey'=> 'id',
-			'conditions'=> '',
+			'foreignKey' => 'id',
+			'conditions' => '',
 			'fields' => '',
-			'order'=> ''
+			'order' => ''
 		]
 	];
 

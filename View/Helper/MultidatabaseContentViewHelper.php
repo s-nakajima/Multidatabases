@@ -308,7 +308,6 @@ class MultidatabaseContentViewHelper extends AppHelper {
 				$result .= $this->NetCommonsForm->input($metaKey, $options);
 				$result .= '</div>';
 				return $result;
-				break;
 			case 'frame_setting':
 				$selections[0] = __d('multidatabases', 'Unspecified');
 				$options = [
@@ -316,8 +315,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
 						'label' => __d('multidatabases', 'Sort order'),
 						'options' => $selections
 					];
-				return $this->NetCommonsForm->input('MultidatabaseFrameSetting.default_sort_type',$options);
-				break;
+				return $this->NetCommonsForm->input('MultidatabaseFrameSetting.default_sort_type', $options);
 			default:
 				return $this->_View->element(
 					'MultidatabaseContents/view/view_content_dropdown_sort',
@@ -327,7 +325,6 @@ class MultidatabaseContentViewHelper extends AppHelper {
 						'url' => $url,
 					]
 				);
-				break;
 		}
 	}
 }

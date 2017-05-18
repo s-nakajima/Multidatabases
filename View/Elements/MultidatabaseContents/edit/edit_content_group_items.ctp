@@ -20,24 +20,25 @@
 				<div class="nc-checkbox">
 					<label>
 						<?php
-							$pw_flg_field = 'value' . $metadata['col_no'] . '_attach_pw_flg';
-							if (isset($multidatabaseContent[$pw_flg_field]) && $multidatabaseContent[$pw_flg_field] == 1) {
-								$pw_flg_value = 1;
-							} else{
-								$pw_flg_value = 0;
+							$pwFlgField = 'value' . $metadata['col_no'] . '_attach_pw_flg';
+							$pwFlgValue = 0;
+							if (
+								isset($multidatabaseContent[$pwFlgField]) && $multidatabaseContent[$pwFlgField] == 1
+							) {
+								$pwFlgValue = 1;
 							}
 						?>
 						<input type="checkbox"
-						       name="<?php echo $pw_flg_field; ?>"
-						       ng-init="<?php echo $pw_flg_field; ?> = <?php echo $pw_flg_value; ?>"
+						       name="<?php echo $pwFlgField; ?>"
+						       ng-init="<?php echo $pwFlgField . '=' . $pwFlgValue; ?>"
 						       ng-true-value="1"
 						       ng-false-value=""
-						       ng-model="<?php echo $pw_flg_field; ?>"
+						       ng-model="<?php echo $pwFlgField; ?>"
 						>
 						<?php echo __d('multidatabases', 'Set download password'); ?>
 					</label>
 				</div>
-				<div ng-if="<?php echo $pw_flg_field; ?> == 1">
+				<div ng-if="<?php echo $pwFlgField; ?> == 1">
 					<?php
 					$options = [
 					];
@@ -46,10 +47,8 @@
 					?>
 				</div>
 			<?php endif; ?>
-			<?php
-			// ファイル削除＆登録済ファイルのリンク
-			if ($isEdit && ($metadata['type'] === 'file' || $metadata['type'] === 'image')):
-			?>
+			<?php if ($isEdit && ($metadata['type'] === 'file' || $metadata['type'] === 'image')): ?>
+				<?php  // ファイル削除＆登録済ファイルのリンク ?>
 				<?php
 					// ファイル or 画像の場合
 					$tmpVal = $this->MultidatabaseContentViewElement->renderViewElement(
@@ -59,18 +58,18 @@
 					);
 				?>
 				<?php if (! empty($tmpVal)): ?>
-				<div class="nc-checkbox">
-					<label>
-						<input type="checkbox"
-						       name="value<?php echo $metadata['col_no']; ?>_attach_del">
-						<?php echo __d('multidatabases', 'Delete file'); ?>
-					</label>
-				</div>
-				<div style="margin-bottom:10px;">
-					<?php
-					echo $tmpVal;
-					?>
-				</div>
+					<div class="nc-checkbox">
+						<label>
+							<input type="checkbox"
+							       name="value<?php echo $metadata['col_no']; ?>_attach_del">
+							<?php echo __d('multidatabases', 'Delete file'); ?>
+						</label>
+					</div>
+					<div style="margin-bottom:10px;">
+						<?php
+						echo $tmpVal;
+						?>
+					</div>
 				<?php endif; ?>
 			<?php endif; ?>
 		</div>

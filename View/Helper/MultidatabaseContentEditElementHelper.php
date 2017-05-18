@@ -52,22 +52,22 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
 		switch ($elementType) {
 			case 'textarea':
 				return $this->__renderFormElementTextArea($name, $options);
-			case 'select':
-				$options['options'] = $this->__cnvMetaSelToArr($metadata['selections']);
-				return $this->__renderFormElementSelect($name, $options);
-			case 'checkbox':
-				$options['options'] = $this->__cnvMetaSelToArr($metadata['selections']);
-				return $this->__renderFormElementCheckBox($name, $options);
 			case 'wysiwyg':
 				$options['rows'] = 12;
 				return $this->__renderFormElementWysiwyg($name, $options);
-			case 'file':
-			case 'image':
-				return $this->__renderFormElementFile($name, $options, $metadata, $content);
 			case 'date':
 				return $this->__renderFormElementDate($name, $options);
 			case 'hidden':
 				return $this->__renderFormElementHidden($name, $options);
+		}
+
+		if (in_array($elementType, ['select', 'checkbox'])) {
+			$options['options'] = $this->__cnvMetaSelToArr($metadata['selections']);
+			return $this->__renderFormElementSelect($name, $options, $elementType);
+		}
+
+		if (in_array($elementType, ['file', 'image'])) {
+			return $this->__renderFormElementFile($name, $options, $metadata, $content);
 		}
 
 		if (in_array($elementType, ['text', 'link', 'mail'])) {
@@ -128,33 +128,25 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
 	}
 
 /**
- * チェックボックスを出力する
+ * セレクトボックス・チェックボックスを出力する
  *
  * @param string $name フィールド名(key)
  * @param array $options オプション
+ * @param string $elementType エレメントタイプ
  * @return string HTML
  */
-	private function __renderFormElementCheckBox($name, $options = []) {
-		$options += [
-			'type' => 'select',
-			'multiple' => 'checkbox',
-			'options' => $options,
-			'class' => 'checkbox-inline nc-checkbox',
-		];
-
-		return $this->NetCommonsForm->input($name, $options);
-	}
-
-/**
- * セレクトボックスを出力する
- *
- * @param string $name フィールド名(key)
- * @param array $options オプション
- * @return string HTML
- */
-	private function __renderFormElementSelect($name, $options = []) {
-		$options['type'] = 'select';
-		return $this->NetCommonsForm->input($name, $options);
+	private function __renderFormElementSelect($name, $options = [], $elementType = '') {
+		if ($elementType == 'checkbox') {
+			$options += [
+				'type' => 'select',
+				'multiple' => 'checkbox',
+				'options' => $options,
+				'class' => 'checkbox-inline nc-checkbox',
+			];
+		} else {
+			$options['type'] = 'select';
+			return $this->NetCommonsForm->input($name, $options);
+		}
 	}
 
 /**
@@ -178,7 +170,7 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
  * @param array $content コンテンツ配列
  * @return string HTML
  */
-	private function __renderFormElementFile($name, $options = [], $metadata =[], $content = []) {
+	private function __renderFormElementFile($name, $options = [], $metadata = [], $content = []) {
 		$options['remove'] = false;
 		$options['filename'] = false;
 		$result = $this->NetCommonsForm->uploadFile($name, $options);

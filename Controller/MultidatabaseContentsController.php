@@ -210,7 +210,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$this->set('isEdit', false);
 
 		if ($this->request->is('post')) {
-			$url = $this->__save();
+			$url = $this->__save(false);
 			if (!$url) {
 				$this->NetCommons->handleValidationError($this->MultidatabaseContent->validationErrors);
 			} else {
@@ -285,7 +285,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * @param bool $isUpdate 更新処理であるか(true:更新,false:新規)
  * @return bool|string
  */
-	private function __save($isUpdate = false) {
+	private function __save($isUpdate) {
 		$this->request->data['MultidatabaseContent']['multidatabase_key'] =
 			$this->_setting['MultidatabaseSetting']['multidatabase_key'];
 
@@ -298,7 +298,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 		unset($data['MultidatabaseContent']['id']);
 
-		if ($result = $this->MultidatabaseContent->saveContent($data,$isUpdate)) {
+		if ($result = $this->MultidatabaseContent->saveContent($data, $isUpdate)) {
 			$url = NetCommonsUrl::actionUrl(
 				[
 					'controller' => 'multidatabase_contents',
@@ -357,11 +357,10 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
  * File Download
  * ファイルダウンロード
  *
- * @throws NotFoundException
+ * @throws InternalErrorException
  * @return void
  */
 	public function download() {
-
 		$key = $this->params['key'];
 
 		$permission = $this->_getPermission();
@@ -380,7 +379,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 		$content = $this->MultidatabaseContent->find('first', $options);
 
-		if(! $content) {
+		if (! $content) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 

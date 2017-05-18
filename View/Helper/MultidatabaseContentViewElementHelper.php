@@ -67,10 +67,8 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 				return $this->__renderViewElementAutoNumber($content, $colNo);
 			case 'mail':
 				return $this->__renderViewElementEmail($content, $colNo);
-			case 'hidden':
-				return $this->__renderViewElementHidden($content, $colNo);
 			default:
-				// text, textarea, checkbox, selectはこちらの処理
+				// text, textarea, checkbox, select, hiddenはこちらの処理
 				return $this->__renderViewElementGeneral($content, $colNo);
 		}
 	}
@@ -147,7 +145,9 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 
 		$MultidatabaseContent = ClassRegistry::init('Multidatabases.MultidatabaseContent');
 
-		if (! $MultidatabaseContent->getAuthKey($content['MultidatabaseContent']['id'], 'value' . $colNo)) {
+		if (! $MultidatabaseContent->getAuthKey(
+			$content['MultidatabaseContent']['id'], 'value' . $colNo)
+		) {
 			$fileUrl = $this->__fileDlUrl($content, $colNo);
 			$result = '<span class="glyphicon glyphicon-file text-primary"></span>&nbsp;';
 			$result .= '<a href="' . $fileUrl . '" target="_blank">';
@@ -210,18 +210,7 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 	}
 
 /**
- * 隠し属性の値を出力する
- *
- * @param array $content コンテンツ配列
- * @param int $colNo カラムNo
- * @return string HTML
- */
-	private function __renderViewElementHidden($content, $colNo) {
-		return $this->__renderViewElementGeneral($content, $colNo);
-	}
-
-/**
- *リンクの値を出力する
+ * リンクの値を出力する
  *
  * @param array $content コンテンツ配列
  * @param int $colNo カラムNo
@@ -250,6 +239,7 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
  * 自動採番の値を出力する
  *
  * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
  * @return string HTML
  */
 	private function __renderViewElementAutoNumber($content, $colNo) {

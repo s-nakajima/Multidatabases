@@ -31,7 +31,7 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
  * Init Metadata Values
  * @var array
  */
-	private $initMetadataValues = [
+	private $__initMetadataValues = [
 		// タイトル
 		0 => [
 			'id' => '',
@@ -262,10 +262,11 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 
 /**
  * Init Metadatas
+ *
  * @return array
  */
 	public function initMetadatas() {
-		$metadataValues = $this->initMetadataValues;
+		$metadataValues = $this->__initMetadataValues;
 
 		$metadataValues[0]['name'] = __d('multidatabases', 'Title');
 		$metadataValues[1]['name'] = __d('multidatabases', 'Phonetic');

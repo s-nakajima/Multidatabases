@@ -17,7 +17,7 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
   $scope.metadataEdit = {};
   var metadataDefault = [];
 
-	/**
+  /**
      * initialize
      *
      * @param {Object} data

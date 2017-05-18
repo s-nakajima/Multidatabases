@@ -2,11 +2,11 @@
 /**
  * MultidatabaseContentImportsController Controller
  *
- *  @author Noriko Arai <arai@nii.ac.jp>
- *  @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
- *  @link http://www.netcommons.org NetCommons Project
- *  @license http://www.netcommons.org/license.txt NetCommons License
- *  @copyright Copyright 2014, NetCommons Project
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
  */
 
 App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
@@ -86,10 +86,6 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
  * @return void
  */
 	public function edit() {
-		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
-			return $this->throwBadRequest();
-		}
-
 		$permissions = $this->Workflow->getBlockRolePermissions(
 			[
 				'content_creatable',
@@ -122,19 +118,19 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 			return false;
 		}
 
-		if(! $this->__saveImportContents($dat)) {
+		if (! $this->__saveImportContents($dat)) {
 			return false;
 		}
 
 		$this->NetCommons->setFlashNotification(
 			__d('multidatabases', 'Successfully saved.'), ['class' => 'success']
 		);
-
 	}
 
 /**
  * Check Import Contents Format
  *
+ * @param array $csvHeader CSVヘッダ配列
  * @return mixed
  */
 	private function __chkImportContentsFormat($csvHeader = []) {
@@ -153,7 +149,7 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 /**
  * Load CSV and Get Import Contents
  *
- * @return mixed
+ * @return array|bool
  */
 	private function __getImportContents() {
 		App::uses('CsvFileReader', 'Files.Utility');
@@ -161,7 +157,7 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 		$reader = new CsvFileReader($file);
 
 		$cnt = 0;
-		foreach ($reader as $rowNo => $rowVals) {
+		foreach ($reader as $rowVals) {
 			if ($cnt == 0) {
 				$dat['header'] = $rowVals;
 				$cnt++;
@@ -183,7 +179,9 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 /**
  * Save Import Contents
  *
- * @return mixed
+ * @param array $importDat インポートデータ配列
+ * @return array|bool
+ * @throws InternalErrorException
  */
 	private function __saveImportContents($importDat) {
 		// 共通データ
@@ -241,6 +239,9 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 
 /**
  * Download CSV Format
+ *
+ * @return bool
+ * @throws InternalErrorException
  */
 	public function download_import_format() {
 		$this->_prepare();

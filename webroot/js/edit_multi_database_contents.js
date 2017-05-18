@@ -11,39 +11,26 @@
 NetCommonsApp.controller('MultidatabaseContentEdit',
     ['$scope', 'NetCommonsWysiwyg', function($scope, NetCommonsWysiwyg) {
 
-	    $scope.multidatabaseContent = [];
-	    $scope.multidatabaseMetadata = [];
+      $scope.multidatabaseContent = [];
+      $scope.multidatabaseMetadata = [];
 
       /**
-     * tinymce
-     *
-     * @type {object}
-     */
+       * tinymce
+       *
+       * @type {object}
+       */
       $scope.tinymce = NetCommonsWysiwyg.new();
 
       /**
-     * initialize
-     *
-     * @param {Object} data
-     * @type {object}
-     */
+       * initialize
+       *
+       * @param {Object} data
+       * @type {object}
+       */
       $scope.initialize = function(data) {
         if (data.multidatabaseContent) {
-	        $scope.multidatabaseContent = data.multidatabaseContent;
-	        $scope.multidatabaseMetadata = data.multidatabaseMetadata;
+          $scope.multidatabaseContent = data.multidatabaseContent;
+          $scope.multidatabaseMetadata = data.multidatabaseMetadata;
         }
       };
-/*
-      $scope.togglePwField = function(field) {
-      	console.log(field);
-	      console.log($scope.multidatabaseContent[field]);
-      	if ($scope.multidatabaseContent[field] == 1) {
-	        $scope.multidatabaseContent[field] = 0;
-        } else {
-	        $scope.multidatabaseContent[field] = 1;
-        }
-	        $scope.$apply();
-        console.log($scope.multidatabaseContent[field]);
-      }
-*/
     }]);

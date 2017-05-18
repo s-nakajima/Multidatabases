@@ -23,25 +23,25 @@ class MultidatabaseMetadataSetting extends MultidatabasesAppModel {
 
 	public $metadatas = [];
 
-	/**
-	 * Use table
-	 *
-	 * @var mixed False or table name
-	 */
+/**
+ * Use table
+ *
+ * @var mixed False or table name
+ */
 	public $useTable = 'multidatabase_metadata_settings';
 
-	/**
-	 * Validation rules
-	 *
-	 * @var array
-	 */
+/**
+ * Validation rules
+ *
+ * @var array
+ */
 	public $validate = [];
 
-	/**
-	 * belongsTo associations
-	 *
-	 * @var array
-	 */
+/**
+ * belongsTo associations
+ *
+ * @var array
+ */
 	public $belongsTo = [
 		'MultidatabaseMetadata' => [
 			'className' => 'MultidatabaseMetadata',
@@ -53,20 +53,27 @@ class MultidatabaseMetadataSetting extends MultidatabasesAppModel {
 		],
 	];
 
-	/**
-	 * Constructor. Binds the model's database table to the object.
-	 *
-	 * @param bool|int|string|array $id Set this ID for this model on startup,
-	 * can also be an array of options, see above.
-	 * @param string $table Name of database table to use.
-	 * @param string $ds DataSource connection name.
-	 * @see Model::__construct()
-	 * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
-	 */
+/**
+ * Constructor. Binds the model's database table to the object.
+ *
+ * @param bool|int|string|array $id Set this ID for this model on startup,
+ * can also be an array of options, see above.
+ * @param string $table Name of database table to use.
+ * @param string $ds DataSource connection name.
+ * @see Model::__construct()
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
 	}
 
+/**
+ * Update Auto Number
+ * 自動採番の更新
+ *
+ * @param int $id メタデータID
+ * @return int
+ */
 	public function updateAutoNum($id) {
 		$metadataSetting = $this->findById($id);
 
@@ -82,12 +89,11 @@ class MultidatabaseMetadataSetting extends MultidatabasesAppModel {
 			'auto_number_sequence' => $tmpNum
 		));
 
-		if($this->save()) {
+		if ($this->save()) {
 			return $tmpNum;
 		}
 
 		return 0;
 	}
-
 }
 

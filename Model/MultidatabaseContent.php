@@ -254,22 +254,23 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 /**
  * パスワードを設定する
  *
- * @param int $content_id  コンテンツID
+ * @param int $contentId  コンテンツID
  * @param array $passwords パスワード配列
  * @return bool
+ * @throws InternalErrorException
  */
-	public function saveAuthKey($content_id, $passwords) {
+	public function saveAuthKey($contentId, $passwords) {
 		$this->loadModels([
 			'AuthorizationKeys' => 'AuthorizationKeys.AuthorizationKey',
 		]);
 
 		$baseDat = [
 			'model' => 'MultidatabaseContent',
-			'content_id' => $content_id
+			'content_id' => $contentId
 		];
 
 		foreach ($passwords as $key => $val) {
-			if(! $this->AuthorizationKeys->saveAuthorizationKey(
+			if (! $this->AuthorizationKeys->saveAuthorizationKey(
 				$baseDat['model'],
 				$baseDat['content_id'],
 				$val,
@@ -285,11 +286,11 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 /**
  * 認証情報を取得する
  *
- * @param int $content_id  コンテンツID
+ * @param int $contentId  コンテンツID
  * @param string $field パスワードフィールド
  * @return bool
  */
-	public function getAuthKey($content_id, $field) {
+	public function getAuthKey($contentId, $field) {
 		$this->loadModels([
 			'AuthorizationKeys' => 'AuthorizationKeys.AuthorizationKey',
 		]);
@@ -297,7 +298,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$options = [
 			'conditions' => [
 				'model' => 'MultidatabaseContent',
-				'content_id' => $content_id,
+				'content_id' => $contentId,
 				'additional_id' => $field
 			],
 			'recursive' => 0,
@@ -316,23 +317,22 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		return $authKey['AuthorizationKey'];
 	}
 
-
 /**
  * Save content
  * コンテンツを保存する
  *
  * @param array $data 保存するコンテンツデータ
  * @param bool $isUpdate 更新処理であるか(true:更新,false:新規)
- * @param bool $skipValidate バリデーションをスキップするか(true:スキップする,false:スキップしない)
  * @return bool|array
  * @throws InternalErrorException
  */
-	public function saveContent($data, $isUpdate = false) {
+	public function saveContent($data, $isUpdate) {
 		$this->loadModels([
 			'MultidatabaseContentEdit' => 'Multidatabases.MultidatabaseContentEdit',
+			'MultidatabaseContentEditPr' => 'Multidatabases.MultidatabaseContentEditPr',
 		]);
 
-		if (! $metadatas = $this->MultidatabaseContentEdit->prGetMetadatas()) {
+		if (! $metadatas = $this->MultidatabaseContentEditPr->prGetMetadatas()) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
@@ -359,11 +359,13 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  *
  * @param array $data 保存するコンテンツデータ
  * @return bool|array
-*/
+ * @throws InternalErrorException
+ */
 	public function saveContentForImport($data) {
 		$this->begin();
 		try {
-			if (($savedData = $this->save($data, false)) === false) {
+			$savedData = $this->save($data, false);
+			if ($savedData === false) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			$this->commit();
@@ -395,7 +397,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @param string $fieldName フィールド名
  * @return array
  */
-	public function getFileInfo($content,$fieldName = '') {
+	public function getFileInfo($content, $fieldName = '') {
 		$UploadFile = ClassRegistry::init('Files.UploadFile');
 		$pluginKey = 'multidatabases';
 		if (empty($fieldName)) {
@@ -429,7 +431,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @param string $fieldName フィールド名
  * @return array|bool
  */
-	public function getFileInfoById($id,$fieldName = '') {
+	public function getFileInfoById($id, $fieldName = '') {
 		$content = $this->getEditData([
 			'MultidatabaseContent.id' => $id,
 			'MultidatabaseContent.is_active' => true,
@@ -439,7 +441,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		if (! $content) {
 			return false;
 		}
-		return $this->getFileInfo($content,$fieldName);
+		return $this->getFileInfo($content, $fieldName);
 	}
 
 /**
@@ -450,7 +452,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @param string $fieldName フィールド名
  * @return array|bool
  */
-	public function getFileInfoByContentKey($key,$fieldName = '') {
+	public function getFileInfoByContentKey($key, $fieldName = '') {
 		$content = $this->getEditData([
 			'MultidatabaseContent.key' => $key,
 			'MultidatabaseContent.is_active' => 1,
@@ -460,7 +462,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		if (! $content) {
 			return false;
 		}
-		return $this->getFileInfo($content,$fieldName);
+		return $this->getFileInfo($content, $fieldName);
 	}
 
 /**
@@ -473,7 +475,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  */
 	public function removeFile($content, $fieldName = '') {
 		$fileInfo = $this->getFileInfo($content, $fieldName);
-		return $this->__removeFile($fileInfo,$fieldName);
+		return $this->__removeFile($fileInfo, $fieldName);
 	}
 
 /**
@@ -486,7 +488,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  */
 	public function removeFileById($id, $fieldName = '') {
 		$fileInfo = $this->getFileInfoById($id, $fieldName);
-		return $this->__removeFile($fileInfo,$fieldName);
+		return $this->__removeFile($fileInfo, $fieldName);
 	}
 
 /**
@@ -499,18 +501,18 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  */
 	public function removeFileByContentKey($key, $fieldName = '') {
 		$fileInfo = $this->getFileInfoByContentKey($key, $fieldName);
-		return $this->__removeFile($fileInfo,$fieldName);
+		return $this->__removeFile($fileInfo, $fieldName);
 	}
 
 /**
  * RemoveFile(s) Base
  * ファイルを削除する
  *
- * @param $fileInfo array アップロードファイル情報
+ * @param array $fileInfo アップロードファイル情報
  * @param string $fieldName フィールド名
  * @return bool
  */
-	private function __removeFile($fileInfo,$fieldName) {
+	private function __removeFile($fileInfo, $fieldName) {
 		$UploadFile = ClassRegistry::init('Files.UploadFile');
 
 		if (empty($fileInfo)) {
@@ -522,7 +524,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				$UploadFile->removeFile($val['UploadFilesContent']['content_id'], $val['UploadFile']['id']);
 			}
 		} else {
-			$UploadFile->removeFile($fileInfo['UploadFilesContent']['content_id'], $fileInfo['UploadFile']['id']);
+			$UploadFile->removeFile(
+				$fileInfo['UploadFilesContent']['content_id'], $fileInfo['UploadFile']['id']);
 		}
 
 		return true;
@@ -574,7 +577,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			$this->deleteCommentsByContentKey($key);
 
 			// 添付ファイルの削除
-			if(! $this->removeFileByContentKey($key)) {
+			if (! $this->removeFileByContentKey($key)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 

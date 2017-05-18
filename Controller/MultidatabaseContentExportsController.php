@@ -1,18 +1,18 @@
 <?php
 /**
- *  [[changeme]] [Controller|Model|View]
+ * MultidatabaseContentExportsController Controller
  *
- *  @author Noriko Arai <arai@nii.ac.jp>
- *  @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
- *  @link http://www.netcommons.org NetCommons Project
- *  @license http://www.netcommons.org/license.txt NetCommons License
- *  @copyright Copyright 2014, NetCommons Project
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Tomoyuki OHNO (Ricksoft, Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
  */
 
 App::uses('MultidatabasesAppController', 'Multidatabases.Controller');
 
 /**
- * MultidatabaseContentImportsController Controller
+ * MultidatabaseContentExportsController Controller
  *
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Controller
@@ -86,10 +86,6 @@ class MultidatabaseContentExportsController extends MultidatabasesAppController 
  * @return void
  */
 	public function edit() {
-		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
-			return $this->throwBadRequest();
-		}
-
 		$permissions = $this->Workflow->getBlockRolePermissions(
 			[
 				'content_creatable',
@@ -109,7 +105,7 @@ class MultidatabaseContentExportsController extends MultidatabasesAppController 
 /**
  * CSV Export
  *
- * @param
+ * @param string $pass ZIPパスワード
  * @return void
  */
 	private function __export($pass = '') {
@@ -125,14 +121,14 @@ class MultidatabaseContentExportsController extends MultidatabasesAppController 
 			'is_latest' => true
 		];
 
-		$multidatabaseContents = $this->MultidatabaseContent->getMultidatabaseContents($conditions);
+		$contents = $this->MultidatabaseContent->getMultidatabaseContents($conditions);
 
 		foreach ($this->_metadata as $metadata) {
 			$metadataTitles['value' . $metadata['col_no']] = $metadata['name'];
 		}
 
 		$cnt = 1;
-		foreach ($multidatabaseContents as $content) {
+		foreach ($contents as $content) {
 			foreach ($metadataTitles as $key => $metadataTitle) {
 				if ($cnt == 1) {
 					$tmpHeader[$key] = $metadataTitle;
@@ -160,5 +156,3 @@ class MultidatabaseContentExportsController extends MultidatabasesAppController 
 		);
 	}
 }
-
-
