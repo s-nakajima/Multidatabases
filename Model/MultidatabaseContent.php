@@ -279,13 +279,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 		$result = $this->MultidatabaseContentEdit->makeSaveData($data, $metadatas, $isUpdate);
 
-		return $this->__saveContent(
-				$result['data'],
-				$result['attachFields'],
-				$result['skipAttaches'],
-				$result['removeAttachFields'],
-				$result['attachPasswords']
-		);
+		return $this->__saveContent($result);
 	}
 
 /**
@@ -385,18 +379,23 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * データを保存する
  *
  * @param array $data データ配列
- * @param array $attachFields 添付ファイルフィールド配列
- * @param array $skipAttaches 添付ファイル除外フィールド配列
- * @param array $removeAttachFields 添付ファイル削除フィールド配列
- * @param array $attachPasswords 添付ファイルパスワード配列
  * @return array|bool
  * @throws InternalErrorException
  */
-	private function __saveContent(
-		$data, $attachFields = [], $skipAttaches = [], $removeAttachFields = [], $attachPasswords = []) {
+	private function __saveContent($data) {
 		$this->loadModels([
 			'MultidatabaseContentFile' => 'Multidatabases.MultidatabaseContentFile',
+			'MultidatabaseContentEditAt' => 'Multidatabases.MultidatabaseContentEditAt',
 		]);
+
+		$attachFields = $data['attachFields'];
+		unset($data['attachFields']);
+		$skipAttaches = $data['skipAttaches'];
+		unset($data['skipAttaches']);
+		$removeAttachFields = $data['removeAttachFields'];
+		unset($data['removeAttachFields']);
+		$attachPasswords = $data['attachPasswords'];
+		unset($data['attachPasswords']);
 
 		if (! empty($attachFields)) {
 			$this->Behaviors->load('Files.Attachment', $attachFields);
@@ -449,7 +448,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			$this->commit();
 
 			// ファイルを削除する
-			$this->MultidatabaseContentEditAt->removeAttachFile(
+			$this->MultidatabaseContentFile->removeAttachFile(
 				$removeAttachFields, $data['MultidatabaseContent']['key']);
 
 		} catch (Exception $e) {

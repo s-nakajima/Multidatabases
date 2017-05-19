@@ -36,19 +36,20 @@ class MultidatabaseContentEditAt extends MultidatabasesAppModel {
 /**
  * 添付ファイル削除フラグを立てる
  *
- * @param array $content コンテンツ配列
+ * @param array $data データ配列
  * @param array $metadatas メタデータ配列
  * @return array
  */
-	public function getAttachDelFlg($content, $metadatas) {
+	public function getAttachDelFlg($data, $metadatas) {
 		$this->loadModels([
 			'MultidatabaseContentEditPr' => 'Multidatabases.MultidatabaseContentEditPr',
 		]);
 
 		// 添付ファイル削除フラグを立てる
 		$result = [];
-		$tmp = $content;
-		foreach (array_keys($tmp) as $key) {
+		$tmp = $data;
+
+		foreach (array_keys($tmp['MultidatabaseContent']) as $key) {
 			if ($colNo = $this->MultidatabaseContentEditPr->prGetColNo($metadatas, $key)) {
 				if (
 					(
@@ -58,49 +59,21 @@ class MultidatabaseContentEditAt extends MultidatabasesAppModel {
 					isset($tmp[$key . '_attach_del'])
 				) {
 					if (
-						isset($tmp[$key . '_attach_del'][0]) &&
-						$tmp[$key . '_attach_del'][0] == '1'
+						isset($tmp[$key . '_attach_del']) &&
+						$tmp[$key . '_attach_del'] == 'on'
 					) {
 						$result[$key] = true;
 					} else {
 						$result[$key] = false;
 					}
-					unset($content[$key . '_attach_del']);
+					//unset($data[$key . '_attach_del']);
 				}
 			}
 		}
-
 		return [
 			'attachDelFlg' => $result,
-			'content' => $content
+			'data' => $data
 		];
-	}
-
-/**
- * 添付ファイルに関する保存前処理
- *
- * @param string $AttachFileName 添付ファイル名
- * @param string $fieldName フィールド名（添付ファイルのフィールド）
- * @param array $attachDelFlgs 添付ファイル削除フラグ（削除対象のフィールドにfalseが設定される）
- * @return array
- */
-	public function prAttachFile($AttachFileName, $fieldName, $attachDelFlgs) {
-		$result['attachField'] = '';
-		$result['removeAttachFld'] = '';
-		$result['skipAttach'] = '';
-
-		if (empty($AttachFileName)) {
-			if (isset($attachDelFlgs[$fieldName]) && $attachDelFlgs[$fieldName]) {
-				$result['attachField'] = $fieldName . '_attach';
-				$result['removeAttachFld'] = $fieldName;
-			} else {
-				$result['skipAttach'] = $fieldName . '_attach';
-			}
-		} else {
-			$result['attachField'] = $fieldName . '_attach';
-		}
-
-		return $result;
 	}
 
 /**
@@ -138,26 +111,5 @@ class MultidatabaseContentEditAt extends MultidatabasesAppModel {
 			'content' => $content
 		];
 	}
-
-/**
- * 添付ファイル削除を行う
- *
- * @param array $removeAttachFields 削除対象フィールド配列
- * @param string $contentKey コンテンツキー
- * @return void
- * @throws InternalErrorException
- */
-	public function removeAttachFile($removeAttachFields, $contentKey) {
-		// ファイルを削除する
-		if (!empty($removeAttachFields)) {
-			foreach ($removeAttachFields as $val) {
-				if (! $this->MultidatabaseContentFile
-					->removeFileByContentKey($contentKey, $val)) {
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-			}
-		}
-	}
-
 }
 

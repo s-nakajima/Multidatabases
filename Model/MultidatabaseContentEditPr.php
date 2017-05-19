@@ -191,19 +191,74 @@ class MultidatabaseContentEditPr extends MultidatabasesAppModel {
 				$attachFileName = $data['MultidatabaseContent'][$fieldName]['name'];
 			}
 
-			$prAttachFile = $this->prAttachFile(
+			if (! empty($attachFileName)) {
+				$data['MultidatabaseContent'][$fieldName . '_attach'] =
+					$data['MultidatabaseContent'][$fieldName];
+			}
+
+			$prAttachFile = $this->__prAttachFile(
 				$attachFileName,
 				$fieldName,
 				$attachDelFlgs
 			);
 
-			foreach ($prAttachFile as $atFileKey => $atFileVal) {
-				if (!empty($atFileVal)) {
-					$data[$atFileKey][] = $atFileVal;
-				}
-			}
+			$data = $this->__prMergeAttachFile($data, $prAttachFile);
+
 			$data['MultidatabaseContent'][$fieldName] = '';
 		}
 		return $data;
+	}
+
+/**
+ * 添付ファイルに関する保存前処理(フラグ設定のマージ)
+ *
+ * @param array $data データ配列
+ * @param array $prAttachFile フラグ設定
+ * @return array
+ */
+	private function __prMergeAttachFile($data, $prAttachFile) {
+		foreach ($prAttachFile as $atFileKey => $atFileVal) {
+			if (!empty($atFileVal)) {
+				switch ($atFileKey) {
+					case 'attachField':
+						$data['attachFields'][] = $atFileVal;
+						break;
+					case 'removeAttachField':
+						$data['removeAttachFields'][] = $atFileVal;
+						break;
+					case 'skipAttach':
+						$data['skipAttaches'][] = $atFileVal;
+						break;
+				}
+			}
+		}
+		return $data;
+	}
+
+/**
+ * 添付ファイルに関する保存前処理(フラグ設定)
+ *
+ * @param string $attachFileName 添付ファイル名
+ * @param string $fieldName フィールド名（添付ファイルのフィールド）
+ * @param array $attachDelFlgs 添付ファイル削除フラグ（削除対象のフィールドにfalseが設定される）
+ * @return array
+ */
+	private function __prAttachFile($attachFileName, $fieldName, $attachDelFlgs) {
+		$result['attachField'] = '';
+		$result['removeAttachField'] = '';
+		$result['skipAttach'] = '';
+
+		if (empty($attachFileName)) {
+			if (isset($attachDelFlgs[$fieldName]) && $attachDelFlgs[$fieldName]) {
+				$result['attachField'] = $fieldName . '_attach';
+				$result['removeAttachField'] = $fieldName;
+			} else {
+				$result['skipAttach'] = $fieldName . '_attach';
+			}
+		} else {
+			$result['attachField'] = $fieldName . '_attach';
+		}
+
+		return $result;
 	}
 }

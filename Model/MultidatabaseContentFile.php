@@ -176,6 +176,7 @@ class MultidatabaseContentFile extends MultidatabasesAppModel {
  */
 	public function getFileInfoByContentKey($key, $fieldName = '') {
 		$this->loadModels([
+			'MultidatabaseContent' => 'Multidatabases.MultidatabaseContent',
 			'AuthorizationKeys' => 'AuthorizationKeys.AuthorizationKey',
 		]);
 
@@ -255,5 +256,24 @@ class MultidatabaseContentFile extends MultidatabasesAppModel {
 		}
 
 		return true;
+	}
+
+/**
+ * 添付ファイル削除を行う
+ *
+ * @param array $removeAttachFields 削除対象フィールド配列
+ * @param string $contentKey コンテンツキー
+ * @return void
+ * @throws InternalErrorException
+ */
+	public function removeAttachFile($removeAttachFields, $contentKey) {
+		// ファイルを削除する
+		if (!empty($removeAttachFields)) {
+			foreach ($removeAttachFields as $val) {
+				if (! $this->removeFileByContentKey($contentKey, $val)) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
+			}
+		}
 	}
 }

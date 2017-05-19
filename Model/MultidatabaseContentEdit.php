@@ -49,20 +49,17 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 			'MultidatabaseContentEditAt' => 'Multidatabases.MultidatabaseContentEditAt',
 		]);
 
-		$multidatabaseContent = $data['MultidatabaseContent'];
-		$result['skipAttaches'] = [];
-		$result['attachFields'] = [];
-		$result['removeAttachFlds'] = [];
-
 		$dataOrg = $this->MultidatabaseContent->getEditData(
 				[
 					'MultidatabaseContent.key' => $data['MultidatabaseContent']['key']
 				]
 			);
 
+		$multidatabaseContent = $data['MultidatabaseContent'];
+
 		// 添付ファイル削除フラグを立てる
-		$tmp = $this->MultidatabaseContentEditAt->getAttachDelFlg($multidatabaseContent, $metadatas);
-		$multidatabaseContent = $tmp['content'];
+		$tmp = $this->MultidatabaseContentEditAt->getAttachDelFlg($data, $metadatas);
+		$data = $tmp['data'];
 		$attachDelFlgs = $tmp['attachDelFlg'];
 
 		// パスワードを取得する
@@ -74,14 +71,23 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 			if (! $colNo = $this->MultidatabaseContentEditPr->prGetColNo($metadatas, $key)) {
 				continue;
 			}
-			$data = $this->MultidatabaseContentEditAt->prMakeSaveData(
+
+			$data = $this->MultidatabaseContentEditPr->prMakeSaveData(
 				$data, $key, $metadatas, $colNo, $attachDelFlgs);
 		}
 
 		$data = $this->MultidatabaseContentEditPr->prSaveAutoNum($metadatas, $data, $dataOrg, $isUpdate);
 
-		$result['data'] = $data;
+		$result = $data;
+		$result['attachDelFlg'] = $attachDelFlgs;
 		$result['attachPasswords'] = $attachPasswords;
+
+		foreach (['skipAttaches', 'attachFields', 'removeAttachFields'] as $key) {
+			if (!isset($result[$key])) {
+				$result[$key] = [];
+			}
+		}
+
 		return $result;
 	}
 
@@ -96,6 +102,7 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 		$this->loadModels([
 			'MultidatabaseContent' => 'Multidatabases.MultidatabaseContent',
 			'MultidatabaseContentEditPr' => 'Multidatabases.MultidatabaseContentEditPr',
+			'MultidatabaseContentEditAt' => 'Multidatabases.MultidatabaseContentEditAt',
 		]);
 
 		$result = $content;
@@ -125,7 +132,7 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 				}
 			}
 
-			$result += $this->__makeEditDataFile($result, $metadata);
+			$result = $this->__makeEditDataFile($result, $metadata);
 		}
 		return $result;
 	}
