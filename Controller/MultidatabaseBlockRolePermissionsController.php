@@ -79,11 +79,20 @@ class MultidatabaseBlockRolePermissionsController extends MultidatabasesAppContr
 	];
 
 /**
- * edit
+ * Edit(permission)
  *
  * @return void
  */
 	public function edit() {
+		$this->__editPermission();
+	}
+
+/**
+ * Edit permission
+ *
+ * @return void
+ */
+	private function __editPermission() {
 		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return $this->throwBadRequest();
 		}

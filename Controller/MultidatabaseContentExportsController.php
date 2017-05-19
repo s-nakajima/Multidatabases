@@ -49,7 +49,6 @@ class MultidatabaseContentExportsController extends MultidatabasesAppController 
 			],
 		],
 		'Files.Download',
-		'Files.FileUpload',
 	];
 
 /**
@@ -81,21 +80,12 @@ class MultidatabaseContentExportsController extends MultidatabasesAppController 
 	];
 
 /**
- * edit
+ * edit (Export)
  *
  * @return void
  */
-	public function edit() {
-		$permissions = $this->Workflow->getBlockRolePermissions(
-			[
-				'content_creatable',
-				'content_publishable',
-				'content_comment_creatable',
-				'content_comment_publishable',
-			]
-		);
-		$this->set('roles', $permissions['Roles']);
-
+	public function export() {
+		// CSVエクスポート
 		if (Hash::check($this->request->query, 'save')) {
 			return $this->__export($this->request->query['pass']);
 		} else {
@@ -110,6 +100,16 @@ class MultidatabaseContentExportsController extends MultidatabasesAppController 
  */
 	private function __export($pass = '') {
 		$this->_prepare();
+
+		$permissions = $this->Workflow->getBlockRolePermissions(
+			[
+				'content_creatable',
+				'content_publishable',
+				'content_comment_creatable',
+				'content_comment_publishable',
+			]
+		);
+		$this->set('roles', $permissions['Roles']);
 
 		set_time_limit(1800);
 

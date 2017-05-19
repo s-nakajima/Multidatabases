@@ -142,11 +142,10 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 					return $metadata['id'];
 				case 'col_no':
 					return $metadata['col_no'];
-				default:
-					$result['id'] = $metadata['id'];
-					$result['col_no'] = $metadata['col_no'];
-					return $result;
 			}
+			$result['id'] = $metadata['id'];
+			$result['col_no'] = $metadata['col_no'];
+			return $result;
 		}
 		return false;
 	}
@@ -199,10 +198,6 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
  * @return array
  */
 	public function getSkipColNos($metadatas = []) {
-		if (empty($metadatas)) {
-			return [];
-		}
-
 		$result = [];
 
 		foreach ($metadatas as $metadata) {
@@ -255,18 +250,17 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 			// 空きカラムNoの取得
 			$colNos = $this->getFreeColNo($metadatas, $colNos);
 
-			switch ($metadata['type']) {
-				case 'textarea':
-				case 'wysiwyg':
-				case 'select':
-				case 'checkbox':
-					$currentColNo = $colNos['col_no_t'];
-					$colNos['col_no_t']++;
-					break;
-				default:
-					$currentColNo = $colNos['col_no'];
-					$colNos['col_no']++;
-					break;
+			if (
+				$metadata['type'] == 'textarea' ||
+				$metadata['type'] == 'wysiwyg' ||
+				$metadata['type'] == 'select' ||
+				$metadata['type'] == 'checkbox'
+			) {
+				$currentColNo = $colNos['col_no_t'];
+				$colNos['col_no_t']++;
+			} else {
+				$currentColNo = $colNos['col_no'];
+				$colNos['col_no']++;
 			}
 		} else {
 			$currentColNo = $metadata['col_no'];

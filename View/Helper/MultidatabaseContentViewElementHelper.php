@@ -143,9 +143,9 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 			return '';
 		}
 
-		$MultidatabaseContent = ClassRegistry::init('Multidatabases.MultidatabaseContent');
+		$ContentFile = ClassRegistry::init('Multidatabases.MultidatabaseContentFile');
 
-		if (! $MultidatabaseContent->getAuthKey(
+		if (! $ContentFile->getAuthKey(
 			$content['MultidatabaseContent']['id'], 'value' . $colNo)
 		) {
 			$fileUrl = $this->__fileDlUrl($content, $colNo);

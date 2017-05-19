@@ -28,6 +28,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 	public $uses = [
 		'Multidatabases.MultidatabaseContent',
 		'Multidatabases.MultidatabaseContentSearch',
+		'Multidatabases.MultidatabaseContentFile',
 		'Workflow.WorkflowComment',
 		'Categories.Category',
 		'NetCommons.NetCommonsTime',
@@ -389,7 +390,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$fieldAttach = $field . '_attach';
 
 		// パスワード認証確認
-		$content['AuthorizationKey'] = $this->MultidatabaseContent->getAuthKey($contentId, $field);
+		$content['AuthorizationKey'] = $this->MultidatabaseContentFile->getAuthKey($contentId, $field);
 		if ($content['AuthorizationKey']) {
 			$this->AuthorizationKey->guard('popup', 'MultidatabaseContent', $content, $field);
 		}

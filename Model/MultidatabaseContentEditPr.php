@@ -90,13 +90,17 @@ class MultidatabaseContentEditPr extends MultidatabasesAppModel {
 	}
 
 /**
- * 保存用に単一選択の値を変換する
+ * 保存用に単一選択(+複数選択)の値を変換する
  *
  * @param array $data データ配列
  * @param array $selections 選択肢配列
+ * @param array $elementType エレメントタイプ
  * @return string
  */
-	public function prSaveContentSelect($data, $selections) {
+	public function prSaveContentSelect($data, $selections, $elementType) {
+		if ($elementType == 'checkbox') {
+			$this->prSaveContentCheck($data, $selections);
+		}
 		foreach ($selections as $metaSel) {
 			if (md5($metaSel) === $data) {
 				return $metaSel;
@@ -130,5 +134,76 @@ class MultidatabaseContentEditPr extends MultidatabasesAppModel {
 		} else {
 			return implode('||', $tmpRes);
 		}
+	}
+
+/**
+ * 保存用に自動採番処理を行う
+ *
+ * @param array $metadatas メタデータ配列
+ * @param array $data データ配列
+ * @param array $dataOrg オリジナルデータ配列
+ * @param bool $isUpdate 更新処理であるか(true:更新,false:新規)
+ * @return string
+ */
+	public function prSaveAutoNum($metadatas, $data, $dataOrg, $isUpdate) {
+		foreach ($metadatas as $metadata) {
+			$key = 'value' . $metadata['col_no'];
+			switch ($metadata['type']) {
+				case 'autonumber':
+					if (! $isUpdate) {
+						$data['MultidatabaseContent'][$key] =
+							$this->MultidatabaseMetadata->MultidatabaseMetadataSetting
+								->updateAutoNum($metadata['id']);
+					} else {
+						$data['MultidatabaseContent'][$key] =
+							$dataOrg['MultidatabaseContent'][$key];
+					}
+					break;
+			}
+		}
+		return $data;
+	}
+
+/**
+ * 保存データ処理（特定の要素への対応）
+ *
+ * @param array $data データ配列
+ * @param string $fieldName フィールド名
+ * @param array $metadatas メタデータ配列
+ * @param int $colNo カラムNo
+ * @param array $attachDelFlgs 添付ファイル削除フラグ
+ * @return array
+ */
+	public function prMakeSaveData($data, $fieldName, $metadatas, $colNo, $attachDelFlgs) {
+		if ($metadatas[$colNo]['type'] == 'select' || $metadatas[$colNo]['type'] == 'checkbox') {
+			$selections = $this->prSaveContentGetSel($metadatas, $colNo);
+			$data['MultidatabaseContent'][$fieldName] =
+				$this->prSaveContentSelect(
+					$data['MultidatabaseContent'][$fieldName],
+					$selections,
+					$metadatas[$colNo]['type']
+				);
+		}
+
+		if ($metadatas[$colNo]['type'] == 'file' || $metadatas[$colNo]['type'] == 'image') {
+			$attachFileName = '';
+			if (isset($data['MultidatabaseContent'][$fieldName]['name'])) {
+				$attachFileName = $data['MultidatabaseContent'][$fieldName]['name'];
+			}
+
+			$prAttachFile = $this->prAttachFile(
+				$attachFileName,
+				$fieldName,
+				$attachDelFlgs
+			);
+
+			foreach ($prAttachFile as $atFileKey => $atFileVal) {
+				if (!empty($atFileVal)) {
+					$data[$atFileKey][] = $atFileVal;
+				}
+			}
+			$data['MultidatabaseContent'][$fieldName] = '';
+		}
+		return $data;
 	}
 }

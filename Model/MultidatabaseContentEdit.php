@@ -14,7 +14,9 @@ App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
 App::uses('MultidatabaseModel', 'Multidatabase.Model');
 App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
 App::uses('MultidatabaseContentModel', 'MultidatabaseContent.Model');
+App::uses('MultidatabaseContentFileModel', 'MultidatabaseContentFile.Model');
 App::uses('MultidatabaseContentEditPrModel', 'MultidatabaseContentEditPr.Model');
+App::uses('MultidatabaseContentEditAtModel', 'MultidatabaseContentEditAt.Model');
 
 /**
  * MultidatabaseContentEdit Model
@@ -33,85 +35,6 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 	public $useTable = false;
 
 /**
- * 添付ファイル削除フラグを立てる
- *
- * @param array $content コンテンツ配列
- * @param array $metadatas メタデータ配列
- * @return array
- */
-	public function getAttachDelFlg($content, $metadatas) {
-		$this->loadModels([
-			'MultidatabaseContentEditPr' => 'Multidatabases.MultidatabaseContentEditPr',
-		]);
-
-		// 添付ファイル削除フラグを立てる
-		$result = [];
-		$tmp = $content;
-		foreach ($tmp as $key => $val) {
-			if ($colNo = $this->MultidatabaseContentEditPr->prGetColNo($metadatas, $key)) {
-				if (
-					(
-						$metadatas[$colNo]['type'] == 'file' ||
-						$metadatas[$colNo]['type'] == 'image'
-					) &&
-					isset($tmp[$key . '_attach_del'])
-				) {
-					if (
-						isset($tmp[$key . '_attach_del'][0]) &&
-						$tmp[$key . '_attach_del'][0] == '1'
-					) {
-						$result[$key] = true;
-					} else {
-						$result[$key] = false;
-					}
-					unset($content[$key . '_attach_del']);
-				}
-			}
-		}
-
-		return [
-			'attachDelFlg' => $result,
-			'content' => $content
-		];
-	}
-
-/**
- * 添付ファイル削除フラグを立てる
- *
- * @param array $content コンテンツ配列
- * @param array $metadatas メタデータ配列
- * @return array
- */
-	public function getAttachPasswords($content, $metadatas) {
-		$this->loadModels([
-			'MultidatabaseContentEditPr' => 'Multidatabases.MultidatabaseContentEditPr',
-		]);
-
-		// 添付ファイル削除フラグを立てる
-		$result = [];
-		$tmp = $content;
-		foreach ($tmp as $key => $val) {
-			if ($colNo = $this->MultidatabaseContentEditPr->prGetColNo($metadatas, $key)) {
-				if ($metadatas[$colNo]['type'] == 'file' &&
-					isset($tmp[$key . '_attach_pw'])
-				) {
-					$tmpPw = trim($tmp[$key . '_attach_pw']);
-
-					if (! empty($tmpPw)) {
-						$result['value' . $colNo] = $tmpPw;
-					}
-					unset($content[$key . '_attach_pw']);
-				}
-			}
-		}
-
-		return [
-			'attachPasswords' => $result,
-			'content' => $content
-		];
-	}
-
-/**
  * 保存データを生成する
  *
  * @param array $data データ配列
@@ -123,13 +46,13 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 		$this->loadModels([
 			'MultidatabaseContent' => 'Multidatabases.MultidatabaseContent',
 			'MultidatabaseContentEditPr' => 'Multidatabases.MultidatabaseContentEditPr',
+			'MultidatabaseContentEditAt' => 'Multidatabases.MultidatabaseContentEditAt',
 		]);
 
 		$multidatabaseContent = $data['MultidatabaseContent'];
-		$skipAttaches = [];
-		$attachFields = [];
-		$removeAttachFlds = [];
-		$attachPasswords = [];
+		$result['skipAttaches'] = [];
+		$result['attachFields'] = [];
+		$result['removeAttachFlds'] = [];
 
 		$dataOrg = $this->MultidatabaseContent->getEditData(
 				[
@@ -138,81 +61,27 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
 			);
 
 		// 添付ファイル削除フラグを立てる
-		$tmp = $this->getAttachDelFlg($multidatabaseContent, $metadatas);
+		$tmp = $this->MultidatabaseContentEditAt->getAttachDelFlg($multidatabaseContent, $metadatas);
 		$multidatabaseContent = $tmp['content'];
-		$attachDelFlg = $tmp['attachDelFlg'];
+		$attachDelFlgs = $tmp['attachDelFlg'];
 
 		// パスワードを取得する
-		$tmp = $this->getAttachPasswords($multidatabaseContent, $metadatas);
+		$tmp = $this->MultidatabaseContentEditAt->getAttachPasswords($multidatabaseContent, $metadatas);
 		$multidatabaseContent = $tmp['content'];
 		$attachPasswords = $tmp['attachPasswords'];
 
-		foreach ($multidatabaseContent as $key => $val) {
-			if ($colNo = $this->MultidatabaseContentEditPr->prGetColNo($metadatas, $key)) {
-				$selections = $this->MultidatabaseContentEditPr->prSaveContentGetSel($metadatas, $colNo);
-				switch ($metadatas[$colNo]['type']) {
-					case 'select':
-						$data['MultidatabaseContent'][$key] =
-							$this->MultidatabaseContentEditPr->prSaveContentSelect(
-								$data['MultidatabaseContent'][$key],
-								$selections
-							);
-						break;
-					case 'checkbox':
-						$data['MultidatabaseContent'][$key] =
-							$this->MultidatabaseContentEditPr->prSaveContentCheck(
-								$data['MultidatabaseContent'][$key],
-								$selections
-							);
-						break;
-					case 'file':
-					case 'image':
-						if (empty($data['MultidatabaseContent'][$key]['name'])) {
-							if (isset($attachDelFlg[$key]) && $attachDelFlg[$key]) {
-								$attachFields[] = $key . '_attach';
-								$removeAttachFlds[] = $key;
-							} else {
-								$skipAttaches[] = $key . '_attach';
-							}
-						} else {
-							$data['MultidatabaseContent'][$key . '_attach'] =
-								$data['MultidatabaseContent'][$key];
-							$data['MultidatabaseContent'][$key] = $val['name'];
-							$attachFields[] = $key . '_attach';
-						}
-						$data['MultidatabaseContent'][$key] = '';
-						break;
-				}
+		foreach (array_keys($multidatabaseContent) as $key) {
+			if (! $colNo = $this->MultidatabaseContentEditPr->prGetColNo($metadatas, $key)) {
+				continue;
 			}
+			$data = $this->MultidatabaseContentEditAt->prMakeSaveData(
+				$data, $key, $metadatas, $colNo, $attachDelFlgs);
 		}
 
-		// 自動採番を行う
-		foreach ($metadatas as $metadata) {
-			$key = 'value' . $metadata['col_no'];
-			switch ($metadata['type']) {
-				case 'autonumber':
-					if (! $isUpdate) {
-						$data['MultidatabaseContent'][$key] =
-							$this->MultidatabaseMetadata->MultidatabaseMetadataSetting
-								->updateAutoNum($metadata['id']);
-					} else {
-						$data['MultidatabaseContent'][$key] =
-							$dataOrg['MultidatabaseContent'][$key];
-					}
-					break;
-				default:
-					break;
-			}
-		}
+		$data = $this->MultidatabaseContentEditPr->prSaveAutoNum($metadatas, $data, $dataOrg, $isUpdate);
 
-		$result = [
-			'data' => $data,
-			'attachFields' => $attachFields,
-			'skipAttaches' => $skipAttaches,
-			'removeAttachFields' => $removeAttachFlds,
-			'attachPasswords' => $attachPasswords
-		];
-
+		$result['data'] = $data;
+		$result['attachPasswords'] = $attachPasswords;
 		return $result;
 	}
 
@@ -269,8 +138,12 @@ class MultidatabaseContentEdit extends MultidatabasesAppModel {
  * @return array
  */
 	private function __makeEditDataFile($content, $metadata) {
+		$this->loadModels([
+			'MultidatabaseContentFile' => 'Multidatabases.MultidatabaseContentFile',
+		]);
+
 		if ($metadata['type'] == 'file') {
-			$authPw = $this->MultidatabaseContent->getAuthKey(
+			$authPw = $this->MultidatabaseContentFile->getAuthKey(
 				$content['MultidatabaseContent']['id'], 'value' . $metadata['col_no']);
 
 			if (! $authPw) {

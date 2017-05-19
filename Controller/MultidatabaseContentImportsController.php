@@ -81,22 +81,12 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 	];
 
 /**
- * edit
+ * edit (Import)
  *
  * @return void
  */
 	public function edit() {
-		$permissions = $this->Workflow->getBlockRolePermissions(
-			[
-				'content_creatable',
-				'content_publishable',
-				'content_comment_creatable',
-				'content_comment_publishable',
-			]
-		);
-
-		$this->set('roles', $permissions['Roles']);
-
+		// CSVインポート
 		if ($this->request->is('post')) {
 			$this->__import();
 		}
@@ -109,6 +99,17 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
  */
 	private function __import() {
 		$this->_prepare();
+
+		$permissions = $this->Workflow->getBlockRolePermissions(
+			[
+				'content_creatable',
+				'content_publishable',
+				'content_comment_creatable',
+				'content_comment_publishable',
+			]
+		);
+
+		$this->set('roles', $permissions['Roles']);
 
 		set_time_limit(1800);
 
