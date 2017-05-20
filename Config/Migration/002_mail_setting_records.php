@@ -68,18 +68,16 @@ class MultidatabaseMailSettingRecords extends MailsMigration {
 				'type_key' => 'contents',
 				'mail_fixed_phrase_subject'
 					=> '[{X-SITE_NAME}-{X-PLUGIN_NAME}]{X-SUBJECT}({X-ROOM} {X-BLOCK_NAME})',
-				'mail_fixed_phrase_body' => <<< EOM
+				'mail_fixed_phrase_body' => '
 You are receiving this email because a message was posted to MULTIDATABASE.
-Room's name:{X-ROOM}
+Room\'s name:{X-ROOM}
 MULTIDATABASE title:{X-BLOCK_NAME}
 title:{X-SUBJECT}
 user:{X-USER}
 date:{X-TO_DATE}
 
 Click on the link below to reply to this article.
-{X-URL}
-EOM
-				,
+{X-URL}',
 			],
 			// * 日本語
 			[
@@ -89,7 +87,7 @@ EOM
 				'type_key' => 'contents',
 				'mail_fixed_phrase_subject'
 					=> '[{X-SITE_NAME}-{X-PLUGIN_NAME}]{X-SUBJECT}({X-ROOM} {X-BLOCK_NAME})',
-				'mail_fixed_phrase_body' => <<< EOM
+				'mail_fixed_phrase_body' => '
 {X-PLUGIN_NAME}に投稿されたのでお知らせします。
 ルーム名:{X-ROOM}
 汎用データベースタイトル:{X-BLOCK_NAME}
@@ -98,9 +96,7 @@ EOM
 投稿日時:{X-TO_DATE}
 
 この記事に返信するには、下記アドレスへ
-{X-URL}
-EOM
-				,
+{X-URL}',
 			],
 		],
 	];

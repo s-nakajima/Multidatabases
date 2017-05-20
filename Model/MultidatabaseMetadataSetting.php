@@ -21,8 +21,6 @@ App::uses('MultidatabasesMetadataModel', 'MultidatabaseMetadata.Model');
  */
 class MultidatabaseMetadataSetting extends MultidatabasesAppModel {
 
-	public $metadatas = [];
-
 /**
  * Use table
  *

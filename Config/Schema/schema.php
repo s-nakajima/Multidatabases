@@ -17,15 +17,33 @@
  */
 class MultidatabasesSchema extends CakeSchema {
 
+/**
+ * @var string connection
+ */
 	public $connection = 'master';
 
+/**
+ * before
+ *
+ * @param array $event event
+ * @return bool
+ */
 	public function before($event = array()) {
 		return true;
 	}
 
+/**
+ * after
+ *
+ * @param array $event event
+ * @return void
+ */
 	public function after($event = array()) {
 	}
 
+/**
+ * @var array $multidatabase_contents multidatabase_contents
+ */
 	public $multidatabase_contents = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary', 'comment' => 'ID'),
 		'key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'キー(content key)', 'charset' => 'utf8'),
@@ -147,6 +165,9 @@ class MultidatabasesSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 
+/**
+ * @var array $multidatabase_frame_settings multidatabase_frame_settings
+ */
 	public $multidatabase_frame_settings = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary', 'comment' => 'ID'),
 		'frame_key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'フレームKey', 'charset' => 'utf8'),
@@ -162,6 +183,9 @@ class MultidatabasesSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 
+/**
+ * @var array $multidatabase_metadatas multidatabase_metadatas
+ */
 	public $multidatabase_metadatas = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary', 'comment' => 'ID'),
 		'key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '汎用DBキー(plugin key)', 'charset' => 'utf8'),
@@ -192,6 +216,9 @@ class MultidatabasesSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 
+/**
+ * @var array $multidatabaseMetadataSettings multidatabaseMetadataSettings
+ */
 	public $multidatabaseMetadataSettings = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary', 'comment' => 'ID'),
 		'auto_number_sequence' => array('type' => 'integer', 'null' => true, 'default' => 0, 'unsigned' => false, 'comment' => '自動採番'),
@@ -205,6 +232,9 @@ class MultidatabasesSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 
+/**
+ * @var array $multidatabases multidatabases
+ */
 	public $multidatabases = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary', 'comment' => 'ID'),
 		'block_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),

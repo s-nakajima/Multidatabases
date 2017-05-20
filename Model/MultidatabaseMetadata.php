@@ -24,8 +24,6 @@ App::uses('CakeSession', 'Model/Datasourse');
  */
 class MultidatabaseMetadata extends MultidatabasesAppModel {
 
-	public $metadatas = [];
-
 /**
  * Use table
  *
