@@ -406,3 +406,6 @@ msgstr "登録済みのファイルを削除する"
 
 msgid "Set download password"
 msgstr "ダウンロードパスワードを設定する"
+
+msgid "This metadata cannot delete because title field."
+msgstr "このメタデータはタイトルとして認識されるため削除できません。"

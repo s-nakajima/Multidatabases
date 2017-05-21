@@ -22,6 +22,11 @@
 <input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][col_no]" type="text" class="hidden"
        value="{{g<?php echo $gPos; ?>.col_no}}">
 <?php // 項目名 ?>
+<div ng-if="<?php echo "g${gPos}.is_title == 1"; ?>">
+	<div class="well well-sm">
+		<?php echo __d('multidatabases','This metadata cannot delete because title field.'); ?>
+	</div>
+</div>
 <div class="row form-group">
 	<div class="col-xs-12">
 		<label for="multidatabaseMetadataSettingEditName<?php echo $gPos; ?>-{{$index}}" class="control-label">
