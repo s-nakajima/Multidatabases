@@ -56,7 +56,7 @@ class MultidatabaseBlockRolePermissionsController extends MultidatabasesAppContr
  * @var array
  */
 	public $helpers = [
-		'Blocks.BlockForm',
+		'Blocks.BlockRolePermissionForm',
 		'Blocks.BlockTabs' => [
 			'mainTabs' => [
 				'block_index' => ['url' => ['controller' => 'multidatabase_blocks']],

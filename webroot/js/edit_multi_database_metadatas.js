@@ -77,7 +77,8 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
      */
   $scope.add = function(positionNo, last) {
     var nextRank = last + 1;
-    var value = metadataDefault;
+    var value = [];
+    angular.copy(metadataDefault, value);
     value['position'] = positionNo;
     value['rank'] = nextRank;
     var currentMetadatas = getGroup(positionNo);
