@@ -24,7 +24,7 @@
 <?php // 項目名 ?>
 <div ng-if="<?php echo "g${gPos}.is_title == 1"; ?>">
 	<div class="well well-sm">
-		<?php echo __d('multidatabases','This metadata cannot delete because title field.'); ?>
+		<?php echo __d('multidatabases', 'This metadata cannot delete because title field.'); ?>
 	</div>
 </div>
 <div class="row form-group">
