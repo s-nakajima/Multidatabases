@@ -1,6 +1,6 @@
 <?php
 /**
- * MultidatabaseFixture
+ * MultidatabaseMetadataSettingFixture
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
@@ -10,9 +10,16 @@
  */
 
 /**
- * Summary for MultidatabaseFixture
+ * Summary for MultidatabaseMetadataSettingFixture
  */
-class MultidatabaseFixture extends CakeTestFixture {
+class MultidatabaseMetadataSettingFixture extends CakeTestFixture {
+
+/**
+ * Table name
+ *
+ * @var string
+ */
+	public $table = 'multidatabase_metadata_settings';
 
 /**
  * Records
@@ -24,7 +31,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 			'id' => '1',
 			'block_id' => '1',
 			'key' => 'multidatabase_1',
-			'name' => 'Test Multidatabase 1',
+			'auto_number_sequence' => '0',
 			'created_user' => '1',
 			'created' => '2016/04/01 1:10:20',
 			'modified_user' => '1',
@@ -34,7 +41,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 			'id' => '2',
 			'block_id' => '2',
 			'key' => 'multidatabase_2',
-			'name' => 'Test Multidatabase 2',
+			'auto_number_sequence' => '0',
 			'created_user' => '1',
 			'created' => '2016/04/01 1:10:20',
 			'modified_user' => '1',
@@ -44,7 +51,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 			'id' => '3',
 			'block_id' => '3',
 			'key' => 'multidatabase_3',
-			'name' => 'Test Multidatabase 3',
+			'auto_number_sequence' => '0',
 			'created_user' => '1',
 			'created' => '2016/04/01 1:10:20',
 			'modified_user' => '1',
@@ -54,7 +61,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 			'id' => '4',
 			'block_id' => '4',
 			'key' => 'multidatabase_4',
-			'name' => 'Test Multidatabase 4',
+			'auto_number_sequence' => '0',
 			'created_user' => '1',
 			'created' => '2016/04/01 1:10:20',
 			'modified_user' => '1',
@@ -64,7 +71,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 			'id' => '5',
 			'block_id' => '5',
 			'key' => 'multidatabase_5',
-			'name' => 'Test Multidatabase 5',
+			'auto_number_sequence' => '0',
 			'created_user' => '1',
 			'created' => '2016/04/01 1:10:20',
 			'modified_user' => '1',
@@ -74,7 +81,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 			'id' => '6',
 			'block_id' => '6',
 			'key' => 'multidatabase_6',
-			'name' => 'Test Multidatabase 6',
+			'auto_number_sequence' => '0',
 			'created_user' => '2',
 			'created' => '2016/04/01 1:10:20',
 			'modified_user' => '2',
@@ -84,7 +91,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 			'id' => '7',
 			'block_id' => '7',
 			'key' => 'multidatabase_7',
-			'name' => 'Test Multidatabase 7',
+			'auto_number_sequence' => '0',
 			'created_user' => '2',
 			'created' => '2016/04/01 1:10:20',
 			'modified_user' => '2',
@@ -94,7 +101,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 			'id' => '8',
 			'block_id' => '8',
 			'key' => 'multidatabase_8',
-			'name' => 'Test Multidatabase 8',
+			'auto_number_sequence' => '0',
 			'created_user' => '2',
 			'created' => '2016/04/01 1:10:20',
 			'modified_user' => '2',
@@ -104,7 +111,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 			'id' => '9',
 			'block_id' => '9',
 			'key' => 'multidatabase_9',
-			'name' => 'Test Multidatabase 9',
+			'auto_number_sequence' => '0',
 			'created_user' => '2',
 			'created' => '2016/04/01 1:10:20',
 			'modified_user' => '2',
@@ -114,7 +121,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 			'id' => '10',
 			'block_id' => '10',
 			'key' => 'multidatabase_10',
-			'name' => 'Test Multidatabase 10',
+			'auto_number_sequence' => '0',
 			'created_user' => '2',
 			'created' => '2016/04/01 1:10:20',
 			'modified_user' => '2',
