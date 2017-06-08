@@ -59,6 +59,42 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 	];
 
 /**
+ * Begin Col No
+ * @var int
+ */
+	private $__beginColNo = 1;
+
+/**
+ * End Col No
+ * @var int
+ */
+	private $__endColNo = 1;
+
+/**
+ * Begin Col for TextArea No
+ * @var int
+ */
+	private $__beginColNoT = 80;
+
+/**
+ * End Col for TextArea No
+ * @var int
+ */
+	private $__endColNoT = 80;
+
+/**
+ * Max Cols
+ * @var int
+ */
+	private $__cntMaxCol = 79;
+
+/**
+ * Max Cols for TextArea
+ * @var int
+ */
+	private $__cntMaxColT = 31;
+
+/**
  * Make save data
  * 保存データを作成
  *
@@ -171,13 +207,15 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 
 		while (! $chkSkipColNo) {
 			if (in_array($result['col_no'], $skipColNos)) {
-				if ($result['col_no'] >= 1 && $result['col_no'] <= 79) {
+				if ($result['col_no'] >= $this->__beginColNo && $result['col_no'] <= $this->__endColNo) {
 					$result['col_no']++;
 				} else {
 					return false;
 				}
 			} elseif (in_array($result['col_no_t'], $skipColNos)) {
-				if ($result['col_no_t'] >= 80 && $result['col_no_t'] <= 100) {
+				if (
+					$result['col_no_t'] >= $this->__beginColNoT && $result['col_no_t'] <= $this->__endColNoT
+				) {
 					$result['col_no_t']++;
 				} else {
 					return false;
@@ -302,17 +340,20 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 			'is_visible_list',
 			'is_visible_detail'
 		] as $metaKey) {
+			$tmp = 0;
 			if (isset($metadata[$metaKey])) {
-				if ($metadata[$metaKey] == 'on') {
-					$metadata[$metaKey] = 1;
+				if (
+					$metadata[$metaKey] === 'on' ||
+					$metadata[$metaKey] === 1 ||
+					$metadata[$metaKey] === true
+				) {
+					$tmp = 1;
 				}
-			} else {
-				$metadata[$metaKey] = 0;
 			}
+			$metadata[$metaKey] = $tmp;
 		}
 
-		return $metadata;
-	}
+		return $metadata;	}
 
 /**
  * Normalize edit metadatas type for JSON
@@ -328,6 +369,14 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 
 		foreach ($metadatas as $key => $metadata) {
 			$result[$key] = $metadata;
+
+			if ($metadata == 'on') {
+				$metadata = 1;
+			}
+
+			if ($metadata == 'off') {
+				$metadata = 0;
+			}
 
 			if (in_array($this->dataType[$key], [
 				'numeric', 'integer'
@@ -352,7 +401,11 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 				if (empty($metadata)) {
 					$result[$key] = [];
 				} else {
-					$result[$key] = json_decode($metadata, true);
+					if (is_array($metadata)) {
+						$result[$key] = $metadata;
+					} else {
+						$result[$key] = json_decode($metadata, true);
+					}
 				}
 			}
 		}
