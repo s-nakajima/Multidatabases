@@ -20,7 +20,6 @@
 			<div class="pull-right">
 				<button class="btn btn-xs btn-danger" type="button"
 				        ng-if="<?php echo "g${gPos}.is_title != 1"; ?>"
-				        ng-disabled="metadataGroup<?php echo $gPos; ?>.length < 2"
 				        ng-click="delete($event, <?php echo $gPos; ?>,
 				            $index,
 				            '<?php echo __d('multidatabases', 'Do you want to delete this metadata field?'); ?>'
@@ -35,43 +34,97 @@
 						<?php echo __d('multidatabases', 'Move'); ?><span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" uib-dropdown-menu role="menu">
-						<li class="move-item-up">
-							<a href="" ng-click="moveRank('up',<?php echo $gPos; ?>,$index)" ng-disabled="$first">
+						<?php // 上に移動（無効） ?>
+						<li class="move-item-up disabled" ng-if="$first == true">
+							<a href="">
 								<span class="glyphicon glyphicon-arrow-up">
 									<?php echo __d('multidatabases', 'Go to Up'); ?>
 								</span>
 							</a>
 						</li>
-						<li class="move-item-down">
-							<a href="" ng-click="moveRank('down',<?php echo $gPos; ?>,$index)" ng-disabled="$last">
+						<?php // 上に移動（有効） ?>
+						<li class="move-item-up" ng-if="$first == false">
+							<a href="" ng-click="moveRank('up',<?php echo $gPos; ?>,$index)">
+								<span class="glyphicon glyphicon-arrow-up">
+									<?php echo __d('multidatabases', 'Go to Up'); ?>
+								</span>
+							</a>
+						</li>
+						<?php // 下に移動（無効） ?>
+						<li class="move-item-down disabled" ng-if="$last == true">
+							<a href="">
+								<span class="glyphicon glyphicon-arrow-down">
+									<?php echo __d('multidatabases', 'Go to Down'); ?>
+								</span>
+							</a>
+						</li>
+						<?php // 下に移動（有効） ?>
+						<li class="move-item-down" ng-if="$last == false">
+							<a href="" ng-click="moveRank('down',<?php echo $gPos; ?>,$index)">
 								<span class="glyphicon glyphicon-arrow-down">
 									<?php echo __d('multidatabases', 'Go to Down'); ?>
 								</span>
 							</a>
 						</li>
 						<li class="divider"></li>
-						<li class="move-item-group-0">
+						<?php // 1段目に移動（無効） ?>
+						<li class="move-item-group-0 disabled" ng-if="<?php echo "g${gPos}.position == 0";?>">
+							<a href="">
+								<span>
+									<?php echo __d('multidatabases', 'Go to Section 1'); ?>
+								</span>
+							</a>
+						</li>
+						<?php // 1段目に移動（有効） ?>
+						<li class="move-item-group-0" ng-if="<?php echo "g${gPos}.position != 0";?>">
 							<a href="" ng-click="movePosition(0,<?php echo $gPos; ?>,$index)">
 								<span>
 									<?php echo __d('multidatabases', 'Go to Section 1'); ?>
 								</span>
 							</a>
 						</li>
-						<li class="move-item-group-1">
+						<?php // 2段目左に移動（無効） ?>
+						<li class="move-item-group-1 disabled" ng-if="<?php echo "g${gPos}.position == 1";?>">
+							<a href="">
+								<span>
+									<?php echo __d('multidatabases', 'Go to Section 2 (Left)'); ?>
+								</span>
+							</a>
+						</li>
+						<?php // 2段目左に移動（有効） ?>
+						<li class="move-item-group-1" ng-if="<?php echo "g${gPos}.position != 1";?>">
 							<a href="" ng-click="movePosition(1,<?php echo $gPos; ?>,$index)">
 								<span>
 									<?php echo __d('multidatabases', 'Go to Section 2 (Left)'); ?>
 								</span>
 							</a>
 						</li>
-						<li class="move-item-group-2">
+						<?php // 2段目右に移動（無効） ?>
+						<li class="move-item-group-2 disabled" ng-if="<?php echo "g${gPos}.position == 2";?>">
+							<a href="">
+								<span>
+									<?php echo __d('multidatabases', 'Go to Section 2 (Right)'); ?>
+								</span>
+							</a>
+						</li>
+						<?php // 2段目右に移動（有効） ?>
+						<li class="move-item-group-2" ng-if="<?php echo "g${gPos}.position != 2";?>">
 							<a href="" ng-click="movePosition(2,<?php echo $gPos; ?>,$index)">
 								<span>
 									<?php echo __d('multidatabases', 'Go to Section 2 (Right)'); ?>
 								</span>
 							</a>
 						</li>
-						<li class="move-item-group-3">
+						<?php // 3段目に移動（無効） ?>
+						<li class="move-item-group-3 disabled" ng-if="<?php echo "g${gPos}.position == 3";?>">
+							<a href="">
+								<span>
+									<?php echo __d('multidatabases', 'Go to Section 3'); ?>
+								</span>
+							</a>
+						</li>
+						<?php // 3段目に移動（有効） ?>
+						<li class="move-item-group-3" ng-if="<?php echo "g${gPos}.position  != 3";?>">
 							<a href="" ng-click="movePosition(3,<?php echo $gPos; ?>,$index)">
 								<span>
 									<?php echo __d('multidatabases', 'Go to Section 3'); ?>
