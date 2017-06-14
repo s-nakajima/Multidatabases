@@ -77,12 +77,13 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
      */
   $scope.add = function(positionNo, last) {
     var nextRank = last + 1;
-    var value = [];
-    angular.copy(metadataDefault, value);
-    value['position'] = positionNo;
-    value['rank'] = nextRank;
+    var targetMetadata = angular.copy(metadataDefault);
     var currentMetadatas = getGroup(positionNo);
-    currentMetadatas.push(value);
+
+    targetMetadata.position = positionNo;
+    targetMetadata.rank = nextRank;
+
+    currentMetadatas.push(targetMetadata);
   };
 
   /**
@@ -94,7 +95,7 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
      * @param {String} message
      * @type {Object}
      */
-  $scope.delete = function($event, positionNo, index, message) {
+    $scope.delete = function($event, positionNo, index, message) {
     $scope.eventStop($event);
 
     if (!confirm(message)) {
@@ -137,18 +138,8 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
      * @type {Object}
      */
   $scope.movePosition = function(destPositionNo, currentPositionNo, rank) {
-
     var currentMetadatas = getGroup(currentPositionNo);
     var destMetadatas = getGroup(destPositionNo);
-
-    if (currentMetadatas == false) {
-      return false;
-    }
-
-    if (destMetadatas == false) {
-      return false;
-    }
-
     var targetMetadata = angular.copy(currentMetadatas[rank]);
 
     destMetadatas.push(targetMetadata);
