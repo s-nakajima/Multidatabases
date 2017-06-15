@@ -13,6 +13,7 @@
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
 App::uses('MultidatabasesMetadataInitModel', 'MultidatabaseMetadataInit.Model');
 App::uses('MultidatabasesMetadataEditModel', 'MultidatabaseMetadataEdit.Model');
+App::uses('MultidatabasesMetadataEditCnvModel', 'MultidatabasesMetadataEditCnv.Model');
 App::uses('MultidatabasesMetadataSettingModel', 'MultidatabaseMetadataSetting.Model');
 App::uses('CakeSession', 'Model/Datasourse');
 
@@ -326,6 +327,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	public function getEditMetadatas($multidatabaseId = 0) {
 		$this->loadModels([
 			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
+			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv'
 		]);
 
 		if (empty($multidatabaseId)) {
@@ -346,7 +348,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				return false;
 			}
 			$tmp = $metadata['MultidatabaseMetadata'];
-			$result[$key] = $this->MultidatabaseMetadataEdit
+			$result[$key] = $this->MultidatabaseMetadataEditCnv
 				->normalizeEditMetadatasType($tmp);
 		}
 

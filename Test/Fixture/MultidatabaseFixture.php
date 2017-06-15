@@ -122,7 +122,7 @@ class MultidatabaseFixture extends CakeTestFixture {
 		],
 	];
 
-	/**
+/**
  * Initialize the fixture.
  *
  * @return void

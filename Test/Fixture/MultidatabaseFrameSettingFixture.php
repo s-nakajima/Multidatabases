@@ -132,11 +132,11 @@ class MultidatabaseFrameSettingFixture extends CakeTestFixture {
 		],
 	];
 
-	/**
-	 * Initialize the fixture.
-	 *
-	 * @return void
-	 */
+/**
+ * Initialize the fixture.
+ *
+ * @return void
+ */
 	public function init() {
 		require_once App::pluginPath('Links') . 'Config' . DS . 'Schema' . DS . 'schema.php';
 		$this->fields = (new LinksSchema())->tables[Inflector::tableize($this->name)];

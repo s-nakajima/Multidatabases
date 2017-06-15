@@ -1,7 +1,7 @@
 <?php
 /**
  * MultidatabaseContentEditPr Model
- * 汎用データベースコンテンツデータに関するモデル処理
+ * 汎用データベースコンテンツデータに関するモデル処理（保存前処理）
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>

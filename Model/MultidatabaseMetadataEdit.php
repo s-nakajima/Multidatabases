@@ -11,6 +11,7 @@
  */
 
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
+App::uses('MultidatabasesMetadataEditCnvModel', 'MultidatabasesMetadataEditCnv.Model');
 
 /**
  * MultidatabaseMetadataEdit Model
@@ -28,37 +29,6 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 	public $useTable = false;
 
 /**
- * Data type
- *
- * @var array
- */
-	public $dataType = [
-		'id' => 'numeric',
-		'key' => 'string',
-		'name' => 'string',
-		'multidatabase_id' => 'numeric',
-		'language_id' => 'numeric',
-		'position' => 'numeric',
-		'rank' => 'numeric',
-		'col_no' => 'numeric',
-		'type' => 'string',
-		'selections' => 'json',
-		'is_require' => 'boolean',
-		'is_title' => 'boolean',
-		'is_searchable' => 'boolean',
-		'is_sortable' => 'boolean',
-		'is_file_dl_require_auth' => 'boolean',
-		'is_visible_file_dl_counter' => 'boolean',
-		'is_visible_field_name' => 'boolean',
-		'is_visible_list' => 'boolean',
-		'is_visible_detail' => 'boolean',
-		'created' => 'datetime',
-		'created_user' => 'numeric',
-		'modified' => 'datetime',
-		'modified_user' => 'numeric',
-	];
-
-/**
  * Begin Col No
  * @var int
  */
@@ -68,7 +38,7 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
  * End Col No
  * @var int
  */
-	private $__endColNo = 1;
+	private $__endColNo = 79;
 
 /**
  * Begin Col for TextArea No
@@ -80,19 +50,7 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
  * End Col for TextArea No
  * @var int
  */
-	private $__endColNoT = 80;
-
-/**
- * Max Cols
- * @var int
- */
-	private $__cntMaxCol = 79;
-
-/**
- * Max Cols for TextArea
- * @var int
- */
-	private $__cntMaxColT = 31;
+	private $__endColNoT = 100;
 
 /**
  * Make save data
@@ -103,13 +61,17 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
  * @return array
  */
 	public function makeSaveData($multidatabase = [], $metadatas = []) {
+		$this->loadModels([
+			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv',
+		]);
+
 		if (empty($metadatas)) {
 			return [];
 		}
 
 		// カラムNo初期値
-		$colNos['col_no'] = 1;
-		$colNos['col_no_t'] = 80;
+		$colNos['col_no'] = $this->__beginColNo;
+		$colNos['col_no_t'] = $this->__beginColNoT;
 
 		$result = [];
 
@@ -123,9 +85,9 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 				$metadata['is_title'] = 0;
 			}
 
-			$metadata = $this->cnvMetaBoolToInt($metadata);
+			$metadata = $this->MultidatabaseMetadataEditCnv->cnvMetaBoolToInt($metadata);
 
-			$metadata['selections'] = $this->cnvMetaSelToJson($metadata);
+			$metadata['selections'] = $this->MultidatabaseMetadataEditCnv->cnvMetaSelToJson($metadata);
 
 			// カラムNoが未設定の場合は、カラムNoを付与する
 			$currentColNo = $this->addColNo($metadata, $colNos, $metadatas);
@@ -305,111 +267,6 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 		}
 
 		return $currentColNo;
-	}
-
-/**
- * 選択肢をJSON化する（保存データのため）
- *
- * @param array $metadata メタデータ配列
- * @return string
- */
-	public function cnvMetaSelToJson($metadata) {
-		if (!empty($metadata['selections']) && is_array($metadata['selections'])) {
-			$selectionsJson = json_encode($metadata['selections']);
-			return $selectionsJson;
-		}
-		return '';
-	}
-
-/**
- * Bool型のデータをIntに変換する（保存データのため）
- *
- * @param array $metadata メタデータ配列
- * @return array
- */
-	public function cnvMetaBoolToInt($metadata) {
-		// メタデータの変換 (on => 1, keyが存在しない => 0)
-		foreach ([
-			'is_require',
-			'is_title',
-			'is_searchable',
-			'is_sortable',
-			'is_file_dl_require_auth',
-			'is_visible_file_dl_counter',
-			'is_visible_field_name',
-			'is_visible_list',
-			'is_visible_detail'
-		] as $metaKey) {
-			$tmp = 0;
-			if (isset($metadata[$metaKey])) {
-				if (
-					$metadata[$metaKey] === 'on' ||
-					$metadata[$metaKey] === 1 ||
-					$metadata[$metaKey] === true
-				) {
-					$tmp = 1;
-				}
-			}
-			$metadata[$metaKey] = $tmp;
-		}
-
-		return $metadata;	}
-
-/**
- * Normalize edit metadatas type for JSON
- * メタデータの型を調整する（JSONのため）
- *
- * @param array $metadatas メタデータ配列
- * @return array|bool
- */
-	public function normalizeEditMetadatasType($metadatas = []) {
-		if (empty($metadatas)) {
-			return false;
-		}
-
-		foreach ($metadatas as $key => $metadata) {
-			$result[$key] = $metadata;
-
-			if ($metadata == 'on') {
-				$metadata = 1;
-			}
-
-			if ($metadata == 'off') {
-				$metadata = 0;
-			}
-
-			if (in_array($this->dataType[$key], [
-				'numeric', 'integer'
-			])) {
-				$result[$key] = (int)$metadata;
-			}
-
-			if (in_array($this->dataType[$key], [
-				'string', 'text'
-			])) {
-				$result[$key] = (string)$metadata;
-			}
-
-			if ($this->dataType[$key] === 'boolean') {
-				$result[$key] = 0;
-				if ($metadata) {
-					$result[$key] = 1;
-				}
-			}
-
-			if ($this->dataType[$key] === 'json') {
-				if (empty($metadata)) {
-					$result[$key] = [];
-				} else {
-					if (is_array($metadata)) {
-						$result[$key] = $metadata;
-					} else {
-						$result[$key] = json_decode($metadata, true);
-					}
-				}
-			}
-		}
-		return $result;
 	}
 }
 

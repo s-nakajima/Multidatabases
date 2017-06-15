@@ -95,7 +95,7 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
      * @param {String} message
      * @type {Object}
      */
-    $scope.delete = function($event, positionNo, index, message) {
+  $scope.delete = function($event, positionNo, index, message) {
     $scope.eventStop($event);
 
     if (!confirm(message)) {
