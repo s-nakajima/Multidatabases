@@ -14,6 +14,7 @@
  *
  * @author Tomoyuki OHNO (Ricksoft, Co., LTD.) <ohno.tomoyuki@ricksoft.jp>
  * @package NetCommons\Multidatabases\Config\Schema
+ * @SuppressWarnings(PHPMD.LongVariable)
  */
 class MultidatabasesSchema extends CakeSchema {
 

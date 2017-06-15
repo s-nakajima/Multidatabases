@@ -11,6 +11,8 @@
 
 /**
  * Summary for MultidatabaseFrameSettingFixture
+ *
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
 class MultidatabaseFrameSettingFixture extends CakeTestFixture {
 
