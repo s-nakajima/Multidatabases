@@ -9,15 +9,22 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+
+// メタデータ項目ヘッダーの最大文字数を取得する
+$headerMaxLength = $this->MultidatabaseContentView->chkItemHeaderMaxLength($multidatabaseMetadata);
 ?>
 
 <article>
 	<div class="row">
 		<?php
-		$viewContentGrp[0] = $this->MultidatabaseContentView->renderGroup($multidatabaseMetadataGroups, $content, 0, 1, $viewMode);
-		$viewContentGrp[1] = $this->MultidatabaseContentView->renderGroup($multidatabaseMetadataGroups, $content, 1, 2, $viewMode);
-		$viewContentGrp[2] = $this->MultidatabaseContentView->renderGroup($multidatabaseMetadataGroups, $content, 2, 2, $viewMode);
-		$viewContentGrp[3] = $this->MultidatabaseContentView->renderGroup($multidatabaseMetadataGroups, $content, 3, 1, $viewMode);
+		$viewContentGrp[0] = $this->MultidatabaseContentView->renderGroup(
+			$multidatabaseMetadataGroups, $content, 0, 1, $headerMaxLength, $viewMode);
+		$viewContentGrp[1] = $this->MultidatabaseContentView->renderGroup(
+			$multidatabaseMetadataGroups, $content, 1, 2, $headerMaxLength, $viewMode);
+		$viewContentGrp[2] = $this->MultidatabaseContentView->renderGroup(
+			$multidatabaseMetadataGroups, $content, 2, 2, $headerMaxLength, $viewMode);
+		$viewContentGrp[3] = $this->MultidatabaseContentView->renderGroup(
+			$multidatabaseMetadataGroups, $content, 3, 1, $headerMaxLength, $viewMode);
 		?>
 		<?php if (!empty($viewContentGrp[0])): ?>
 			<?php echo $viewContentGrp[0]; ?>
