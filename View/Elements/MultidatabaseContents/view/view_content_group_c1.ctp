@@ -15,7 +15,7 @@
 	<table class="table table-bordered">
 		<?php foreach ($gMetadatas as $key => $metadata): ?>
 			<tr>
-				<th class="col-xs-3 col-sm-2">
+				<th style="width:<?php echo $headerMaxLength; ?>rem;">
 					<?php if ($metadata['is_visible_field_name'] === 1): ?>
 						<?php echo $metadata['name']; ?>
 					<?php endif; ?>

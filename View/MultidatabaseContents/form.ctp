@@ -10,9 +10,15 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-echo $this->NetCommonsHtml->script([
-	'/multidatabases/js/edit_multi_database_contents.js',
-]);
+if ($this->MultidatabaseContentEdit->chkHaveWysiwygItems($multidatabaseMetadata)) {
+	echo $this->NetCommonsHtml->script([
+		'/multidatabases/js/edit_multi_database_contents.js',
+	]);
+} else {
+	echo $this->NetCommonsHtml->script([
+		'/multidatabases/js/edit_multi_database_contents_without_wysiwyg.js',
+	]);
+}
 
 echo $this->NetCommonsHtml->css([
 	'/multidatabases/css/style.css',

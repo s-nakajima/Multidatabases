@@ -45,17 +45,43 @@ class MultidatabaseContentViewHelper extends AppHelper {
 	}
 
 /**
+ * メタデータ項目ヘッダーの最大文字数を取得する
+ *
+ * @param array $metadatas メタデータ配列
+ * @return int
+ */
+	public function chkItemHeaderMaxLength($metadatas) {
+		$result = 8;
+
+		if (empty($metadatas)) {
+			return $result;
+		}
+
+		foreach ($metadatas as $metadata) {
+			$tmp = mb_convert_encoding($metadata['name'], 'EUC-JP', 'UTF-8');
+			$tmpLen = strlen(bin2hex($tmp)) / 2;
+
+			if ($result < $tmpLen) {
+				$result = $tmpLen;
+			}
+		}
+
+		return $result;
+	}
+
+/**
  * 汎用データベースコンテンツ グループのHTMLを出力する(列)
  *
  * @param array $metadataGroups メタデータグループ配列
  * @param array $contents コンテンツ配列
  * @param int $position 位置（グループ）
  * @param int $colSize 列サイズ（1:1列,2:2列）
+ * @param int $headerMaxLength ヘッダー最大文字数
  * @param null $viewMode 表示方法
  * @return string HTML
  */
 	public function renderGroup(
-		$metadataGroups, $contents, $position, $colSize = 1, $viewMode = null
+		$metadataGroups, $contents, $position, $colSize = 1, $headerMaxLength = 5, $viewMode = null
 	) {
 		switch ($colSize) {
 			case 2:
@@ -95,6 +121,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
 				'gMetadatas' => $metadatas,
 				'gContents' => $contents,
 				'colSize' => $colSize,
+				'headerMaxLength' => $headerMaxLength
 			]
 		);
 	}
