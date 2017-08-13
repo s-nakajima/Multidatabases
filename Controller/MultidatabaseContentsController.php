@@ -134,7 +134,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		$this->set('multidatabaseFrameSetting', $frameSetting['MultidatabaseFrameSetting']);
 
 		// ゲストアクセスOKのアクションを設定
-		$this->Auth->allow('index', 'detail');
+		$this->Auth->allow('index', 'detail', 'search');
 
 		$this->_prepare();
 	}
