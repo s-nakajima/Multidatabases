@@ -133,7 +133,6 @@ class MultidatabaseMetadataEditCnv extends MultidatabasesAppModel {
  * メタデータの型を調整する(JSON)
  *
  * @param string $metadata メタデータ値
- * @param string $key メタデータキー
  * @return array
  */
 	private function __normalizeEditMetadataJson($metadata) {

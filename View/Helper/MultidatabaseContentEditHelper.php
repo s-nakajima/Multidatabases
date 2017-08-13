@@ -44,6 +44,24 @@ class MultidatabaseContentEditHelper extends AppHelper {
 	}
 
 /**
+ * Wysiwygアイテムの有無確認
+ *
+ * @param array $metadatas メタデータ配列
+ * @return bool
+ */
+	public function chkHaveWysiwygItems($metadatas) {
+		if (empty($metadatas)) {
+			return false;
+		}
+
+		foreach ($metadatas as $metadata) {
+			if (isset($metadata['type']) && $metadata['type'] === 'wysiwyg') {
+				return true;
+			}
+		}
+	}
+
+/**
  * 汎用データベースメタデータレイアウト グループのHTMLを出力する(列)
  *
  * @param array $metadataGroups メタデータグループ
