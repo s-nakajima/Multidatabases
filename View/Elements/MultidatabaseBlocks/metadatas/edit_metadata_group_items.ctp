@@ -14,7 +14,8 @@
 <uib-accordion close-others="true">
 	<div ng-repeat="<?php echo "g{$gPos} in metadataGroup${gPos}"; ?> track by $index"
 	     class="panel-default form-horizontal"
-	     is-open="metadata.isOpen"
+	     ng-init="status = {isOpen: g<?php echo $gPos; ?>.is_open == 1}"
+	     is-open="status.isOpen"
 	     uib-accordion-group>
 		<div uib-accordion-heading>
 			<div class="pull-right">
@@ -134,7 +135,11 @@
 					</ul>
 				</div>
 			</div>
-			<span class="multidatabase-metadata-item-caption">{{g<?php echo $gPos; ?>.name}}</span>
+			<span class="multidatabase-metadata-item-caption">
+				<i class="glyphicon glyphicon-menu-down" ng-if="status.isOpen"></i>
+				<i class="glyphicon glyphicon-menu-right" ng-if="! status.isOpen"></i>
+				{{g<?php echo $gPos; ?>.name}}
+			</span>
 			<div class="clearfix"></div>
 		</div>
 		<div>

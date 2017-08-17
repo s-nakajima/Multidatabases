@@ -29,6 +29,9 @@ NetCommonsApp.controller('MultidatabaseMetadata', ['$scope', function($scope) {
       switch (value.position) {
         case 0:
           value.rank = $scope.metadataGroup0.length;
+          if ($scope.metadataGroup0.length === 0) {
+            value.is_open = true;
+          }
           $scope.metadataGroup0.push(value);
           break;
         case 1:
