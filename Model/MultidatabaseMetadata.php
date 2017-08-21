@@ -97,6 +97,17 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 /**
+ * Before validate
+ *
+ * @param array $options オプション
+ * @return bool
+ */
+	public function beforeValidate($options = []) {
+		$this->validate = $this->__makeValidation();
+		return parent::beforeValidate($options);
+	}
+
+/**
  * Get one metadata
  * メタデータを1件取得する
  *
@@ -231,6 +242,12 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @return array
  */
 	public function mergeGroupToMetadatas($data) {
+		for ($i = 1; $i <= 3; $i++) {
+			if (!isset($data[$i])) {
+				$data[$i] = [];
+			}
+		}
+
 		$result['MultidatabaseMetadata'] = array_merge($data[0], $data[1], $data[2], $data[3]);
 		return $result;
 	}
@@ -327,7 +344,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	public function getEditMetadatas($multidatabaseId = 0) {
 		$this->loadModels([
 			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
-			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv'
 		]);
 
 		if (empty($multidatabaseId)) {
@@ -338,11 +354,67 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		}
 
 		$metadatas = $this->getMetadatas($multidatabaseId);
+		$result = $this->__normalizeEditMetadatas($metadatas);
+
+		return $result;
+	}
+
+/**
+ * メタデータのバリデーションを行う
+ *
+ * @param array $metadataGroups メタデータグループ配列
+ * @return bool|array
+ */
+	public function doValidateMetadatas($metadataGroups) {
+		$this->loadModels([
+			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv'
+		]);
+
+		$metadatas = $this->mergeGroupToMetadatas($metadataGroups);
+
+		$result['has_err'] = false;
+		$result['errors'] = [];
+		$result['data'] = $metadatas['MultidatabaseMetadata'];
+
+		foreach ($metadatas['MultidatabaseMetadata'] as $key => $metadata) {
+			$this->set($metadata);
+
+			$result['data'][$key] = $this->MultidatabaseMetadataEditCnv
+				->normalizeEditMetadatasType($metadata);
+
+			$result['data'][$key]['has_err'] = 0;
+			$result['data'][$key]['err_msg'] = '';
+			$result['errors'][$key] = '';
+
+			if (! $this->validates()) {
+				$result['has_err'] = true;
+				$result['errors'][$key] = $this->ValidationErrors;
+				$result['data'][$key]['has_err'] = 1;
+				if (! empty($this->validationErrors['name'][0])) {
+					$result['data'][$key]['err_msg'] = $this->validationErrors['name'][0];
+				}
+			}
+		}
+
+		return $result;
+	}
+
+/**
+ * 編集用メタデータの値を調整する
+ *
+ * @param array $metadatas メタデータ配列
+ * @return array|bool
+ */
+	private function __normalizeEditMetadatas($metadatas) {
+		$this->loadModels([
+			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv'
+		]);
 
 		if (!$metadatas) {
 			return false;
 		}
 
+		$result = [];
 		foreach ($metadatas as $key => $metadata) {
 			if (!isset($metadata['MultidatabaseMetadata'])) {
 				return false;
@@ -356,81 +428,25 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 /**
- * Count metadatas
- * 件数カウント
+ * Make validation rules
+ * バリデーションルールの作成
  *
- * @param array $metadatas メタデータ配列
- * @return array|bool 全体のメタデータ合計と各ポジションのメタデータ合計
- */
-	public function countMetadatas($metadatas) {
-		$totalAllMetadatas = count($metadatas);
-
-		foreach ($metadatas as $metadata) {
-
-			if (!isset($metadata['MultidatabaseMetadata']['position'])) {
-				return false;
-			}
-
-			$position = $metadata['MultidatabaseMetadata']['position'];
-
-			if (isset($totalPosMetadatas[$position])) {
-				$totalPosMetadatas[$position]++;
-			} else {
-				$totalPosMetadatas[$position] = 1;
-			}
-		}
-
-		$result = [
-			'total' => $totalAllMetadatas,
-			'position' => $totalPosMetadatas,
-		];
-
-		return $result;
-	}
-
-/**
- * 検索対象のメタデータフィールド一覧を取得する
- *
- * @param int $multidatabaseId 汎用データベースID
  * @return array|bool
- * @throws InternalErrorException
  */
-	public function getSearchMetadatas($multidatabaseId = 0) {
-		if (! $metadatas = $this->getMetadatas(
-				$multidatabaseId,
-				[
-					'is_searchable' => 1
-				]
-			)) {
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		$result = [];
-		foreach ($metadatas as $metadata) {
-			$result[] = 'value' . $metadata['MultidatabaseMetadata']['col_no'];
-		}
-
-		return $result;
-	}
-
-/**
- * Get initial metadatas
- * 初期データ
- *
- * @return array
- */
-	public function getInitMetadatas() {
-		$this->loadModels([
-			'MultidatabaseMetadataInit' => 'Multidatabases.MultidatabaseMetadataInit',
-		]);
-
-		$initMetadatas = $this->MultidatabaseMetadataInit->initMetadatas();
-		$result = [];
-		foreach ($initMetadatas as $key => $initMetadata) {
-			$result[$key] = $initMetadata;
-			$result[$key]['language_id'] = Current::read('Language.id');
-		}
-		return $result;
+	private function __makeValidation() {
+		$result = [
+			'name' => [
+				'notBlank' => [
+					'rule' => ['notBlank'],
+					'message' => sprintf(
+						__d('net_commons', 'Please input %s.'),
+						__d('multidatabases', 'Field name')
+					),
+					'required' => true
+				],
+			],
+		];
+		return Hash::merge($this->validate, $result);
 	}
 }
 

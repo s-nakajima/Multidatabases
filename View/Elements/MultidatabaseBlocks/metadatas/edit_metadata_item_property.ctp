@@ -26,6 +26,11 @@
 	<div class="well well-sm">
 		<?php echo __d('multidatabases', 'This metadata cannot delete because title field.'); ?>
 	</div>
+	<?php // タイトルはhiddenにtypeの値を持たせる(text) ?>
+	<input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][type]" type="text" class="hidden"
+		   value="text">
+	<input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_title]" type="text" class="hidden"
+		   value="1">
 </div>
 <div class="row form-group">
 	<div class="col-xs-12">
@@ -38,6 +43,9 @@
 		       id="multidatabaseMetadataSettingEditName<?php echo $gPos; ?>-{{$index}}"
 		       name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][name]"
 		       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['name']">
+		<div class="has-error" ng-if="<?php echo "g${gPos}.has_err == 1"; ?>">
+			<div class="help-block">{{ <?php echo "g${gPos}.err_msg"; ?> }}</div>
+		</div>
 	</div>
 </div>
 <?php // 属性 ?>
@@ -75,6 +83,7 @@
 				       ng-true-value="1"
 				       ng-false-value=""
 				       ng-model="metadataGroup<?php echo $gPos; ?>[$index]['is_require']">
+
 				<?php echo __d('multidatabases', 'Is require.'); ?>
 			</label>
 		</div>

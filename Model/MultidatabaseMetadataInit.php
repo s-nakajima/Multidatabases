@@ -261,11 +261,27 @@ class MultidatabaseMetadataInit extends MultidatabasesAppModel {
 	];
 
 /**
+ * Get initial metadatas
+ * 初期データ
+ *
+ * @return array
+ */
+	public function getInitMetadatas() {
+		$initMetadatas = $this->__initMetadatas();
+		$result = [];
+		foreach ($initMetadatas as $key => $initMetadata) {
+			$result[$key] = $initMetadata;
+			$result[$key]['language_id'] = Current::read('Language.id');
+		}
+		return $result;
+	}
+
+/**
  * Init Metadatas
  *
  * @return array
  */
-	public function initMetadatas() {
+	private function __initMetadatas() {
 		$metadataValues = $this->__initMetadataValues;
 
 		$metadataValues[0]['name'] = __d('multidatabases', 'Title');
