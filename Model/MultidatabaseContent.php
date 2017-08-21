@@ -15,6 +15,7 @@ App::uses('MultidatabaseModel', 'Multidatabase.Model');
 App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
 App::uses('MultidatabaseContentEditModel', 'MultidatabaseContentEdit.Model');
 App::uses('MultidatabaseContentFileModel', 'MultidatabaseContentFile.Model');
+App::uses('MultidatabaseContentSearchModel', 'MultidatabaseContentSearch.Model');
 App::uses('TemporaryFolder', 'Files.Utility');
 
 /**
@@ -99,7 +100,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @return bool
  */
 	public function beforeValidate($options = []) {
-		$this->validate = $this->makeValidation();
+		$this->validate = $this->__makeValidation();
 
 		return parent::beforeValidate($options);
 	}
@@ -167,59 +168,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		]);
 
 		return $result;
-	}
-
-/**
- * Make validation rules
- * バリデーションルールの作成
- *
- * @return array|bool
- */
-	public function makeValidation() {
-		$this->loadModels([
-			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
-			'Multidatabase' => 'Multidatabases.Multidatabase',
-		]);
-
-		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
-			return false;
-		}
-
-		if (!$metadatas =
-			$this->MultidatabaseMetadata->getEditMetadatas(
-				$multidatabase['Multidatabase']['id']
-			)
-		) {
-			return false;
-		}
-
-		$result = [];
-		foreach ($metadatas as $metadata) {
-			if ($metadata['is_require']) {
-				$tmp = [];
-				switch ($metadata['type']) {
-					case 'checkbox':
-						$tmp['rule'] = [
-							'multiple',
-							[
-								'min' => 1,
-							],
-						];
-						break;
-					default:
-						$tmp['rule'][] = 'notBlank';
-						$tmp['message'] = sprintf(
-							__d('net_commons', 'Please input %s.'),
-							$metadata['name']
-						);
-						break;
-				}
-				$tmp['required'] = true;
-				$result['value' . $metadata['col_no']] = $tmp;
-			}
-		}
-
-		return Hash::merge($this->validate, $result);
 	}
 
 /**
@@ -386,6 +334,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$this->loadModels([
 			'MultidatabaseContentFile' => 'Multidatabases.MultidatabaseContentFile',
 			'MultidatabaseContentEditAt' => 'Multidatabases.MultidatabaseContentEditAt',
+			'MultidatabaseContentSearch' => 'Multidatabases.MultidatabaseContentSearch',
 		]);
 
 		$attachFields = $data['attachFields'];
@@ -410,7 +359,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 		$this->begin();
 		try {
-			if (! $searchContents = $this->MultidatabaseMetadata->getSearchMetadatas()) {
+			if (! $searchContents = $this->MultidatabaseContentSearch->getSearchMetadatas()) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
@@ -455,5 +404,58 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			$this->rollback($e);
 		}
 		return $savedData;
+	}
+
+/**
+ * Make validation rules
+ * バリデーションルールの作成
+ *
+ * @return array|bool
+ */
+	private function __makeValidation() {
+		$this->loadModels([
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+		]);
+
+		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
+			return false;
+		}
+
+		if (!$metadatas =
+			$this->MultidatabaseMetadata->getEditMetadatas(
+				$multidatabase['Multidatabase']['id']
+			)
+		) {
+			return false;
+		}
+
+		$result = [];
+		foreach ($metadatas as $metadata) {
+			if ($metadata['is_require']) {
+				$tmp = [];
+				switch ($metadata['type']) {
+					case 'checkbox':
+						$tmp['rule'] = [
+							'multiple',
+							[
+								'min' => 1,
+							],
+						];
+						break;
+					default:
+						$tmp['rule'][] = 'notBlank';
+						$tmp['message'] = sprintf(
+							__d('net_commons', 'Please input %s.'),
+							$metadata['name']
+						);
+						break;
+				}
+				$tmp['required'] = true;
+				$result['value' . $metadata['col_no']] = $tmp;
+			}
+		}
+
+		return Hash::merge($this->validate, $result);
 	}
 }

@@ -10,7 +10,7 @@
  */
 
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
-App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
+App::uses('MultidatabaseContentSearchModel', 'MultidatabaseContentSearch.Model');
 
 /**
  * MultidatabaseContentSearchCond Model
@@ -191,14 +191,14 @@ class MultidatabaseContentSearchCond extends MultidatabasesAppModel {
  */
 	private function __makeKwCond($keywords, $condType) {
 		$this->loadModels([
-			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+			'MultidatabaseContentSearch' => 'Multidatabases.MultidatabaseContentSearch',
 		]);
 
 		// キーワード文字列を配列に変換
 		$arrKeywords = $this->__kwValToArr($keywords);
 
 		// 検索対象のメタデータを取得
-		$searchMetadatas = $this->MultidatabaseMetadata->getSearchMetadatas();
+		$searchMetadatas = $this->MultidatabaseContentSearch->getSearchMetadatas();
 
 		$result = [];
 		if (!empty($arrKeywords)) {

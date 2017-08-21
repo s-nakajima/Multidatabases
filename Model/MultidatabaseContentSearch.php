@@ -11,6 +11,7 @@
 
 App::uses('MultidatabasesAppModel', 'Multidatabases.Model');
 App::uses('MultidatabaseContentSearchCondModel', 'MultidatabaseContentSearchCond.Model');
+App::uses('MultidatabaseMetadataModel', 'MultidatabaseMetadata.Model');
 
 /**
  * MultidatabaseContentSearch Model
@@ -27,6 +28,35 @@ class MultidatabaseContentSearch extends MultidatabasesAppModel {
  * @var string
  */
 	public $useTable = false;
+
+/**
+ * 検索対象のメタデータフィールド一覧を取得する
+ *
+ * @param int $multidatabaseId 汎用データベースID
+ * @return array|bool
+ * @throws InternalErrorException
+ */
+	public function getSearchMetadatas($multidatabaseId = 0) {
+		$this->loadModels([
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata'
+		]);
+
+		if (! $metadatas = $this->MultidatabaseMetadata->getMetadatas(
+			$multidatabaseId,
+			[
+				'is_searchable' => 1
+			]
+		)) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		$result = [];
+		foreach ($metadatas as $metadata) {
+			$result[] = 'value' . $metadata['MultidatabaseMetadata']['col_no'];
+		}
+
+		return $result;
+	}
 
 /**
  * 検索結果を出力するための条件設定を行う

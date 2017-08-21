@@ -57,17 +57,22 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
  * 保存データを作成
  *
  * @param array $multidatabase 汎用データベース配列
- * @param array $metadatas メタデータ配列
  * @return array
  */
-	public function makeSaveData($multidatabase = [], $metadatas = []) {
+	public function makeSaveData($multidatabase) {
 		$this->loadModels([
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
 			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv',
 		]);
 
-		if (empty($metadatas)) {
+		if (empty($multidatabase['MultidatabaseMetadata'])) {
 			return [];
 		}
+
+		$tmp = $this->MultidatabaseMetadata->mergeGroupToMetadatas(
+			$multidatabase['MultidatabaseMetadata']);
+
+		$metadatas = $tmp['MultidatabaseMetadata'];
 
 		// カラムNo初期値
 		$colNos['col_no'] = $this->__beginColNo;
@@ -267,6 +272,39 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 		}
 
 		return $currentColNo;
+	}
+
+/**
+ * Count metadatas
+ * 件数カウント
+ *
+ * @param array $metadatas メタデータ配列
+ * @return array|bool 全体のメタデータ合計と各ポジションのメタデータ合計
+ */
+	public function countMetadatas($metadatas) {
+		$totalAllMetadatas = count($metadatas);
+
+		foreach ($metadatas as $metadata) {
+
+			if (!isset($metadata['MultidatabaseMetadata']['position'])) {
+				return false;
+			}
+
+			$position = $metadata['MultidatabaseMetadata']['position'];
+
+			if (isset($totalPosMetadatas[$position])) {
+				$totalPosMetadatas[$position]++;
+			} else {
+				$totalPosMetadatas[$position] = 1;
+			}
+		}
+
+		$result = [
+			'total' => $totalAllMetadatas,
+			'position' => $totalPosMetadatas,
+		];
+
+		return $result;
 	}
 }
 
