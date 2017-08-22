@@ -83,7 +83,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Likes.Like',
 		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
-		'Files.Attachment',
 	];
 
 /**
@@ -274,6 +273,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	public function saveContentForImport($data) {
 		$this->begin();
 		try {
+			$this->create();
 			$savedData = $this->save($data, false);
 			if ($savedData === false) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
