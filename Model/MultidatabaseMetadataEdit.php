@@ -280,5 +280,42 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 
 		return $result;
 	}
+
+/**
+ * メタデータを比較して、変更前のみ存在するメタデータのIDとカラムNoを返す
+ *
+ * @param array $beforeMetadatas メタデータ配列（変更前）
+ * @param array $currentMetadatas メタデータ配列（変更後/現在）
+ * @return array
+ */
+	public function diffBeforeMetadatas($beforeMetadatas, $currentMetadatas) {
+		$result = [];
+
+		foreach ($beforeMetadatas as $beforeMetadata) {
+			$metadataIsExists = false;
+			$beforeMetadata['id'] = (int)$beforeMetadata['id'];
+			foreach ($currentMetadatas as $currentMetadata) {
+				$currentMetadata['id'] = (int)$currentMetadata['id'];
+				if (
+					! empty($currentMetadata['id']) &&
+					! empty($beforeMetadata['id']) &&
+					$currentMetadata['id'] === $beforeMetadata['id']
+				) {
+					$metadataIsExists = true;
+					break;
+				}
+			}
+
+			// 変更前のみ存在するメタデータのIDとカラムNoをセットする
+			if (! $metadataIsExists) {
+				$result[] = [
+					'metadata_id' => $beforeMetadata['id'],
+					'col_no' => $beforeMetadata['col_no'],
+				];
+			}
+		}
+		return $result;
+	}
+
 }
 

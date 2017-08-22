@@ -94,9 +94,36 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 			'MultidatabaseContent' => 'Multidatabases.MultidatabaseContent',
 			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
 			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv',
+			'MultidatabaseMetadataSetting' => 'Multidatabases.MultidatabaseMetadataSetting',
 			'MultidatabaseFrameSetting' => 'Multidatabases.MultidatabaseFrameSetting',
 			'MultidatabaseSetting' => 'Multidatabases.MultidatabaseSetting',
 		]);
+	}
+
+/**
+ * Called after each successful save operation.
+ *
+ * @param bool $created True if this save created a new record
+ * @param array $options Options passed from Model::save().
+ * @return void
+ * @throws InternalErrorException
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#aftersave
+ * @see Model::save()
+ */
+	public function afterSave($created, $options = []) {
+		if ($created && $this->data['MultidatabaseMetadata']['type'] === 'autonumber') {
+			// MultidatabaseMetadataSetting追加
+			$metadataId = $this->getInsertID();
+			$metadataSettingVals = [
+				'id' => $metadataId,
+				'auto_number_sequence' => 0
+			];
+			if (! $this->MultidatabaseMetadataSetting->save($metadataSettingVals)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		}
+
+		parent::afterSave($created, $options);
 	}
 
 /**
@@ -282,7 +309,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		}
 
 		// 保存
-		if (!$this->saveAll($metadatas)) {
+		if (! $this->saveAll($metadatas)) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 	}
@@ -389,43 +416,8 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 			return [];
 		}
 
-		return $this->__diffBeforeMetadatas($beforeSaveMetadatas, $currentMetadatas);
-	}
-
-/**
- * メタデータを比較して、変更前のみ存在するメタデータのIDとカラムNoを返す
- *
- * @param array $beforeMetadatas メタデータ配列（変更前）
- * @param array $currentMetadatas メタデータ配列（変更後/現在）
- * @return array
- */
-	private function __diffBeforeMetadatas($beforeMetadatas, $currentMetadatas) {
-		$result = [];
-
-		foreach ($beforeMetadatas as $beforeMetadata) {
-			$metadataIsExists = false;
-			$beforeMetadata['id'] = (int)$beforeMetadata['id'];
-			foreach ($currentMetadatas as $currentMetadata) {
-				$currentMetadata['id'] = (int)$currentMetadata['id'];
-				if (
-					! empty($currentMetadata['id']) &&
-					! empty($beforeMetadata['id']) &&
-					$currentMetadata['id'] === $beforeMetadata['id']
-				) {
-					$metadataIsExists = true;
-					break;
-				}
-			}
-
-			// 変更前のみ存在するメタデータのIDとカラムNoをセットする
-			if (! $metadataIsExists) {
-				$result[] = [
-					'metadata_id' => $beforeMetadata['id'],
-					'col_no' => $beforeMetadata['col_no'],
-				];
-			}
-		}
-		return $result;
+		return $this->MultidatabaseMetadataEdit->diffBeforeMetadatas(
+			$beforeSaveMetadatas, $currentMetadatas);
 	}
 
 /**

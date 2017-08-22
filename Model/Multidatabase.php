@@ -139,26 +139,25 @@ class Multidatabase extends MultidatabasesAppModel {
  * @see Model::save()
  */
 	public function afterSave($created, $options = []) {
-		//MultidatabaseSetting登録
+		// MultidatabaseSetting登録
 		if (isset($this->MultidatabaseSetting->data['MultidatabaseSetting'])) {
 			$this->MultidatabaseSetting->set($this->MultidatabaseSetting->data['MultidatabaseSetting']);
 			$this->MultidatabaseSetting->save(null, false);
 		}
 
-		//MultidatabaseFrameSetting登録
+		// MultidatabaseFrameSetting登録
 		if (isset($this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']) &&
-			!$this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']['id']
+			! $this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']['id']
 		) {
 			if (! $this->MultidatabaseFrameSetting->save(null, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
 
-		if (!isset($this->data['MultidatabaseMetadata'])) {
+		// MultidatabaseMetadata登録
+		if (! isset($this->data['MultidatabaseMetadata'])) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-
-		// MultidatabaseMetadata登録
 		$this->MultidatabaseMetadata->saveMetadatas($this->data);
 
 		parent::afterSave($created, $options);
