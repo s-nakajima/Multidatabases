@@ -200,7 +200,6 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 		$commonDat['Multidatabase']['key'] = $this->_multidatabase['Multidatabase']['key'];
 
 		$commonDat['WorkflowComment']['comment'] = '';
-		$commonDat['_NetCommonsTime']['user_timezone'] = NetCommonsTime::getUserTimezone();
 		$commonDat['_NetCommonsTime']['convert_fields'] = '';
 
 		if (empty($importDat['data'])) {
