@@ -94,6 +94,30 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	];
 
 /**
+ * Constructor. Binds the model's database table to the object.
+ *
+ * @param bool|int|string|array $id Set this ID for this model on startup,
+ * can also be an array of options, see above.
+ * @param string $table Name of database table to use.
+ * @param string $ds DataSource connection name.
+ * @see Model::__construct()
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
+	public function __construct($id = false, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+
+		$this->loadModels([
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
+			'MultidatabaseContentEdit' => 'Multidatabases.MultidatabaseContentEdit',
+			'MultidatabaseContentEditPr' => 'Multidatabases.MultidatabaseContentEditPr',
+			'MultidatabaseContentEditAt' => 'Multidatabases.MultidatabaseContentEditAt',
+			'MultidatabaseContentSearch' => 'Multidatabases.MultidatabaseContentSearch',
+			'MultidatabaseContentFile' => 'Multidatabases.MultidatabaseContentFile',
+		]);
+	}
+
+/**
  * Before validate
  *
  * @param array $options オプション
@@ -112,12 +136,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @return array|bool
  */
 	public function getEditData($conditions = []) {
-		$this->loadModels([
-			'Multidatabase' => 'Multidatabases.Multidatabase',
-			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
-			'MultidatabaseContentEdit' => 'Multidatabases.MultidatabaseContentEdit',
-		]);
-
 		if (empty($conditions)) {
 			return false;
 		}
@@ -138,6 +156,30 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 /**
+ * カラムの値をクリアする
+ *
+ * @param string $multidatabaseKey 汎用データベースKey
+ * @param int $colNo カラムNo
+ * @return bool
+ * @throws InternalErrorException
+ */
+	public function clrMultidatabaseColVal($multidatabaseKey, $colNo) {
+		$data = [
+			'MultidatabaseContent.value' . $colNo => '""',
+		];
+
+		$conditions = [
+			'MultidatabaseContent.multidatabase_key' => $multidatabaseKey,
+		];
+
+		if (! $this->updateAll($data, $conditions)) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		return true;
+	}
+
+/**
  * Get contents
  * 複数のコンテンツを取得
  *
@@ -146,10 +188,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @return array|bool
  */
 	public function getMultidatabaseContents($conditions = [], $recursive = 0) {
-		$this->loadModels([
-			'Multidatabase' => 'Multidatabases.Multidatabase',
-		]);
-
 		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
@@ -210,11 +248,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
 	public function saveContent($data, $isUpdate) {
-		$this->loadModels([
-			'MultidatabaseContentEdit' => 'Multidatabases.MultidatabaseContentEdit',
-			'MultidatabaseContentEditPr' => 'Multidatabases.MultidatabaseContentEditPr',
-		]);
-
 		if (! $metadatas = $this->MultidatabaseContentEditPr->prGetMetadatas()) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -288,10 +321,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
 	public function deleteContentByKey($key) {
-		$this->loadModels([
-			'MultidatabaseContentFile' => 'Multidatabases.MultidatabaseContentFile',
-		]);
-
 		$this->begin();
 
 		$result = false;
@@ -331,12 +360,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
 	private function __saveContent($data) {
-		$this->loadModels([
-			'MultidatabaseContentFile' => 'Multidatabases.MultidatabaseContentFile',
-			'MultidatabaseContentEditAt' => 'Multidatabases.MultidatabaseContentEditAt',
-			'MultidatabaseContentSearch' => 'Multidatabases.MultidatabaseContentSearch',
-		]);
-
 		$attachFields = $data['attachFields'];
 		unset($data['attachFields']);
 		$skipAttaches = $data['skipAttaches'];
@@ -413,11 +436,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @return array|bool
  */
 	private function __makeValidation() {
-		$this->loadModels([
-			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
-			'Multidatabase' => 'Multidatabases.Multidatabase',
-		]);
-
 		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}

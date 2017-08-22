@@ -90,7 +90,10 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		parent::__construct($id, $table, $ds);
 
 		$this->loadModels([
-			'multidatabase' => 'Multidatabases.Multidatabase',
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+			'MultidatabaseContent' => 'Multidatabases.MultidatabaseContent',
+			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
+			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv',
 			'MultidatabaseFrameSetting' => 'Multidatabases.MultidatabaseFrameSetting',
 			'MultidatabaseSetting' => 'Multidatabases.MultidatabaseSetting',
 		]);
@@ -120,7 +123,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 			return false;
 		}
 
-		$multidatabase = $this->multidatabase->getMultidatabase();
+		$multidatabase = $this->Multidatabase->getMultidatabase();
 
 		if (!$multidatabase) {
 			return $multidatabase;
@@ -253,85 +256,35 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 /**
- * Delete metadata
- * メタデータを削除する
- *
- * @param array $metadataIds メタデータID配列
- * @return void
- * @throws InternalErrorException
- */
-	public function deleteMetadatas($metadataIds = []) {
-		if (empty($metadataIds)) {
-			return false;
-		}
-
-		foreach ($metadataIds as $metadataId) {
-			if (!$this->delete($metadataId)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-		}
-	}
-
-/**
  * Save metadata (New/Update)
  * メタデータを保存する（新規・更新）
  *
- * @param array $metadatas メタデータ配列
+ * @param array $data データ配列
  * @return void
  * @throws InternalErrorException
  */
-	public function saveMetadatas($metadatas) {
+	public function saveMetadatas($data) {
+		$metadatas = $this->MultidatabaseMetadataEdit->makeSaveData($data);
+
+		// 削除ID,カラムの確認
+		$delMetaIdColNos =
+			$this->__getDeleteMetadatas(
+				$data['Multidatabase']['id'],
+				$metadatas
+			);
+
+		// MultidatabaseMetadata削除
+		if (! empty($delMetaIdColNos)) {
+			$this->__deleteMetadatas(
+				$data['Multidatabase']['key'],
+				$delMetaIdColNos
+			);
+		}
+
+		// 保存
 		if (!$this->saveAll($metadatas)) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-	}
-
-/**
- * Get Metadata columns for delete
- * 削除対象のカラムNoを取得する
- *
- * @param int|null $multidatabaseId 汎用データベースID
- * @param array $currentMetadatas メタデータ配列
- * @param string $type 出力方法
- * @return array|bool
- */
-	public function getDeleteMetadatas(
-		$multidatabaseId = null, $currentMetadatas = [], $type = 'all'
-	) {
-		$this->loadModels([
-			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
-		]);
-
-		if (is_null($multidatabaseId) || empty($currentMetadatas)) {
-			return false;
-		}
-
-		if (!$beforeSaveMetadatas = $this->getEditMetadatas($multidatabaseId)) {
-			return false;
-		}
-
-		$result = [];
-
-		$currentColNos = $this->MultidatabaseMetadataEdit->getColNos($currentMetadatas);
-		if (empty($currentColNos)) {
-			return false;
-		}
-
-		foreach ($beforeSaveMetadatas as $beforeSaveMetadata) {
-			$tmp = $this->MultidatabaseMetadataEdit->getDeleteMetadata(
-				$beforeSaveMetadata, $currentMetadatas, $type
-			);
-
-			if (!$tmp) {
-				$result[] = $tmp;
-			}
-		}
-
-		if (empty($result)) {
-			return false;
-		}
-
-		return $result;
 	}
 
 /**
@@ -342,10 +295,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @return array|bool
  */
 	public function getEditMetadatas($multidatabaseId = 0) {
-		$this->loadModels([
-			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
-		]);
-
 		if (empty($multidatabaseId)) {
 			if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
 				return false;
@@ -354,7 +303,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		}
 
 		$metadatas = $this->getMetadatas($multidatabaseId);
-		$result = $this->__normalizeEditMetadatas($metadatas);
+		$result = $this->MultidatabaseMetadataEditCnv->normalizeEditMetadatas($metadatas);
 
 		return $result;
 	}
@@ -366,10 +315,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @return bool|array
  */
 	public function doValidateMetadatas($metadataGroups) {
-		$this->loadModels([
-			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv'
-		]);
-
 		$metadatas = $this->mergeGroupToMetadatas($metadataGroups);
 
 		$result['has_err'] = false;
@@ -400,30 +345,86 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 	}
 
 /**
- * 編集用メタデータの値を調整する
+ * Delete metadata
+ * メタデータを削除する
  *
- * @param array $metadatas メタデータ配列
- * @return array|bool
+ * @param string $multidatabaseKey 汎用データベースKey
+ * @param array $metadataIdColNos メタデータID・カラムNo配列
+ * @return void
+ * @throws InternalErrorException
  */
-	private function __normalizeEditMetadatas($metadatas) {
-		$this->loadModels([
-			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv'
-		]);
-
-		if (!$metadatas) {
+	private function __deleteMetadatas($multidatabaseKey = null, $metadataIdColNos = []) {
+		if (
+			empty($multidatabaseKey) ||
+			empty($metadataIdColNos)
+		) {
 			return false;
 		}
 
-		$result = [];
-		foreach ($metadatas as $key => $metadata) {
-			if (!isset($metadata['MultidatabaseMetadata'])) {
-				return false;
+		foreach ($metadataIdColNos as $metadataIdColNo) {
+			// 当該メタデータを削除する
+			if (! $this->delete($metadataIdColNo['metadata_id'], false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-			$tmp = $metadata['MultidatabaseMetadata'];
-			$result[$key] = $this->MultidatabaseMetadataEditCnv
-				->normalizeEditMetadatasType($tmp);
+			// 当該メタデータに関連するカラムの値をクリアする
+			$this->MultidatabaseContent->clrMultidatabaseColVal(
+				$multidatabaseKey, $metadataIdColNo['col_no']);
+		}
+	}
+
+/**
+ * Get Metadata columns for delete
+ * 削除対象のメタデータIDを取得する
+ *
+ * @param int|null $multidatabaseId 汎用データベースID
+ * @param array $currentMetadatas メタデータ配列
+ * @return array
+ */
+	private function __getDeleteMetadatas($multidatabaseId = null, $currentMetadatas = []) {
+		if (
+			empty($multidatabaseId) ||
+			empty($currentMetadatas) ||
+			!$beforeSaveMetadatas = $this->getEditMetadatas($multidatabaseId)
+		) {
+			return [];
 		}
 
+		return $this->__diffBeforeMetadatas($beforeSaveMetadatas, $currentMetadatas);
+	}
+
+/**
+ * メタデータを比較して、変更前のみ存在するメタデータのIDとカラムNoを返す
+ *
+ * @param array $beforeMetadatas メタデータ配列（変更前）
+ * @param array $currentMetadatas メタデータ配列（変更後/現在）
+ * @return array
+ */
+	private function __diffBeforeMetadatas($beforeMetadatas, $currentMetadatas) {
+		$result = [];
+
+		foreach ($beforeMetadatas as $beforeMetadata) {
+			$metadataIsExists = false;
+			$beforeMetadata['id'] = (int)$beforeMetadata['id'];
+			foreach ($currentMetadatas as $currentMetadata) {
+				$currentMetadata['id'] = (int)$currentMetadata['id'];
+				if (
+					! empty($currentMetadata['id']) &&
+					! empty($beforeMetadata['id']) &&
+					$currentMetadata['id'] === $beforeMetadata['id']
+				) {
+					$metadataIsExists = true;
+					break;
+				}
+			}
+
+			// 変更前のみ存在するメタデータのIDとカラムNoをセットする
+			if (! $metadataIsExists) {
+				$result[] = [
+					'metadata_id' => $beforeMetadata['id'],
+					'col_no' => $beforeMetadata['col_no'],
+				];
+			}
+		}
 		return $result;
 	}
 

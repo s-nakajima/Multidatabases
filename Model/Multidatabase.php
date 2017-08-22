@@ -107,6 +107,7 @@ class Multidatabase extends MultidatabasesAppModel {
 		parent::__construct($id, $table, $ds);
 
 		$this->loadModels([
+			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
 			'MultidatabaseFrameSetting' => 'Multidatabases.MultidatabaseFrameSetting',
 			'MultidatabaseSetting' => 'Multidatabases.MultidatabaseSetting',
 			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
@@ -138,10 +139,6 @@ class Multidatabase extends MultidatabasesAppModel {
  * @see Model::save()
  */
 	public function afterSave($created, $options = []) {
-		$this->loadModels([
-			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
-		]);
-
 		//MultidatabaseSetting登録
 		if (isset($this->MultidatabaseSetting->data['MultidatabaseSetting'])) {
 			$this->MultidatabaseSetting->set($this->MultidatabaseSetting->data['MultidatabaseSetting']);
@@ -152,7 +149,7 @@ class Multidatabase extends MultidatabasesAppModel {
 		if (isset($this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']) &&
 			!$this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']['id']
 		) {
-			if (!$this->MultidatabaseFrameSetting->save(null, false)) {
+			if (! $this->MultidatabaseFrameSetting->save(null, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
@@ -161,30 +158,9 @@ class Multidatabase extends MultidatabasesAppModel {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		$metadatas = $this->data['MultidatabaseMetadata'];
-
-		// 削除ID,カラムの確認
-		$delMetadataIds =
-			$this->MultidatabaseMetadata->getDeleteMetadatas(
-				$this->data['Multidatabase']['id'], $metadatas, 'id'
-			);
-		/*
-		$delMetadataColNos =
-			$this->MultidatabaseMetadata->getDeleteMetadatas(
-				$this->data['Multidatabase']['id'], $metadatas, 'col_no'
-			);
-		*/
 		// MultidatabaseMetadata登録
-		$metadatas = $this->MultidatabaseMetadataEdit->makeSaveData($this->data);
+		$this->MultidatabaseMetadata->saveMetadatas($this->data);
 
-		$this->MultidatabaseMetadata->saveMetadatas($metadatas);
-
-		// MultidatabaseMetadata削除
-		if (!empty($delMetadataIds)) {
-			$this->MultidatabaseMetadata->deleteMetadatas($delMetadataIds);
-		}
-
-		// MultidatabaseContentの削除
 		parent::afterSave($created, $options);
 	}
 
@@ -238,8 +214,6 @@ class Multidatabase extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
 	public function saveMultidatabase($data) {
-		$this->set($data);
-
 		//トランザクションBegin
 		$this->begin();
 		try {
