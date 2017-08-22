@@ -180,7 +180,7 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 			'#',
 			[
 				'authorization-keys-popup-link',
-				'url' => $this->__fileDlUrl($content, $colNo),
+				'url' => NetCommonsUrl::actionUrl($this->__fileDlArrayReqAuth($content, $colNo)),
 				'popup-title' => __d('authorization_keys', 'Authorization key confirm dialog'),
 				'popup-label' => __d('authorization_keys', 'Authorization key'),
 				'popup-placeholder' =>
@@ -261,6 +261,27 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 			$content['MultidatabaseContent']['key'],
 			$content['MultidatabaseContent']['id'],
 			'?' => ['col_no' => $colNo]
+		];
+	}
+
+/**
+ * ファイルダウンロードURL出力用の配列を返す（認証あり）
+ *
+ * @param array $content コンテンツ配列
+ * @param int $colNo カラムNo
+ * @return array
+ */
+	private function __fileDlArrayReqAuth($content, $colNo) {
+		return [
+			'controller' => 'multidatabase_contents',
+			'action' => 'download',
+			Current::read('Block.id'),
+			$content['MultidatabaseContent']['key'],
+			$content['MultidatabaseContent']['id'],
+			'?' => [
+				'col_no' => $colNo,
+				'frame_id' => Current::read('Frame.id')
+			]
 		];
 	}
 
