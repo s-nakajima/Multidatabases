@@ -83,6 +83,10 @@ class MultidatabaseContentViewHelper extends AppHelper {
 	public function renderGroup(
 		$metadataGroups, $contents, $position, $colSize = 1, $headerMaxLength = 5, $viewMode = null
 	) {
+		if (! isset($metadataGroups[$position])) {
+			return '';
+		}
+
 		switch ($colSize) {
 			case 2:
 				// 2列レイアウト

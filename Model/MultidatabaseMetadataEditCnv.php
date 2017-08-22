@@ -107,6 +107,29 @@ class MultidatabaseMetadataEditCnv extends MultidatabasesAppModel {
 	}
 
 /**
+ * 編集用メタデータの値を調整する
+ *
+ * @param array $metadatas メタデータ配列
+ * @return array|bool
+ */
+	public function normalizeEditMetadatas($metadatas) {
+		if (!$metadatas) {
+			return false;
+		}
+
+		$result = [];
+		foreach ($metadatas as $key => $metadata) {
+			if (!isset($metadata['MultidatabaseMetadata'])) {
+				return false;
+			}
+			$tmp = $metadata['MultidatabaseMetadata'];
+			$result[$key] = $this->normalizeEditMetadatasType($tmp);
+		}
+
+		return $result;
+	}
+
+/**
  * Normalize edit metadatas type for JSON
  * メタデータの型を調整する（JSONのため）
  *

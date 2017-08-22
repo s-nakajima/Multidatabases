@@ -56,21 +56,21 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
  * Make save data
  * 保存データを作成
  *
- * @param array $multidatabase 汎用データベース配列
+ * @param array $data データ配列
  * @return array
  */
-	public function makeSaveData($multidatabase) {
+	public function makeSaveData($data) {
 		$this->loadModels([
 			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
 			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv',
 		]);
 
-		if (empty($multidatabase['MultidatabaseMetadata'])) {
+		if (empty($data['MultidatabaseMetadata'])) {
 			return [];
 		}
 
 		$tmp = $this->MultidatabaseMetadata->mergeGroupToMetadatas(
-			$multidatabase['MultidatabaseMetadata']);
+			$data['MultidatabaseMetadata']);
 
 		$metadatas = $tmp['MultidatabaseMetadata'];
 
@@ -100,8 +100,8 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 			$result[] = array_merge(
 				$metadata,
 				['language_id' => Current::read('Language.id')],
-				['multidatabase_id' => $multidatabase['Multidatabase']['id']],
-				['key' => $multidatabase['Multidatabase']['key']],
+				['multidatabase_id' => $data['Multidatabase']['id']],
+				['key' => $data['Multidatabase']['key']],
 				['col_no' => $currentColNo]
 			);
 		}
@@ -125,32 +125,6 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 		}
 
 		return $colNos;
-	}
-
-/**
- * 削除対象のカラムを1件出力する
- *
- * @param array $metadata メタデータ配列
- * @param array $colNos カラムNo配列
- * @param string $type 種別
- * @return bool|array
- */
-	public function getDeleteMetadata($metadata, $colNos, $type) {
-		if (
-			isset($metadata['col_no']) &&
-			!in_array($metadata['col_no'], $colNos)
-		) {
-			switch ($type) {
-				case 'id':
-					return $metadata['id'];
-				case 'col_no':
-					return $metadata['col_no'];
-			}
-			$result['id'] = $metadata['id'];
-			$result['col_no'] = $metadata['col_no'];
-			return $result;
-		}
-		return false;
 	}
 
 /**
