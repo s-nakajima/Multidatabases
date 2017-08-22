@@ -90,10 +90,24 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		parent::__construct($id, $table, $ds);
 
 		$this->loadModels([
-			'multidatabase' => 'Multidatabases.Multidatabase',
+			'Multidatabase' => 'Multidatabases.Multidatabase',
+			'MultidatabaseContent' => 'Multidatabases.MultidatabaseContent',
+			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
+			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv',
 			'MultidatabaseFrameSetting' => 'Multidatabases.MultidatabaseFrameSetting',
 			'MultidatabaseSetting' => 'Multidatabases.MultidatabaseSetting',
 		]);
+	}
+
+/**
+ * Before validate
+ *
+ * @param array $options オプション
+ * @return bool
+ */
+	public function beforeValidate($options = []) {
+		$this->validate = $this->__makeValidation();
+		return parent::beforeValidate($options);
 	}
 
 /**
@@ -109,7 +123,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 			return false;
 		}
 
-		$multidatabase = $this->multidatabase->getMultidatabase();
+		$multidatabase = $this->Multidatabase->getMultidatabase();
 
 		if (!$multidatabase) {
 			return $multidatabase;
@@ -231,90 +245,46 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @return array
  */
 	public function mergeGroupToMetadatas($data) {
-		$result['MultidatabaseMetadata'] = array_merge($data[0], $data[1], $data[2], $data[3]);
-		return $result;
-	}
-
-/**
- * Delete metadata
- * メタデータを削除する
- *
- * @param array $metadataIds メタデータID配列
- * @return void
- * @throws InternalErrorException
- */
-	public function deleteMetadatas($metadataIds = []) {
-		if (empty($metadataIds)) {
-			return false;
-		}
-
-		foreach ($metadataIds as $metadataId) {
-			if (!$this->delete($metadataId)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		for ($i = 1; $i <= 3; $i++) {
+			if (!isset($data[$i])) {
+				$data[$i] = [];
 			}
 		}
+
+		$result['MultidatabaseMetadata'] = array_merge($data[0], $data[1], $data[2], $data[3]);
+		return $result;
 	}
 
 /**
  * Save metadata (New/Update)
  * メタデータを保存する（新規・更新）
  *
- * @param array $metadatas メタデータ配列
+ * @param array $data データ配列
  * @return void
  * @throws InternalErrorException
  */
-	public function saveMetadatas($metadatas) {
+	public function saveMetadatas($data) {
+		$metadatas = $this->MultidatabaseMetadataEdit->makeSaveData($data);
+
+		// 削除ID,カラムの確認
+		$delMetaIdColNos =
+			$this->__getDeleteMetadatas(
+				$data['Multidatabase']['id'],
+				$metadatas
+			);
+
+		// MultidatabaseMetadata削除
+		if (! empty($delMetaIdColNos)) {
+			$this->__deleteMetadatas(
+				$data['Multidatabase']['key'],
+				$delMetaIdColNos
+			);
+		}
+
+		// 保存
 		if (!$this->saveAll($metadatas)) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-	}
-
-/**
- * Get Metadata columns for delete
- * 削除対象のカラムNoを取得する
- *
- * @param int|null $multidatabaseId 汎用データベースID
- * @param array $currentMetadatas メタデータ配列
- * @param string $type 出力方法
- * @return array|bool
- */
-	public function getDeleteMetadatas(
-		$multidatabaseId = null, $currentMetadatas = [], $type = 'all'
-	) {
-		$this->loadModels([
-			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
-		]);
-
-		if (is_null($multidatabaseId) || empty($currentMetadatas)) {
-			return false;
-		}
-
-		if (!$beforeSaveMetadatas = $this->getEditMetadatas($multidatabaseId)) {
-			return false;
-		}
-
-		$result = [];
-
-		$currentColNos = $this->MultidatabaseMetadataEdit->getColNos($currentMetadatas);
-		if (empty($currentColNos)) {
-			return false;
-		}
-
-		foreach ($beforeSaveMetadatas as $beforeSaveMetadata) {
-			$tmp = $this->MultidatabaseMetadataEdit->getDeleteMetadata(
-				$beforeSaveMetadata, $currentMetadatas, $type
-			);
-
-			if (!$tmp) {
-				$result[] = $tmp;
-			}
-		}
-
-		if (empty($result)) {
-			return false;
-		}
-
-		return $result;
 	}
 
 /**
@@ -325,11 +295,6 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @return array|bool
  */
 	public function getEditMetadatas($multidatabaseId = 0) {
-		$this->loadModels([
-			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
-			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv'
-		]);
-
 		if (empty($multidatabaseId)) {
 			if (! $multidatabase = $this->Multidatabase->getMultidatabase()) {
 				return false;
@@ -338,99 +303,151 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 		}
 
 		$metadatas = $this->getMetadatas($multidatabaseId);
+		$result = $this->MultidatabaseMetadataEditCnv->normalizeEditMetadatas($metadatas);
 
-		if (!$metadatas) {
+		return $result;
+	}
+
+/**
+ * メタデータのバリデーションを行う
+ *
+ * @param array $metadataGroups メタデータグループ配列
+ * @return bool|array
+ */
+	public function doValidateMetadatas($metadataGroups) {
+		$metadatas = $this->mergeGroupToMetadatas($metadataGroups);
+
+		$result['has_err'] = false;
+		$result['errors'] = [];
+		$result['data'] = $metadatas['MultidatabaseMetadata'];
+
+		foreach ($metadatas['MultidatabaseMetadata'] as $key => $metadata) {
+			$this->set($metadata);
+
+			$result['data'][$key] = $this->MultidatabaseMetadataEditCnv
+				->normalizeEditMetadatasType($metadata);
+
+			$result['data'][$key]['has_err'] = 0;
+			$result['data'][$key]['err_msg'] = '';
+			$result['errors'][$key] = '';
+
+			if (! $this->validates()) {
+				$result['has_err'] = true;
+				$result['errors'][$key] = $this->ValidationErrors;
+				$result['data'][$key]['has_err'] = 1;
+				if (! empty($this->validationErrors['name'][0])) {
+					$result['data'][$key]['err_msg'] = $this->validationErrors['name'][0];
+				}
+			}
+		}
+
+		return $result;
+	}
+
+/**
+ * Delete metadata
+ * メタデータを削除する
+ *
+ * @param string $multidatabaseKey 汎用データベースKey
+ * @param array $metadataIdColNos メタデータID・カラムNo配列
+ * @return void
+ * @throws InternalErrorException
+ */
+	private function __deleteMetadatas($multidatabaseKey = null, $metadataIdColNos = []) {
+		if (
+			empty($multidatabaseKey) ||
+			empty($metadataIdColNos)
+		) {
 			return false;
 		}
 
-		foreach ($metadatas as $key => $metadata) {
-			if (!isset($metadata['MultidatabaseMetadata'])) {
-				return false;
+		foreach ($metadataIdColNos as $metadataIdColNo) {
+			// 当該メタデータを削除する
+			if (! $this->delete($metadataIdColNo['metadata_id'], false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-			$tmp = $metadata['MultidatabaseMetadata'];
-			$result[$key] = $this->MultidatabaseMetadataEditCnv
-				->normalizeEditMetadatasType($tmp);
+			// 当該メタデータに関連するカラムの値をクリアする
+			$this->MultidatabaseContent->clrMultidatabaseColVal(
+				$multidatabaseKey, $metadataIdColNo['col_no']);
 		}
-
-		return $result;
 	}
 
 /**
- * Count metadatas
- * 件数カウント
+ * Get Metadata columns for delete
+ * 削除対象のメタデータIDを取得する
  *
- * @param array $metadatas メタデータ配列
- * @return array|bool 全体のメタデータ合計と各ポジションのメタデータ合計
- */
-	public function countMetadatas($metadatas) {
-		$totalAllMetadatas = count($metadatas);
-
-		foreach ($metadatas as $metadata) {
-
-			if (!isset($metadata['MultidatabaseMetadata']['position'])) {
-				return false;
-			}
-
-			$position = $metadata['MultidatabaseMetadata']['position'];
-
-			if (isset($totalPosMetadatas[$position])) {
-				$totalPosMetadatas[$position]++;
-			} else {
-				$totalPosMetadatas[$position] = 1;
-			}
-		}
-
-		$result = [
-			'total' => $totalAllMetadatas,
-			'position' => $totalPosMetadatas,
-		];
-
-		return $result;
-	}
-
-/**
- * 検索対象のメタデータフィールド一覧を取得する
- *
- * @param int $multidatabaseId 汎用データベースID
- * @return array|bool
- * @throws InternalErrorException
- */
-	public function getSearchMetadatas($multidatabaseId = 0) {
-		if (! $metadatas = $this->getMetadatas(
-				$multidatabaseId,
-				[
-					'is_searchable' => 1
-				]
-			)) {
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		$result = [];
-		foreach ($metadatas as $metadata) {
-			$result[] = 'value' . $metadata['MultidatabaseMetadata']['col_no'];
-		}
-
-		return $result;
-	}
-
-/**
- * Get initial metadatas
- * 初期データ
- *
+ * @param int|null $multidatabaseId 汎用データベースID
+ * @param array $currentMetadatas メタデータ配列
  * @return array
  */
-	public function getInitMetadatas() {
-		$this->loadModels([
-			'MultidatabaseMetadataInit' => 'Multidatabases.MultidatabaseMetadataInit',
-		]);
+	private function __getDeleteMetadatas($multidatabaseId = null, $currentMetadatas = []) {
+		if (
+			empty($multidatabaseId) ||
+			empty($currentMetadatas) ||
+			!$beforeSaveMetadatas = $this->getEditMetadatas($multidatabaseId)
+		) {
+			return [];
+		}
 
-		$initMetadatas = $this->MultidatabaseMetadataInit->initMetadatas();
+		return $this->__diffBeforeMetadatas($beforeSaveMetadatas, $currentMetadatas);
+	}
+
+/**
+ * メタデータを比較して、変更前のみ存在するメタデータのIDとカラムNoを返す
+ *
+ * @param array $beforeMetadatas メタデータ配列（変更前）
+ * @param array $currentMetadatas メタデータ配列（変更後/現在）
+ * @return array
+ */
+	private function __diffBeforeMetadatas($beforeMetadatas, $currentMetadatas) {
 		$result = [];
-		foreach ($initMetadatas as $key => $initMetadata) {
-			$result[$key] = $initMetadata;
-			$result[$key]['language_id'] = Current::read('Language.id');
+
+		foreach ($beforeMetadatas as $beforeMetadata) {
+			$metadataIsExists = false;
+			$beforeMetadata['id'] = (int)$beforeMetadata['id'];
+			foreach ($currentMetadatas as $currentMetadata) {
+				$currentMetadata['id'] = (int)$currentMetadata['id'];
+				if (
+					! empty($currentMetadata['id']) &&
+					! empty($beforeMetadata['id']) &&
+					$currentMetadata['id'] === $beforeMetadata['id']
+				) {
+					$metadataIsExists = true;
+					break;
+				}
+			}
+
+			// 変更前のみ存在するメタデータのIDとカラムNoをセットする
+			if (! $metadataIsExists) {
+				$result[] = [
+					'metadata_id' => $beforeMetadata['id'],
+					'col_no' => $beforeMetadata['col_no'],
+				];
+			}
 		}
 		return $result;
+	}
+
+/**
+ * Make validation rules
+ * バリデーションルールの作成
+ *
+ * @return array|bool
+ */
+	private function __makeValidation() {
+		$result = [
+			'name' => [
+				'notBlank' => [
+					'rule' => ['notBlank'],
+					'message' => sprintf(
+						__d('net_commons', 'Please input %s.'),
+						__d('multidatabases', 'Field name')
+					),
+					'required' => true
+				],
+			],
+		];
+		return Hash::merge($this->validate, $result);
 	}
 }
 

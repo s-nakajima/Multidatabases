@@ -76,6 +76,10 @@ class MultidatabaseContentEditHelper extends AppHelper {
 			case 1:
 			case 2:
 			case 3:
+				if (! isset($metadataGroups[$position])) {
+					return '';
+				}
+
 				return $this->_View->Element(
 					$element,
 					[

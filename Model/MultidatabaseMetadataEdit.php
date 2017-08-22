@@ -56,18 +56,23 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
  * Make save data
  * 保存データを作成
  *
- * @param array $multidatabase 汎用データベース配列
- * @param array $metadatas メタデータ配列
+ * @param array $data データ配列
  * @return array
  */
-	public function makeSaveData($multidatabase = [], $metadatas = []) {
+	public function makeSaveData($data) {
 		$this->loadModels([
+			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
 			'MultidatabaseMetadataEditCnv' => 'Multidatabases.MultidatabaseMetadataEditCnv',
 		]);
 
-		if (empty($metadatas)) {
+		if (empty($data['MultidatabaseMetadata'])) {
 			return [];
 		}
+
+		$tmp = $this->MultidatabaseMetadata->mergeGroupToMetadatas(
+			$data['MultidatabaseMetadata']);
+
+		$metadatas = $tmp['MultidatabaseMetadata'];
 
 		// カラムNo初期値
 		$colNos['col_no'] = $this->__beginColNo;
@@ -95,8 +100,8 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 			$result[] = array_merge(
 				$metadata,
 				['language_id' => Current::read('Language.id')],
-				['multidatabase_id' => $multidatabase['Multidatabase']['id']],
-				['key' => $multidatabase['Multidatabase']['key']],
+				['multidatabase_id' => $data['Multidatabase']['id']],
+				['key' => $data['Multidatabase']['key']],
 				['col_no' => $currentColNo]
 			);
 		}
@@ -120,32 +125,6 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 		}
 
 		return $colNos;
-	}
-
-/**
- * 削除対象のカラムを1件出力する
- *
- * @param array $metadata メタデータ配列
- * @param array $colNos カラムNo配列
- * @param string $type 種別
- * @return bool|array
- */
-	public function getDeleteMetadata($metadata, $colNos, $type) {
-		if (
-			isset($metadata['col_no']) &&
-			!in_array($metadata['col_no'], $colNos)
-		) {
-			switch ($type) {
-				case 'id':
-					return $metadata['id'];
-				case 'col_no':
-					return $metadata['col_no'];
-			}
-			$result['id'] = $metadata['id'];
-			$result['col_no'] = $metadata['col_no'];
-			return $result;
-		}
-		return false;
 	}
 
 /**
@@ -267,6 +246,39 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 		}
 
 		return $currentColNo;
+	}
+
+/**
+ * Count metadatas
+ * 件数カウント
+ *
+ * @param array $metadatas メタデータ配列
+ * @return array|bool 全体のメタデータ合計と各ポジションのメタデータ合計
+ */
+	public function countMetadatas($metadatas) {
+		$totalAllMetadatas = count($metadatas);
+
+		foreach ($metadatas as $metadata) {
+
+			if (!isset($metadata['MultidatabaseMetadata']['position'])) {
+				return false;
+			}
+
+			$position = $metadata['MultidatabaseMetadata']['position'];
+
+			if (isset($totalPosMetadatas[$position])) {
+				$totalPosMetadatas[$position]++;
+			} else {
+				$totalPosMetadatas[$position] = 1;
+			}
+		}
+
+		$result = [
+			'total' => $totalAllMetadatas,
+			'position' => $totalPosMetadatas,
+		];
+
+		return $result;
 	}
 }
 

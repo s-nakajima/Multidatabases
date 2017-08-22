@@ -107,6 +107,7 @@ class Multidatabase extends MultidatabasesAppModel {
 		parent::__construct($id, $table, $ds);
 
 		$this->loadModels([
+			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
 			'MultidatabaseFrameSetting' => 'Multidatabases.MultidatabaseFrameSetting',
 			'MultidatabaseSetting' => 'Multidatabases.MultidatabaseSetting',
 			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata',
@@ -123,47 +124,7 @@ class Multidatabase extends MultidatabasesAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = []) {
-		$this->MultidatabaseSetting->set($this->data['MultidatabaseSetting']);
-		$this->MultidatabaseFrameSetting->set($this->data['MultidatabaseFrameSetting']);
-		/*
-				if (isset($this->data['MultidatabaseSetting'])) {
-					$this->MultidatabaseSetting->set($this->data['MultidatabaseSetting']);
-					if (! $this->MultidatabaseSetting->validates()) {
-						$this->validationErrors = Hash::merge(
-							$this->validationErrors, $this->MultidatabaseSetting->validationErrors
-						);
-						return false;
-					}
-				}
-
-				if (
-					isset($this->data['MultidatabaseFrameSetting']) &&
-					! $this->data['MultidatabaseFrameSetting']['id']
-				) {
-					$this->MultidatabaseFrameSetting->set($this->data['MultidatabaseFrameSetting']);
-					if (! $this->MultidatabaseFrameSetting->validates()) {
-						$this->validationErrors = Hash::merge(
-							$this->validationErrors, $this->MultidatabaseFrameSetting->validationErrors
-						);
-						return false;
-					}
-				}
-		*/
-		if (isset($this->data['MultidatabaseMetadata'])) {
-			// SecurityComponentを除外したため、ここにMetadataのチェックを記述する
-			$metadatas = $this->data['MultidatabaseMetadata'];
-			$metadatas = $this->MultidatabaseMetadata->mergeGroupToMetadatas($metadatas);
-
-			$this->MultidatabaseMetadata->set($metadatas);
-
-			if (!$this->MultidatabaseMetadata->validates()) {
-				$this->validationErrors = Hash::merge(
-					$this->validationErrors, $this->MultidatabaseMetadata->validationErrors
-				);
-				return false;
-			}
-		}
-
+		$this->validate = $this->__makeValidation();
 		return parent::beforeValidate($options);
 	}
 
@@ -178,10 +139,6 @@ class Multidatabase extends MultidatabasesAppModel {
  * @see Model::save()
  */
 	public function afterSave($created, $options = []) {
-		$this->loadModels([
-			'MultidatabaseMetadataEdit' => 'Multidatabases.MultidatabaseMetadataEdit',
-		]);
-
 		//MultidatabaseSetting登録
 		if (isset($this->MultidatabaseSetting->data['MultidatabaseSetting'])) {
 			$this->MultidatabaseSetting->set($this->MultidatabaseSetting->data['MultidatabaseSetting']);
@@ -192,42 +149,18 @@ class Multidatabase extends MultidatabasesAppModel {
 		if (isset($this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']) &&
 			!$this->MultidatabaseFrameSetting->data['MultidatabaseFrameSetting']['id']
 		) {
-			if (!$this->MultidatabaseFrameSetting->save(null, false)) {
+			if (! $this->MultidatabaseFrameSetting->save(null, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
 
-		if (!isset($this->MultidatabaseMetadata->data['MultidatabaseMetadata'])) {
+		if (!isset($this->data['MultidatabaseMetadata'])) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		$metadatas = $this->MultidatabaseMetadata->data['MultidatabaseMetadata'];
-
-		// 削除ID,カラムの確認
-		$delMetadataIds =
-			$this->MultidatabaseMetadata->getDeleteMetadatas(
-				$this->data['Multidatabase']['id'], $metadatas, 'id'
-			);
-		/*
-		$delMetadataColNos =
-			$this->MultidatabaseMetadata->getDeleteMetadatas(
-				$this->data['Multidatabase']['id'], $metadatas, 'col_no'
-			);
-		*/
 		// MultidatabaseMetadata登録
-		$metadatas = $this->MultidatabaseMetadataEdit->makeSaveData(
-			$this->data,
-			$metadatas
-		);
+		$this->MultidatabaseMetadata->saveMetadatas($this->data);
 
-		$this->MultidatabaseMetadata->saveMetadatas($metadatas);
-
-		// MultidatabaseMetadata削除
-		if (!empty($delMetadataIds)) {
-			$this->MultidatabaseMetadata->deleteMetadatas($delMetadataIds);
-		}
-
-		// MultidatabaseContentの削除
 		parent::afterSave($created, $options);
 	}
 
@@ -283,16 +216,6 @@ class Multidatabase extends MultidatabasesAppModel {
 	public function saveMultidatabase($data) {
 		//トランザクションBegin
 		$this->begin();
-
-		//バリデーション
-		$this->set($data);
-
-		if (!$this->validates()) {
-			$this->rollback();
-
-			return false;
-		}
-
 		try {
 			//登録処理
 			$result = $this->save($data, false);
@@ -307,8 +230,6 @@ class Multidatabase extends MultidatabasesAppModel {
 			//トランザクションRollback
 			$this->rollback($ex);
 		}
-
-		return true;
 	}
 
 /**
@@ -362,5 +283,61 @@ class Multidatabase extends MultidatabasesAppModel {
 			$this->rollback($ex);
 		}
 		return true;
+	}
+
+/**
+ * Make validation rules
+ * バリデーションルールの作成
+ *
+ * @return array|bool
+ */
+	private function __makeValidation() {
+		$result = [
+			'name' => [
+				'notBlank' => [
+					'rule' => ['notBlank'],
+					'message' => sprintf(
+						__d('net_commons', 'Please input %s.'),
+						__d('multidatabases', 'Multidatabase name')
+					),
+					'required' => true
+				],
+			],
+		];
+		return Hash::merge($this->validate, $result);
+	}
+
+/**
+ * 汎用DB設定のバリデーションを行う
+ *
+ * @param array $data データ配列
+ * @return bool|array
+ */
+	public function doValidate($data) {
+		$this->set($data);
+
+		$result['errors']['Multidatabase'] = [];
+		$result['has_err'] = false;
+		$result['data'] = $data;
+
+		if (! isset($data['MultidatabaseMetadata'])) {
+			$result['hasError'] = true;
+		} else {
+			$metadataGroups = $data['MultidatabaseMetadata'];
+			$metadatasResult = $this->MultidatabaseMetadata->doValidateMetadatas($metadataGroups);
+			$result['data']['MultidatabaseMetadata'] = $metadatasResult['data'];
+			$result['errors']['MultidatabaseMetadata'] = $metadatasResult['errors'];
+
+			if ($metadatasResult['has_err']) {
+				$result['has_err'] = true;
+			}
+		}
+
+		if (! $this->validates()) {
+			$result['errors']['Multidatabase'] = $this->ValidationErrors;
+			$result['has_err'] = true;
+		}
+
+		return $result;
 	}
 }
