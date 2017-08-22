@@ -274,9 +274,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$this->begin();
 		try {
 			$this->create();
-			$savedData = $this->save($data, false);
+			$savedData = $this->save($data);
 			if ($savedData === false) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				$this->rollback();
+				return false;
 			}
 			$this->commit();
 		} catch (Exception $e) {

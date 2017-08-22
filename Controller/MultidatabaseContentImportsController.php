@@ -115,17 +115,22 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 
 		$dat = $this->__getImportContents();
 
-		if (!$dat) {
-			return false;
+		if (! $dat) {
+			$this->NetCommons->setFlashNotification(
+				__d('multidatabases', 'Invalid data.'), ['class' => 'danger']
+			);
 		}
 
-		if (! $this->__saveImportContents($dat)) {
-			return false;
+		$result = $this->__saveImportContents($dat);
+		if ($result['result']) {
+			$this->NetCommons->setFlashNotification(
+				__d('multidatabases', 'Successfully saved.'), ['class' => 'success']
+			);
+		} else {
+			$this->NetCommons->setFlashNotification(
+				$result['errmsg'], ['class' => 'danger']
+			);
 		}
-
-		$this->NetCommons->setFlashNotification(
-			__d('multidatabases', 'Successfully saved.'), ['class' => 'success']
-		);
 	}
 
 /**
@@ -153,6 +158,11 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
  * @return array|bool
  */
 	private function __getImportContents() {
+		// ファイル有無チェック
+		if (empty($_FILES['data']['name']['import_csv'])) {
+			return false;
+		}
+
 		App::uses('CsvFileReader', 'Files.Utility');
 		$file = $this->FileUpload->getTemporaryUploadFile('import_csv');
 		$reader = new CsvFileReader($file);
@@ -200,13 +210,14 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 		$commonDat['Multidatabase']['key'] = $this->_multidatabase['Multidatabase']['key'];
 
 		$commonDat['WorkflowComment']['comment'] = '';
+		//$commonDat['_NetCommonsTime']['user_timezone'] = NetCommonsTime::getUserTimezone();
 		$commonDat['_NetCommonsTime']['convert_fields'] = '';
 
 		if (empty($importDat['data'])) {
-			$this->NetCommons->setFlashNotification(
-				__d('multidatabases', 'Invalid data.'), ['class' => 'danger']
-			);
-			return false;
+			return [
+				'result' => false,
+				'errmsg' => __d('multidatabases', 'Invalid data.'), ['class' => 'danger']
+			];
 		}
 
 		foreach ($importDat['data'] as $content) {
@@ -219,10 +230,10 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 				) {
 					$tmp['MultidatabaseContent']['value' . $metadata['col_no']] = $content[$key];
 				} else {
-					$this->NetCommons->setFlashNotification(
-						__d('multidatabases', 'Invalid data.'), ['class' => 'danger']
-					);
-					return false;
+					return [
+						'result' => false,
+						'errmsg' => __d('multidatabases', 'Invalid data.'), ['class' => 'danger']
+					];
 				}
 			}
 			$result[] = $tmp;
@@ -230,11 +241,17 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 
 		foreach ($result as $val) {
 			if (! $this->MultidatabaseContent->saveContentForImport($val)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				return [
+					'result' => false,
+					'errmsg' => __d('multidatabases', 'Invalid data.'), ['class' => 'danger']
+				];
 			}
 		}
 
-		return true;
+		return [
+			'result' => true,
+			'errmsg' => ''
+		];
 	}
 
 /**
