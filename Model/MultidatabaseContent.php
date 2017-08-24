@@ -83,6 +83,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Likes.Like',
 		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
+		'Files.Attachment'
 	];
 
 /**
@@ -271,6 +272,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @throws InternalErrorException
  */
 	public function saveContentForImport($data) {
+		$this->Behaviors->unload('Files.Attachment');
 		$this->begin();
 		try {
 			$this->create();
