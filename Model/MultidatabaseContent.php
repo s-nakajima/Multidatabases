@@ -374,6 +374,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 		if (! empty($attachFields)) {
 			$this->Behaviors->load('Files.Attachment', $attachFields);
+		} else{
+			$this->Behaviors->unload('Files.Attachment');
 		}
 
 		// 未アップロードの場合は既存ファイルを保持する
@@ -384,6 +386,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		}
 
 		$this->begin();
+		$savedData = false;
 		try {
 			if (! $searchContents = $this->MultidatabaseContentSearch->getSearchMetadatas()) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
@@ -423,8 +426,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			$this->commit();
 
 			// ファイルを削除する
-			$this->MultidatabaseContentFile->removeAttachFile(
-				$removeAttachFields, $data['MultidatabaseContent']['key']);
+			if (! empty($removeAttachFields)) {
+				$this->MultidatabaseContentFile->removeAttachFile(
+					$removeAttachFields, $data['MultidatabaseContent']['key']);
+			}
 
 		} catch (Exception $e) {
 			$this->rollback($e);
