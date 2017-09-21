@@ -99,7 +99,7 @@ class MultidatabaseContentEditPr extends MultidatabasesAppModel {
  */
 	public function prSaveContentSelect($data, $selections, $elementType) {
 		if ($elementType == 'checkbox') {
-			$this->prSaveContentCheck($data, $selections);
+			return $this->prSaveContentCheck($data, $selections);
 		}
 		foreach ($selections as $metaSel) {
 			if (md5($metaSel) === $data) {
