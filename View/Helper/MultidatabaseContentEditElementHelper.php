@@ -145,8 +145,8 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
 			];
 		} else {
 			$options['type'] = 'select';
-			return $this->NetCommonsForm->input($name, $options);
 		}
+		return $this->NetCommonsForm->input($name, $options);
 	}
 
 /**

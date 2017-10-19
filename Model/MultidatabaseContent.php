@@ -374,7 +374,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 
 		if (! empty($attachFields)) {
 			$this->Behaviors->load('Files.Attachment', $attachFields);
-		} else{
+		} else {
 			$this->Behaviors->unload('Files.Attachment');
 		}
 
