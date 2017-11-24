@@ -140,8 +140,8 @@ class Multidatabase extends MultidatabasesAppModel {
  */
 	public function afterSave($created, $options = []) {
 		// MultidatabaseSetting登録
-		if (isset($this->MultidatabaseSetting->data['MultidatabaseSetting'])) {
-			$this->MultidatabaseSetting->set($this->MultidatabaseSetting->data['MultidatabaseSetting']);
+		if (isset($this->data['MultidatabaseSetting'])) {
+			$this->MultidatabaseSetting->set($this->data['MultidatabaseSetting']);
 			$this->MultidatabaseSetting->save(null, false);
 		}
 
