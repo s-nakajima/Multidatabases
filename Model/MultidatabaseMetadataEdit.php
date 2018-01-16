@@ -79,6 +79,7 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 		$colNos['col_no_t'] = $this->__beginColNoT;
 
 		$result = [];
+		$assignedColNos = [];
 
 		foreach ($metadatas as $metadata) {
 			// 1列目はタイトルとする
@@ -95,7 +96,8 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 			$metadata['selections'] = $this->MultidatabaseMetadataEditCnv->cnvMetaSelToJson($metadata);
 
 			// カラムNoが未設定の場合は、カラムNoを付与する
-			$currentColNo = $this->addColNo($metadata, $colNos, $metadatas);
+			$currentColNo = $this->__addColNo($metadata, $colNos, $metadatas, $assignedColNos);
+			$assignedColNos[] = $currentColNo;
 
 			$result[] = array_merge(
 				$metadata,
@@ -109,22 +111,68 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 	}
 
 /**
- * メタデータのカラムNoを出力する
+ * Get empty metadata
+ * 空のメタデータを取得する
  *
- * @param array $metadatas メタデータ配列
  * @return array
  */
-	public function getColNos($metadatas) {
-		$colNos = [];
-		if (!empty($metadatas)) {
-			foreach ($metadatas as $metadata) {
-				if (isset($metadata['col_no'])) {
-					$colNos[] = $metadata['col_no'];
+	public function getEmptyMetadata() {
+		return [
+			'id' => '',
+			'key' => '',
+			'name' => __d('multidatabases', 'No title'),
+			'language_id' => Current::read('Language.id'),
+			'position' => 0,
+			'rank' => 0,
+			'col_no' => 0,
+			'type' => 'text',
+			'selections' => [],
+			'is_require' => 0,
+			'is_title' => 0,
+			'is_searchable' => 0,
+			'is_sortable' => 0,
+			'is_file_dl_require_auth' => 0,
+			'is_visible_file_dl_counter' => 0,
+			'is_visible_field_name' => 1,
+			'is_visible_list' => 1,
+			'is_visible_detail' => 1,
+		];
+	}
+
+/**
+ * メタデータを比較して、変更前のみ存在するメタデータのIDとカラムNoを返す
+ *
+ * @param array $beforeMetadatas メタデータ配列（変更前）
+ * @param array $currentMetadatas メタデータ配列（変更後/現在）
+ * @return array
+ */
+	public function diffBeforeMetadatas($beforeMetadatas, $currentMetadatas) {
+		$result = [];
+
+		foreach ($beforeMetadatas as $beforeMetadata) {
+			$metadataIsExists = false;
+			$beforeMetadata['id'] = (int)$beforeMetadata['id'];
+			foreach ($currentMetadatas as $currentMetadata) {
+				$currentMetadata['id'] = (int)$currentMetadata['id'];
+				if (
+					! empty($currentMetadata['id']) &&
+					! empty($beforeMetadata['id']) &&
+					$currentMetadata['id'] === $beforeMetadata['id']
+				) {
+					$metadataIsExists = true;
+					break;
 				}
 			}
-		}
 
-		return $colNos;
+			// 変更前のみ存在するメタデータのIDとカラムNoをセットする
+			if (! $metadataIsExists) {
+				$result[] = [
+					'metadata_id' => $beforeMetadata['id'],
+					'col_no' => $beforeMetadata['col_no'],
+				];
+			}
+		}
+		return $result;
 	}
 
 /**
@@ -133,10 +181,11 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
  *
  * @param array $metadatas メタデータ配列
  * @param array $colNos 列番号配列
+ * @param array $assignedColNos 定義済みカラムNo配列
  * @return array|bool
  */
-	public function getFreeColNo($metadatas, $colNos) {
-		$skipColNos = $this->getSkipColNos($metadatas);
+	private function __getFreeColNo($metadatas, $colNos, $assignedColNos) {
+		$skipColNos = $this->__getSkipColNos($metadatas, $assignedColNos);
 
 		if (empty($skipColNos)) {
 			return $colNos;
@@ -174,9 +223,10 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
  * スキップ対象のカラムNoを取得
  *
  * @param array $metadatas メタデータ配列
+ * @param array $assignedColNos 定義済みカラムNo配列
  * @return array
  */
-	public function getSkipColNos($metadatas = []) {
+	private function __getSkipColNos($metadatas = [], $assignedColNos = []) {
 		$result = [];
 
 		foreach ($metadatas as $metadata) {
@@ -184,36 +234,14 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 				$result[] = $metadata['col_no'];
 			}
 		}
-		return $result;
-	}
 
-/**
- * Get empty metadata
- * 空のメタデータを取得する
- *
- * @return array
- */
-	public function getEmptyMetadata() {
-		return [
-			'id' => '',
-			'key' => '',
-			'name' => __d('multidatabases', 'No title'),
-			'language_id' => Current::read('Language.id'),
-			'position' => 0,
-			'rank' => 0,
-			'col_no' => 0,
-			'type' => 'text',
-			'selections' => [],
-			'is_require' => 0,
-			'is_title' => 0,
-			'is_searchable' => 0,
-			'is_sortable' => 0,
-			'is_file_dl_require_auth' => 0,
-			'is_visible_file_dl_counter' => 0,
-			'is_visible_field_name' => 1,
-			'is_visible_list' => 1,
-			'is_visible_detail' => 1,
-		];
+		foreach ($assignedColNos as $assingnedcolNo) {
+			if (! array_search($assingnedcolNo, $result)) {
+				$result[] = $assingnedcolNo;
+			}
+		}
+
+		return $result;
 	}
 
 /**
@@ -222,12 +250,13 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
  * @param array $metadata メタデータ配列（単一）
  * @param array $colNos カラムNo配列
  * @param array $metadatas メタデータ配列
+ * @param array $assignedColNos 定義済みカラムNo
  * @return int
  */
-	public function addColNo($metadata, $colNos, $metadatas) {
+	private function __addColNo($metadata, $colNos, $metadatas, $assignedColNos) {
 		if (!isset($metadata['col_no']) || empty($metadata['col_no'])) {
 			// 空きカラムNoの取得
-			$colNos = $this->getFreeColNo($metadatas, $colNos);
+			$colNos = $this->__getFreeColNo($metadatas, $colNos, $assignedColNos);
 
 			if (
 				$metadata['type'] == 'textarea' ||
@@ -246,75 +275,6 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 		}
 
 		return $currentColNo;
-	}
-
-/**
- * Count metadatas
- * 件数カウント
- *
- * @param array $metadatas メタデータ配列
- * @return array|bool 全体のメタデータ合計と各ポジションのメタデータ合計
- */
-	public function countMetadatas($metadatas) {
-		$totalAllMetadatas = count($metadatas);
-
-		foreach ($metadatas as $metadata) {
-
-			if (!isset($metadata['MultidatabaseMetadata']['position'])) {
-				return false;
-			}
-
-			$position = $metadata['MultidatabaseMetadata']['position'];
-
-			if (isset($totalPosMetadatas[$position])) {
-				$totalPosMetadatas[$position]++;
-			} else {
-				$totalPosMetadatas[$position] = 1;
-			}
-		}
-
-		$result = [
-			'total' => $totalAllMetadatas,
-			'position' => $totalPosMetadatas,
-		];
-
-		return $result;
-	}
-
-/**
- * メタデータを比較して、変更前のみ存在するメタデータのIDとカラムNoを返す
- *
- * @param array $beforeMetadatas メタデータ配列（変更前）
- * @param array $currentMetadatas メタデータ配列（変更後/現在）
- * @return array
- */
-	public function diffBeforeMetadatas($beforeMetadatas, $currentMetadatas) {
-		$result = [];
-
-		foreach ($beforeMetadatas as $beforeMetadata) {
-			$metadataIsExists = false;
-			$beforeMetadata['id'] = (int)$beforeMetadata['id'];
-			foreach ($currentMetadatas as $currentMetadata) {
-				$currentMetadata['id'] = (int)$currentMetadata['id'];
-				if (
-					! empty($currentMetadata['id']) &&
-					! empty($beforeMetadata['id']) &&
-					$currentMetadata['id'] === $beforeMetadata['id']
-				) {
-					$metadataIsExists = true;
-					break;
-				}
-			}
-
-			// 変更前のみ存在するメタデータのIDとカラムNoをセットする
-			if (! $metadataIsExists) {
-				$result[] = [
-					'metadata_id' => $beforeMetadata['id'],
-					'col_no' => $beforeMetadata['col_no'],
-				];
-			}
-		}
-		return $result;
 	}
 
 }
