@@ -216,7 +216,7 @@ class MultidatabaseContentFile extends MultidatabasesAppModel {
 	public function removeFileById($id, $fieldName = '') {
 		$fileInfo = $this->getFileInfoById($id, $fieldName);
 
-		if(empty($fileInfo)) {
+		if (empty($fileInfo)) {
 			return true;
 		}
 
@@ -234,7 +234,7 @@ class MultidatabaseContentFile extends MultidatabasesAppModel {
 	public function removeFileByContentKey($key, $fieldName = '') {
 		$fileInfo = $this->getFileInfoByContentKey($key, $fieldName);
 
-		if(empty($fileInfo)) {
+		if (empty($fileInfo)) {
 			return true;
 		}
 
