@@ -372,7 +372,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$attachPasswords = $data['attachPasswords'];
 		unset($data['attachPasswords']);
 
-		if (! empty($attachFields)) {
+		if (! empty($attachFields) || ! empty($skipAttaches)) {
 			$this->Behaviors->load('Files.Attachment', $attachFields);
 		} else {
 			$this->Behaviors->unload('Files.Attachment');
