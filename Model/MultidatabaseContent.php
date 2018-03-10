@@ -392,11 +392,22 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
+			// is_titleのcol_no取得用
+			$metadata = $this->MultidatabaseMetadata->findByKeyAndLanguageIdAndIsTitle(
+					$data['Multidatabase']['key'],
+					Current::read('Language.id'),
+					'1'
+				);
+			if (! $metadata) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$titleColum = 'MultidatabaseContent.value' . $metadata['MultidatabaseMetadata']['col_no'];
+
 			// 新着情報を登録
 			$this->Behaviors->load('Topics.Topics', [
 				'fields' => [
-					'title' => 'MultidatabaseContent.value1',
-					'summary' => 'MultidatabaseContent.value1',
+					'title' => $titleColum,
+					'summary' => $titleColum,
 					'path' => '/:plugin_key/multidatabase_contents/detail/:block_id/:content_key',
 				],
 				'search_contents' => $searchContents
