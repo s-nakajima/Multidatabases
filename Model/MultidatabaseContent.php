@@ -372,18 +372,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$attachPasswords = $data['attachPasswords'];
 		unset($data['attachPasswords']);
 
-		if (! empty($attachFields) || ! empty($skipAttaches)) {
-			$this->Behaviors->load('Files.Attachment', $attachFields);
-		} else {
-			$this->Behaviors->unload('Files.Attachment');
-		}
-
 		// 未アップロードの場合は既存ファイルを保持する
-		if (! empty($skipAttaches)) {
-			foreach ($skipAttaches as $val) {
-				$this->uploadSettings($val);
-			}
-		}
+		$this->__filesAttachment($attachFields, $skipAttaches);
 
 		$this->begin();
 		$savedData = false;
@@ -392,11 +382,22 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
+			// is_titleのcol_no取得用
+			$metadata = $this->MultidatabaseMetadata->findByKeyAndLanguageIdAndIsTitle(
+					$data['Multidatabase']['key'],
+					Current::read('Language.id'),
+					'1'
+				);
+			if (! $metadata) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$titleColum = 'MultidatabaseContent.value' . $metadata['MultidatabaseMetadata']['col_no'];
+
 			// 新着情報を登録
 			$this->Behaviors->load('Topics.Topics', [
 				'fields' => [
-					'title' => 'MultidatabaseContent.value1',
-					'summary' => 'MultidatabaseContent.value1',
+					'title' => $titleColum,
+					'summary' => $titleColum,
 					'path' => '/:plugin_key/multidatabase_contents/detail/:block_id/:content_key',
 				],
 				'search_contents' => $searchContents
@@ -435,6 +436,28 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			$this->rollback($e);
 		}
 		return $savedData;
+	}
+
+/**
+ * 未アップロードの場合は既存ファイルを保持する
+ *
+ * @param array $attachFields ファイルのフィールド
+ * @param array $skipAttaches 未アップロードの場合の既存ファイル
+ * @return void
+ */
+	private function __filesAttachment($attachFields, $skipAttaches) {
+		if (! empty($attachFields) || ! empty($skipAttaches)) {
+			$this->Behaviors->load('Files.Attachment', $attachFields);
+
+			// 未アップロードの場合は既存ファイルを保持する
+			// $skipAttachesは、空でも必ずarray()の想定. 空array()ならforeach抜けてくれる
+			foreach ($skipAttaches as $val) {
+				$this->uploadSettings($val);
+			}
+
+		} else {
+			$this->Behaviors->unload('Files.Attachment');
+		}
 	}
 
 /**
