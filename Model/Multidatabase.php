@@ -225,9 +225,11 @@ class Multidatabase extends MultidatabasesAppModel {
 
 			//トランザクションCommit
 			$this->commit();
+			return true;
 		} catch (Exception $ex) {
 			//トランザクションRollback
 			$this->rollback($ex);
+			return false;
 		}
 	}
 
