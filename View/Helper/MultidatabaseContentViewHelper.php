@@ -224,8 +224,10 @@ class MultidatabaseContentViewHelper extends AppHelper {
 			$selections = [];
 
 			if (
-				$metadata['type'] === 'select' ||
-				$metadata['type'] === 'checkbox'
+				(int)$metadata['is_visible_list'] === 1 && (
+					$metadata['type'] === 'select' ||
+					$metadata['type'] === 'checkbox'
+				)
 			) {
 				$colNo = $metadata['col_no'];
 				$name = $metadata['name'];
