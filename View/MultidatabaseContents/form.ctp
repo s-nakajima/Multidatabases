@@ -41,6 +41,7 @@ echo $this->NetCommonsHtml->css([
 				<?php echo $this->NetCommonsForm->hidden('Block.id', ['value' => Current::read('Block.id')]); ?>
 				<?php echo $this->NetCommonsForm->hidden('Multidatabase.id', ['value' => $multidatabase['Multidatabase']['id']]); ?>
 				<?php echo $this->NetCommonsForm->hidden('Multidatabase.key', ['value' => $multidatabase['Multidatabase']['key']]); ?>
+				<?php echo $this->NetCommonsForm->hidden('MultidatabaseContent.multidatabase_id', ['value' => $multidatabase['Multidatabase']['id']]); ?>
 				<?php echo $this->element('MultidatabaseContents/edit/edit_content'); ?>
 				</fieldset>
 				<hr/>
