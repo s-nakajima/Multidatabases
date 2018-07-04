@@ -41,14 +41,13 @@ class MultidatabaseContentSearch extends MultidatabasesAppModel {
 			'MultidatabaseMetadata' => 'Multidatabases.MultidatabaseMetadata'
 		]);
 
-		if (! $metadatas = $this->MultidatabaseMetadata->getMetadatas(
+		// 「検索の対象に含める(is_searchable)」は、全てOFFの場合もあるため、空でも例外にしない
+		$metadatas = $this->MultidatabaseMetadata->getMetadatas(
 			$multidatabaseId,
 			[
 				'is_searchable' => 1
 			]
-		)) {
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
+		);
 
 		$result = [];
 		foreach ($metadatas as $metadata) {
