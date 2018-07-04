@@ -378,9 +378,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$this->begin();
 		$savedData = false;
 		try {
-			if (! $searchContents = $this->MultidatabaseContentSearch->getSearchMetadatas()) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
+			// 「検索の対象に含める(is_searchable)」は、全てOFFの場合もあるため、空でも例外にしない
+			$searchContents = $this->MultidatabaseContentSearch->getSearchMetadatas();
 
 			// is_titleのcol_no取得用
 			$metadata = $this->MultidatabaseMetadata->findByKeyAndLanguageIdAndIsTitle(
