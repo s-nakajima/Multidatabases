@@ -11,6 +11,7 @@
  */
 
 App::uses('AppHelper', 'View/Helper');
+App::uses('NetCommonsTime', 'NetCommons.Utility');
 
 /**
  * MultidatabaseContentViewElementHelper Helper
@@ -115,16 +116,17 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
  * @return string HTML
  */
 	private function __renderViewElementDate($content, $colNo, $type = null) {
+		$netCommonsTime = new NetCommonsTime();
 		switch ($type) {
 			case 'created':
 				// 作成日時を出力
-				return date("Y-m-d H:i:s", strtotime($content['MultidatabaseContent']['created']));
+				return $netCommonsTime->toUserDatetime($content['MultidatabaseContent']['created']);
 			case 'updated':
 				// 更新日時を出力
-				return date("Y-m-d H:i:s", strtotime($content['MultidatabaseContent']['modified']));
+				return $netCommonsTime->toUserDatetime($content['MultidatabaseContent']['modified']);
 			default:
 				$value = $this->__renderViewElementGeneral($content, $colNo);
-				return date("Y-m-d H:i:s", strtotime($value));
+				return $netCommonsTime->toUserDatetime($value);
 		}
 	}
 
