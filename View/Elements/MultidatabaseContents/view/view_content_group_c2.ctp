@@ -20,7 +20,7 @@
 						<?php echo $metadata['name']; ?>
 					<?php endif; ?>
 				</th>
-				<td>
+				<td class="<?php if ($metadata['type'] == 'link'): ?>break-word<?php endif; ?>">
 					<?php echo $this->MultidatabaseContentViewElement->renderViewElement($gContents, $metadata); ?>
 				</td>
 			</tr>
