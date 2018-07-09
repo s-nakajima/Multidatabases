@@ -159,9 +159,9 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
 	private function __renderFormElementDate($name, $options = []) {
 		$options['type'] = 'datetime';
 		$value = Hash::get($this->request->data, $name);
-		$value = DateTime::createFromFormat('Y-m-d H:i:s', $value);
+		$dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $value);
 		// DateTime型以外 or 空はfalse
-		if ($value === false) {
+		if ($dateTime === false) {
 			// datetimepickerは、falseにしないと値を現在日時を自動セットする。
 			$options['value'] = false;
 		}

@@ -126,12 +126,12 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 				return $netCommonsTime->toUserDatetime($content['MultidatabaseContent']['modified']);
 			default:
 				$value = $this->__renderViewElementGeneral($content, $colNo);
-				$value = DateTime::createFromFormat('Y-m-d H:i:s', $value);
+				$dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $value);
 				// DateTime型以外 or 空はfalse
-				if ($value === false) {
+				if ($dateTime === false) {
 					return '';
 				}
-				return $netCommonsTime->toUserDatetime($value);
+				return $netCommonsTime->toUserDatetime($dateTime->format('Y-m-d H:i:s'));
 		}
 	}
 
