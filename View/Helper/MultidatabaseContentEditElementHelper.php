@@ -158,6 +158,11 @@ class MultidatabaseContentEditElementHelper extends AppHelper {
  */
 	private function __renderFormElementDate($name, $options = []) {
 		$options['type'] = 'datetime';
+		$value = Hash::get($this->request->data, $name);
+		if (empty($value)) {
+			// datetimepickerは、falseにしないと値を現在日時を自動セットする。
+			$options['value'] = false;
+		}
 		return $this->NetCommonsForm->input($name, $options);
 	}
 

@@ -38,3 +38,8 @@
 	background-color:#F5F5F5;
 }
 
+.multidatabase-contents table .break-word {
+	word-break : break-all;
+	word-wrap : break-word;
+	overflow-wrap : break-word;
+}
