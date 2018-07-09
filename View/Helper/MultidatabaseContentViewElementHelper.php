@@ -126,6 +126,9 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 				return $netCommonsTime->toUserDatetime($content['MultidatabaseContent']['modified']);
 			default:
 				$value = $this->__renderViewElementGeneral($content, $colNo);
+				if (empty($value)) {
+					return '';
+				}
 				return $netCommonsTime->toUserDatetime($value);
 		}
 	}
