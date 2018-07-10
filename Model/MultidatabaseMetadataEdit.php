@@ -82,15 +82,6 @@ class MultidatabaseMetadataEdit extends MultidatabasesAppModel {
 		$assignedColNos = [];
 
 		foreach ($metadatas as $metadata) {
-			// 1列目はタイトルとする
-			if ((int)$metadata['col_no'] === 1) {
-				$metadata['is_title'] = 1;
-				$metadata['is_require'] = 1;
-				$metadata['type'] = 'text';
-			} else {
-				$metadata['is_title'] = 0;
-			}
-
 			$metadata = $this->MultidatabaseMetadataEditCnv->cnvMetaBoolToInt($metadata);
 
 			$metadata['selections'] = $this->MultidatabaseMetadataEditCnv->cnvMetaSelToJson($metadata);
