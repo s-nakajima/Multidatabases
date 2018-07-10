@@ -21,16 +21,18 @@
        value="{{g<?php echo $gPos; ?>.position}}">
 <input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][col_no]" type="text" class="hidden"
        value="{{g<?php echo $gPos; ?>.col_no}}">
+<input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_title]" type="text" class="hidden"
+	   value="{{g<?php echo $gPos; ?>.is_title}}">
 <?php // 項目名 ?>
 <div ng-if="<?php echo "g${gPos}.is_title == 1"; ?>">
 	<div class="well well-sm">
 		<?php echo __d('multidatabases', 'This metadata cannot delete because title field.'); ?>
 	</div>
-	<?php // タイトルはhiddenにtypeの値を持たせる(text) ?>
+	<?php // タイトル指定はhiddenにtype,is_requireの値を持たせる ?>
 	<input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][type]" type="text" class="hidden"
-		   value="text">
-	<input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_title]" type="text" class="hidden"
-		   value="1">
+		   value="{{g<?php echo $gPos; ?>.type}}">
+	<input name="data[MultidatabaseMetadata][<?php echo $gPos; ?>][{{$index}}][is_require]" type="text" class="hidden"
+		   value="{{g<?php echo $gPos; ?>.is_require}}">
 </div>
 <div class="row form-group">
 	<div class="col-xs-12">
