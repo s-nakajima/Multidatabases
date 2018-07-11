@@ -94,7 +94,7 @@ class MultidatabaseMetadataEditCnv extends MultidatabasesAppModel {
 			if (isset($metadata[$metaKey])) {
 				if (
 					$metadata[$metaKey] === 'on' ||
-					$metadata[$metaKey] === '1' ||
+					(int)$metadata[$metaKey] === 1 ||
 					$metadata[$metaKey] === true
 				) {
 					$tmp = 1;
