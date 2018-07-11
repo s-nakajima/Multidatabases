@@ -226,7 +226,7 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
  */
 	private function __renderViewElementLink($content, $colNo) {
 		$value = $this->__renderViewElementGeneral($content, $colNo);
-		$result = '<a href="' . $value . '">' . $value . '</a>';
+		$result = '<a href="' . $value . '" target="_blank">' . $value . '</a>';
 		return $result;
 	}
 
