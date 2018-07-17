@@ -407,7 +407,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				'embedTags' => [
 					'X-SUBJECT' => 'MultidatabaseContent.value1',
 					'X-URL' => [
-						'controller' => 'multidatabase_contents'
+						'controller' => 'multidatabase_contents',
+						'action' => 'detail',
 					]
 				],
 			]);
