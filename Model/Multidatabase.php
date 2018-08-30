@@ -180,9 +180,8 @@ class Multidatabase extends MultidatabasesAppModel {
 			],
 
 		]);
-		$multidatabase = Hash::merge($multidatabase, $this->MultidatabaseSetting->createBlockSetting());
 
-		return $multidatabase;
+		return ($multidatabase + $this->MultidatabaseSetting->createBlockSetting());
 	}
 
 /**
@@ -201,7 +200,7 @@ class Multidatabase extends MultidatabasesAppModel {
 			return $multidatabase;
 		}
 
-		return Hash::merge($multidatabase, $this->MultidatabaseSetting->getMultidatabaseSetting());
+		return ($multidatabase + $this->MultidatabaseSetting->getMultidatabaseSetting());
 	}
 
 /**

@@ -20,10 +20,10 @@
 		<?php foreach ($dropdownItems as $itemKey => $label) : ?>
 			<li>
 				<?php if ($itemKey === 0): ?>
-					<?php echo $this->Paginator->link($label, Hash::merge($url, array($dropdownCol => 0))); ?>
+					<?php echo $this->Paginator->link($label, array_merge($url, [$dropdownCol => 0])); ?>
 					<li class="divider"></li>
 				<?php else: ?>
-					<?php echo $this->Paginator->link($label, Hash::merge($url, array($dropdownCol => $itemKey))); ?>
+					<?php echo $this->Paginator->link($label, array_merge($url, [$dropdownCol => $itemKey])); ?>
 				<?php endif; ?>
 			</li>
 		<?php endforeach; ?>
