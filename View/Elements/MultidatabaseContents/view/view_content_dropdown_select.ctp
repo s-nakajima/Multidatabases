@@ -20,7 +20,7 @@
 		<?php foreach ($dropdownItems as $itemKey => $label) : ?>
 			<li>
 				<?php if ($itemKey === 0): ?>
-					<?php echo $this->Paginator->link($label, array_merge($url, [$dropdownCol => 0])); ?>
+					<?php echo $this->Paginator->link($label, array_merge($url, [$dropdownCol => null])); ?>
 					<li class="divider"></li>
 				<?php else: ?>
 					<?php echo $this->Paginator->link($label, array_merge($url, [$dropdownCol => $itemKey])); ?>

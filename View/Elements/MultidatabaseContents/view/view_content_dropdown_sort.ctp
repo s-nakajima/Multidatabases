@@ -19,7 +19,7 @@
 		<?php foreach ($dropdownItems as $itemKey => $label) : ?>
 			<li>
 				<?php if ($itemKey === 0): ?>
-					<?php echo $this->Paginator->link($label, array_merge($url, ['sort_col' => 0])); ?>
+					<?php echo $this->Paginator->link($label, array_merge($url, ['sort_col' => null])); ?>
 					<li class="divider"></li>
 				<?php else: ?>
 					<?php echo $this->Paginator->link($label, array_merge($url, ['sort_col' => $itemKey])); ?>
