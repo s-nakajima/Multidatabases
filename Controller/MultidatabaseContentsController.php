@@ -457,7 +457,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 		);
 
 		$this->set('cancelUrl', NetCommonsUrl::backToIndexUrl());
-		$this->set('multidatabaseContents', $this->Paginator->paginate());
+		$this->set('multidatabaseContents', $this->Paginator->paginate('MultidatabaseContent'));
 		$this->set('viewMode', 'list');
 		if (!empty($query)) {
 			$this->render('search_results');
@@ -547,7 +547,7 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 
 		$this->MultidatabaseContent->recursive = 0;
 		$this->MultidatabaseContent->Behaviors->load('ContentComments.ContentComment');
-		$this->set('multidatabaseContents', $this->Paginator->paginate());
+		$this->set('multidatabaseContents', $this->Paginator->paginate('MultidatabaseContent'));
 		$this->MultidatabaseContent->Behaviors->unload('ContentComments.ContentComment');
 		$this->MultidatabaseContent->recursive = -1;
 
