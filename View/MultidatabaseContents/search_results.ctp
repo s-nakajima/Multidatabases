@@ -22,7 +22,13 @@ echo $this->NetCommonsHtml->css([
 			<?php echo $this->LinkButton->toList(); ?>
 		</div>
 		<div class="pull-right">
-			<?php echo $this->DisplayNumber->dropDownToggle(); ?>
+			<?php
+			$named = $this->Paginator->params['named'];
+			$named['page'] = '1';
+			$url = NetCommonsUrl::blockUrl($named);
+			$url['?'] = $this->request->query;
+			echo $this->DisplayNumber->dropDownToggle(['url' => $url]);
+			?>
 		</div>
 	</header>
 
