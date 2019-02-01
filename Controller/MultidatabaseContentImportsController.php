@@ -197,11 +197,16 @@ class MultidatabaseContentImportsController extends MultidatabasesAppController 
 	private function __saveImportContents($importDat) {
 		// 共通データ
 		$commonDat['MultidatabaseContent']['key'] = '';
+		$commonDat['MultidatabaseContent']['multidatabase_id'] =
+			$this->_multidatabase['Multidatabase']['id'];
 		$commonDat['MultidatabaseContent']['multidatabase_key'] =
 			$this->_setting['MultidatabaseSetting']['multidatabase_key'];
 		$commonDat['MultidatabaseContent']['block_id'] = Current::read('Block.id');
 		$commonDat['MultidatabaseContent']['language_id'] = Current::read('Language.id');
-		$commonDat['MultidatabaseContent']['status'] = 1;
+		// WorkflowBehavior.phpで厳密型比較しているため、stringでないとactiveとみなされない
+		// https://github.com/NetCommons3/Workflow/blob/d4081290421b1f8e8b8659dc44fb36345a57af1f/Model/Behavior/WorkflowBehavior.php#L129
+		//$commonDat['MultidatabaseContent']['status'] = 1;
+		$commonDat['MultidatabaseContent']['status'] = '1';
 
 		$commonDat['Frame']['id'] = Current::read('Frame.id');
 		$commonDat['Block']['id'] = Current::read('Block.id');
