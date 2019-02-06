@@ -38,5 +38,5 @@
 		); ?>
 	</div>
 
-	<?php echo $this->Form->end(); ?>
+	<?php echo $this->NetCommonsForm->end(); ?>
 </div>
