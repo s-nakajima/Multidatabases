@@ -163,6 +163,8 @@ class MultidatabaseContentSearchCond extends MultidatabasesAppModel {
 				return $result;
 			}
 		}
+		// 一覧表示でプルダウンでセレクトボックス値を選択後、表示されたURLの値を変えると内部エラーになるため、空配列を返す
+		return [];
 	}
 
 /**
@@ -180,6 +182,8 @@ class MultidatabaseContentSearchCond extends MultidatabasesAppModel {
 				return $result;
 			}
 		}
+		// 一覧表示でプルダウンでチェックボックス値を選択後、表示されたURLの値を変えると内部エラーになるため、空配列を返す
+		return [];
 	}
 
 /**

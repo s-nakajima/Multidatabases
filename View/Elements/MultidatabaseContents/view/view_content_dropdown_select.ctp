@@ -13,7 +13,12 @@
 
 <span class="btn-group">
 	<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-		<?php echo $dropdownItems[$currentItemKey]; ?>
+		<?php
+		// URLを直接いじって、ありえない値にするとUndefined index対応
+		if (isset($dropdownItems[$currentItemKey])) {
+			echo $dropdownItems[$currentItemKey];
+		}
+		?>
 		<span class="caret"></span>
 	</button>
 	<ul class="dropdown-menu" role="menu">

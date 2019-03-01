@@ -479,7 +479,13 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 			if (empty($pagerNamed['sort_col'])) {
 				$sortCol = $this->_frameSetting['MultidatabaseFrameSetting']['default_sort_type'];
 			} else {
-				$sortCol = $pagerNamed['sort_col'];
+				// ソートする項目はDBにあるか
+				if ($this->MultidatabaseContent->hasField($pagerNamed['sort_col'])) {
+					$sortCol = $pagerNamed['sort_col'];
+				} else {
+					// 項目ないと内部エラーになるため空にする
+					$sortCol = '';
+				}
 			}
 		}
 
