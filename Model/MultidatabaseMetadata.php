@@ -439,7 +439,7 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
 				],
 			],
 		];
-		return Hash::merge($this->validate, $result);
+		return ValidateMerge::merge($this->validate, $result);
 	}
 }
 
