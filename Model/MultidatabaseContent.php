@@ -130,6 +130,17 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 /**
+ * ファイルタイプのnotBlank
+ *
+ * @param array $check チェック値
+ * @return bool
+ */
+	public function notBlankFile($check) {
+		$value = array_shift($check);
+		return !empty($value['name']);
+	}
+
+/**
  * 編集用のデータを取得する
  *
  * @param array $conditions データ取得条件
@@ -491,6 +502,13 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 								'min' => 1,
 							],
 						];
+						break;
+					case 'file':
+						$tmp['rule'][] = 'notBlankFile';
+						$tmp['message'] = sprintf(
+							__d('net_commons', 'Please input %s.'),
+							$metadata['name']
+						);
 						break;
 					default:
 						$tmp['rule'][] = 'notBlank';
