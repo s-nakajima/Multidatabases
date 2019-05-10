@@ -124,7 +124,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * @return bool
  */
 	public function beforeValidate($options = []) {
-		$this->validate = $this->__makeValidation();
+		if (! isset($options['deleteFiles'])) {
+			$options['deleteFiles'] = [];
+		}
+		$this->validate = $this->__makeValidation($options['deleteFiles']);
 
 		return parent::beforeValidate($options);
 	}
@@ -133,11 +136,14 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * ファイルタイプのnotBlank
  *
  * @param array $check チェック値
+ * @param bool $isDelete ファイル削除か否か
  * @return bool
  */
-	public function notBlankFile($check) {
+	public function notBlankFile($check, $isDelete) {
+		$key = key($check);
 		$value = array_shift($check);
-		return !empty($value['name']);
+		return !empty($value['name']) ||
+				!$isDelete && !empty($this->data['UploadFile'][$key . '_attach']);
 	}
 
 /**
@@ -262,10 +268,19 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		if (! $metadatas = $this->MultidatabaseContentEditPr->prGetMetadatas()) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-
 		$this->set($data);
 
-		if (! $this->validates()) {
+		//__makeValidation()にファイル削除したかどうかを渡すためのカラムNoリスト生成
+		$colNoList = array_keys($metadatas);
+		$deleteFiles = [];
+		foreach ($colNoList as $colNo) {
+			$delColumn = 'value' . $colNo . '_attach_del';
+			if (isset($data[$delColumn]) && $data[$delColumn] === 'on') {
+				$deleteFiles[] = $colNo;
+			}
+		}
+
+		if (! $this->validates(['deleteFiles' => $deleteFiles])) {
 			return false;
 		}
 
@@ -475,9 +490,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  * Make validation rules
  * バリデーションルールの作成
  *
+ * @param array $deleteFiles 削除ファイルリスト
  * @return array|bool
  */
-	private function __makeValidation() {
+	private function __makeValidation($deleteFiles) {
 		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
 			return false;
 		}
@@ -503,15 +519,16 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 							],
 						];
 						break;
+					case 'image':
 					case 'file':
-						$tmp['rule'][] = 'notBlankFile';
+						$tmp['rule'] = ['notBlankFile', in_array($metadata['col_no'], $deleteFiles, true)];
 						$tmp['message'] = sprintf(
 							__d('net_commons', 'Please input %s.'),
 							$metadata['name']
 						);
 						break;
 					default:
-						$tmp['rule'][] = 'notBlank';
+						$tmp['rule'] = ['notBlank'];
 						$tmp['message'] = sprintf(
 							__d('net_commons', 'Please input %s.'),
 							$metadata['name']
