@@ -21,7 +21,7 @@
 		<?php echo $this->MailForm->editFrom(
 			[
 				[
-					'mailBodyPopoverMessage' => __d('multidatbases', 'Multidatabase.mail_fixed_phrase_body.popover'),
+					'mailBodyPopoverMessage' => __d('multidatabases', 'MailSetting.mail_fixed_phrase_body.popover'),
 				],
 			],
 			NetCommonsUrl::backToIndexUrl('default_setting_action')
