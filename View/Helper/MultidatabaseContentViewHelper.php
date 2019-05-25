@@ -292,6 +292,11 @@ class MultidatabaseContentViewHelper extends AppHelper {
 			$currentItemKey = $named['sort_col'];
 		}
 
+		// 一覧表示で並び順パラメータなかったらフレーム設定のデフォルトにする
+		if (!$currentItemKey && $viewType === 'index') {
+		    $currentItemKey = $this->_View->viewVars['multidatabaseFrameSetting']['default_sort_type'];
+		}
+
 		$selections = [];
 		$selections[0] = __d('multidatabases', 'Sort');
 
