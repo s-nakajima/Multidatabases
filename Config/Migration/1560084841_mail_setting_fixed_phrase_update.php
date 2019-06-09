@@ -1,9 +1,9 @@
 <?php
 /**
  * MutidatabaseMailSettingRecords Migration
- * メール設定データのためのMigration
+ * メール定型文の初期値データを更新するためのMigration
  *
- * @author Tomoyuki OHNO (Ricksoft Co., Ltd.) <ohno.tomoyuki@ricksoft.jp>
+ * @author Mitsuru Mutaguchi <mutaguchi@opensource-workshop.jp>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
@@ -14,10 +14,10 @@ App::uses('MailsMigration', 'Mails.Config/Migration');
 /**
  * MultidatabaseMailSettingRecords Migration
  *
- * @author Tomoyuki OHNO (Ricksoft, Co., LTD.) <ohno.tomoyuki@ricksoft.jp>
+ * @author Mitsuru Mutaguchi <mutaguchi@opensource-workshop.jp>
  * @package NetCommons\Multidatabases\Config\Migration
  */
-class MultidatabaseMailSettingRecords extends MailsMigration {
+class MailSettingFixedPhraseUpdate extends MailsMigration {
 
 /**
  * プラグインキー
@@ -31,7 +31,7 @@ class MultidatabaseMailSettingRecords extends MailsMigration {
  *
  * @var string
  */
-	public $description = 'mail_setting_records';
+	public $description = 'MailSettingFixedPhraseUpdate';
 
 /**
  * Actions to be performed
@@ -49,15 +49,6 @@ class MultidatabaseMailSettingRecords extends MailsMigration {
  * @var array $migration
  */
 	public $records = [
-		'MailSetting' => [
-			//コンテンツ通知 - 設定
-			[
-				'plugin_key' => self::PLUGIN_KEY,
-				'block_key' => null,
-				'is_mail_send' => false,
-				'is_mail_send_approval' => true,
-			],
-		],
 		'MailSettingFixedPhrase' => [
 			//コンテンツ通知 - 定型文
 			// * 英語
@@ -75,6 +66,10 @@ MULTIDATABASE title:{X-BLOCK_NAME}
 title:{X-SUBJECT}
 user:{X-USER}
 date:{X-TO_DATE}
+
+
+{X-DATA}
+
 
 Click on the link below to reply to this article.
 {X-URL}',
@@ -94,6 +89,10 @@ Click on the link below to reply to this article.
 コンテンツタイトル:{X-SUBJECT}
 投稿者:{X-USER}
 投稿日時:{X-TO_DATE}
+
+
+{X-DATA}
+
 
 この記事に返信するには、下記アドレスへ
 {X-URL}',
@@ -118,6 +117,10 @@ Click on the link below to reply to this article.
  * @return bool Should process continue
  */
 	public function after($direction) {
-		return parent::updateAndDelete($direction, self::PLUGIN_KEY);
+		// delete -> insertするために、一度down, その後upする
+		if (! parent::updateAndDelete('down', self::PLUGIN_KEY)) {
+			return false;
+		}
+		return parent::updateAndDelete('up', self::PLUGIN_KEY);
 	}
 }

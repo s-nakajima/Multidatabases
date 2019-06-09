@@ -297,38 +297,8 @@ class MultidatabaseContentViewHelper extends AppHelper {
 			$currentItemKey = $this->_View->viewVars['multidatabaseFrameSetting']['default_sort_type'];
 		}
 
-		$selections = [];
-		$selections[0] = __d('multidatabases', 'Sort');
-
-		foreach ($metadatas as $metadata) {
-			$colNo = 0;
-			$name = '';
-			if (
-				(int)$metadata['is_sortable'] === 1 &&
-				$metadata['type'] <> 'created' &&
-				$metadata['type'] <> 'updated'
-			) {
-				$colNo = $metadata['col_no'];
-				$name = $metadata['name'];
-				$selections['value' . $colNo]
-					= $name . '(' . __d('multidatabases', 'Ascending') . ')';
-				$selections['value' . $colNo . '_desc']
-					= $name . '(' . __d('multidatabases', 'Descending') . ')';
-			}
-		}
-
-		$selections['created']
-			= __d('multidatabases', 'Created date') .
-			'(' . __d('multidatabases', 'Ascending') . ')';
-		$selections['created_desc']
-			= __d('multidatabases', 'Created date') .
-			'(' . __d('multidatabases', 'Descending') . ')';
-		$selections['modified']
-			= __d('multidatabases', 'Modified date') .
-			'(' . __d('multidatabases', 'Ascending') . ')';
-		$selections['modified_desc']
-			= __d('multidatabases', 'Modified date') .
-			'(' . __d('multidatabases', 'Descending') . ')';
+		// セレクトボックス取得
+		$selections = $this->__getSelections($metadatas);
 
 		$result = '';
 
@@ -364,5 +334,48 @@ class MultidatabaseContentViewHelper extends AppHelper {
 					]
 				);
 		}
+	}
+
+/**
+ * セレクトボックス取得
+ *
+ * @param array $metadatas メタデータ配列
+ * @return array セレクトボックス
+ */
+	private function __getSelections($metadatas) {
+		$selections = [];
+		$selections[0] = __d('multidatabases', 'Sort');
+
+		foreach ($metadatas as $metadata) {
+			$colNo = 0;
+			$name = '';
+			if (
+				(int)$metadata['is_sortable'] === 1 &&
+				$metadata['type'] <> 'created' &&
+				$metadata['type'] <> 'updated'
+			) {
+				$colNo = $metadata['col_no'];
+				$name = $metadata['name'];
+				$selections['value' . $colNo]
+					= $name . '(' . __d('multidatabases', 'Ascending') . ')';
+				$selections['value' . $colNo . '_desc']
+					= $name . '(' . __d('multidatabases', 'Descending') . ')';
+			}
+		}
+
+		$selections['created']
+			= __d('multidatabases', 'Created date') .
+			'(' . __d('multidatabases', 'Ascending') . ')';
+		$selections['created_desc']
+			= __d('multidatabases', 'Created date') .
+			'(' . __d('multidatabases', 'Descending') . ')';
+		$selections['modified']
+			= __d('multidatabases', 'Modified date') .
+			'(' . __d('multidatabases', 'Ascending') . ')';
+		$selections['modified_desc']
+			= __d('multidatabases', 'Modified date') .
+			'(' . __d('multidatabases', 'Descending') . ')';
+
+		return $selections;
 	}
 }

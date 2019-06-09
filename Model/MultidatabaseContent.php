@@ -83,7 +83,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Likes.Like',
 		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
-		'Files.Attachment'
+		'Files.Attachment',
+		'Multidatabases.MultidatabaseContentValidation',
 	];
 
 /**
@@ -127,23 +128,9 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		if (! isset($options['deleteFiles'])) {
 			$options['deleteFiles'] = [];
 		}
-		$this->validate = $this->__makeValidation($options['deleteFiles']);
+		$this->validate = $this->makeValidation($options['deleteFiles']);
 
 		return parent::beforeValidate($options);
-	}
-
-/**
- * ファイルタイプのnotBlank
- *
- * @param array $check チェック値
- * @param bool $isDelete ファイル削除か否か
- * @return bool
- */
-	public function notBlankFile($check, $isDelete) {
-		$key = key($check);
-		$value = array_shift($check);
-		return !empty($value['name']) ||
-				!$isDelete && !empty($this->data['UploadFile'][$key . '_attach']);
 	}
 
 /**
@@ -437,6 +424,10 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				'search_contents' => $searchContents
 			]);
 
+			// メールの埋め込みタグ{X-DATA}データ取得
+			// $data['_x_data'] にセットしても、MailQueueBehaviorでは値が消えてしまっているため、$data['MultidatabaseContent']['_x_data']にセット
+			$data['MultidatabaseContent']['_x_data'] = $this->__getMailXData($data);
+
 			// メールキューを登録
 			$this->Behaviors->load('Mails.MailQueue', [
 				'embedTags' => [
@@ -444,8 +435,11 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 					'X-URL' => [
 						'controller' => 'multidatabase_contents',
 						'action' => 'detail',
-					]
+					],
+					'X-DATA' => 'MultidatabaseContent._x_data',
 				],
+				// 投稿内容にウィジウィグの内容が含まれる事があるため設定
+				'embedTagsWysiwyg' => array('X-DATA'),
 			]);
 
 			$savedData = $this->save($data, false);
@@ -496,59 +490,30 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 	}
 
 /**
- * Make validation rules
- * バリデーションルールの作成
+ * メールの埋め込みタグ{X-DATA}データ取得
  *
- * @param array $deleteFiles 削除ファイルリスト
- * @return array|bool
+ * @param array $data データ配列
+ * @return string
+ * @throws InternalErrorException
  */
-	private function __makeValidation($deleteFiles) {
-		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
-			return false;
-		}
-
-		if (!$metadatas =
-			$this->MultidatabaseMetadata->getEditMetadatas(
-				$multidatabase['Multidatabase']['id']
-			)
+	private function __getMailXData($data) {
+		// メールの埋め込みタグ{X-DATA}取得用
+		if (!$metadataGroups = $this->MultidatabaseMetadata->getMetadataGroups(
+			$data['Multidatabase']['id'])
 		) {
-			return false;
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
-
-		$result = [];
-		foreach ($metadatas as $metadata) {
-			if ($metadata['is_require']) {
-				$tmp = [];
-				switch ($metadata['type']) {
-					case 'checkbox':
-						$tmp['rule'] = [
-							'multiple',
-							[
-								'min' => 1,
-							],
-						];
-						break;
-					case 'image':
-					case 'file':
-						$tmp['rule'] = ['notBlankFile', in_array($metadata['col_no'], $deleteFiles, true)];
-						$tmp['message'] = sprintf(
-							__d('net_commons', 'Please input %s.'),
-							$metadata['name']
-						);
-						break;
-					default:
-						$tmp['rule'] = ['notBlank'];
-						$tmp['message'] = sprintf(
-							__d('net_commons', 'Please input %s.'),
-							$metadata['name']
-						);
-						break;
-				}
-				$tmp['required'] = true;
-				$result['value' . $metadata['col_no']] = $tmp;
+		// メールの埋め込みタグ{X-DATA}データ作成
+		// $data['_x_data'] にセットしても、MailQueueBehaviorでは値が消えてしまっているため、$data['MultidatabaseContent']['_x_data']にセット
+		$mailXData = '';
+		foreach ($metadataGroups as $metadataGroup) {
+			foreach ($metadataGroup as $metadataItem) {
+				$mailXData .= $metadataItem['name'] . ':' .
+						$data['MultidatabaseContent']['value' . $metadataItem['col_no']] . "\n";
 			}
 		}
-
-		return ValidateMerge::merge($this->validate, $result);
+		// 末尾の不要な改行削除
+		$mailXData = rtrim($mailXData, "\n");
+		return $mailXData;
 	}
 }
