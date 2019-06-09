@@ -428,6 +428,24 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 				'search_contents' => $searchContents
 			]);
 
+			// メールの埋め込みタグ{X-DATA}取得用
+			if (!$metadataGroups = $this->MultidatabaseMetadata->getMetadataGroups(
+				$data['Multidatabase']['id'])
+			) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			// メールの埋め込みタグ{X-DATA}作成
+			// $data['_x_data'] にセットしても、MailQueueBehaviorでは値が消えてしまっているため、$data['MultidatabaseContent']['_x_data']にセット
+			$data['MultidatabaseContent']['_x_data'] = '';
+			foreach ($metadataGroups as $metadataGroup) {
+				foreach ($metadataGroup as $metadataItem) {
+					$data['MultidatabaseContent']['_x_data'] .= $metadataItem['name'] . ':' .
+							$data['MultidatabaseContent']['value' . $metadataItem['col_no']] . "\n";
+				}
+			}
+			// 末尾の不要な改行削除
+			$data['MultidatabaseContent']['_x_data'] = rtrim($data['MultidatabaseContent']['_x_data'], "\n");
+
 			// メールキューを登録
 			$this->Behaviors->load('Mails.MailQueue', [
 				'embedTags' => [
@@ -435,7 +453,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 					'X-URL' => [
 						'controller' => 'multidatabase_contents',
 						'action' => 'detail',
-					]
+					],
+					'X-DATA' => 'MultidatabaseContent._x_data',
 				],
 			]);
 

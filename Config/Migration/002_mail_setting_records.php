@@ -76,6 +76,10 @@ title:{X-SUBJECT}
 user:{X-USER}
 date:{X-TO_DATE}
 
+
+{X-DATA}
+
+
 Click on the link below to reply to this article.
 {X-URL}',
 			],
@@ -94,6 +98,10 @@ Click on the link below to reply to this article.
 コンテンツタイトル:{X-SUBJECT}
 投稿者:{X-USER}
 投稿日時:{X-TO_DATE}
+
+
+{X-DATA}
+
 
 この記事に返信するには、下記アドレスへ
 {X-URL}',
