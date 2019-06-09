@@ -456,6 +456,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 					],
 					'X-DATA' => 'MultidatabaseContent._x_data',
 				],
+				// 投稿内容にウィジウィグの内容が含まれる事があるため設定
+				'embedTagsWysiwyg' => array('X-DATA'),
 			]);
 
 			$savedData = $this->save($data, false);
