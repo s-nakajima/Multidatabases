@@ -83,7 +83,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		'Likes.Like',
 		'Workflow.WorkflowComment',
 		'ContentComments.ContentComment',
-		'Files.Attachment'
+		'Files.Attachment',
+		'Multidatabases.MultidatabaseContentValidation',
 	];
 
 /**
@@ -127,23 +128,9 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		if (! isset($options['deleteFiles'])) {
 			$options['deleteFiles'] = [];
 		}
-		$this->validate = $this->__makeValidation($options['deleteFiles']);
+		$this->validate = $this->makeValidation($options['deleteFiles']);
 
 		return parent::beforeValidate($options);
-	}
-
-/**
- * ファイルタイプのnotBlank
- *
- * @param array $check チェック値
- * @param bool $isDelete ファイル削除か否か
- * @return bool
- */
-	public function notBlankFile($check, $isDelete) {
-		$key = key($check);
-		$value = array_shift($check);
-		return !empty($value['name']) ||
-				!$isDelete && !empty($this->data['UploadFile'][$key . '_attach']);
 	}
 
 /**
@@ -498,6 +485,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
  *
  * @param array $data データ配列
  * @return string
+ * @throws InternalErrorException
  */
 	private function __getMailXData($data) {
 		// メールの埋め込みタグ{X-DATA}取得用
@@ -518,62 +506,5 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		// 末尾の不要な改行削除
 		$mailXData = rtrim($mailXData, "\n");
 		return $mailXData;
-	}
-
-/**
- * Make validation rules
- * バリデーションルールの作成
- *
- * @param array $deleteFiles 削除ファイルリスト
- * @return array|bool
- */
-	private function __makeValidation($deleteFiles) {
-		if (!$multidatabase = $this->Multidatabase->getMultidatabase()) {
-			return false;
-		}
-
-		if (!$metadatas =
-			$this->MultidatabaseMetadata->getEditMetadatas(
-				$multidatabase['Multidatabase']['id']
-			)
-		) {
-			return false;
-		}
-
-		$result = [];
-		foreach ($metadatas as $metadata) {
-			if ($metadata['is_require']) {
-				$tmp = [];
-				switch ($metadata['type']) {
-					case 'checkbox':
-						$tmp['rule'] = [
-							'multiple',
-							[
-								'min' => 1,
-							],
-						];
-						break;
-					case 'image':
-					case 'file':
-						$tmp['rule'] = ['notBlankFile', in_array($metadata['col_no'], $deleteFiles, true)];
-						$tmp['message'] = sprintf(
-							__d('net_commons', 'Please input %s.'),
-							$metadata['name']
-						);
-						break;
-					default:
-						$tmp['rule'] = ['notBlank'];
-						$tmp['message'] = sprintf(
-							__d('net_commons', 'Please input %s.'),
-							$metadata['name']
-						);
-						break;
-				}
-				$tmp['required'] = true;
-				$result['value' . $metadata['col_no']] = $tmp;
-			}
-		}
-
-		return ValidateMerge::merge($this->validate, $result);
 	}
 }
