@@ -408,9 +408,18 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			$searchContents = $this->MultidatabaseContentSearch->getSearchMetadatas();
 
 			// is_titleのcol_no取得用
-			$metadata = $this->MultidatabaseMetadata->findByKeyAndLanguageIdAndIsTitle(
+			//
+			// 日英にした時、英で表示＆登録時にInternalErrorExceptionが発生する場合あり。
+			// 英表示で汎用DBのセッティングで登録すると、Metadataも英のみになる。英日でもMetadataはいずれかの言語で１セットのみの状態。
+			// 欲しいのはis_titleのcol_noなので、言語に依存してない。
+			// そのため、条件からLanguage.idを外す。
+			//$metadata = $this->MultidatabaseMetadata->findByKeyAndLanguageIdAndIsTitle(
+			//		$data['Multidatabase']['key'],
+			//		Current::read('Language.id'),
+			//		'1'
+			//	);
+			$metadata = $this->MultidatabaseMetadata->findByKeyAndIsTitle(
 					$data['Multidatabase']['key'],
-					Current::read('Language.id'),
 					'1'
 				);
 			if (! $metadata) {

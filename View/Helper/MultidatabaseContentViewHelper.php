@@ -294,7 +294,7 @@ class MultidatabaseContentViewHelper extends AppHelper {
 
 		// 一覧表示で並び順パラメータなかったらフレーム設定のデフォルトにする
 		if (!$currentItemKey && $viewType === 'index') {
-		    $currentItemKey = $this->_View->viewVars['multidatabaseFrameSetting']['default_sort_type'];
+			$currentItemKey = $this->_View->viewVars['multidatabaseFrameSetting']['default_sort_type'];
 		}
 
 		$selections = [];
