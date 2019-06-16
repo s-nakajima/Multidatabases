@@ -159,10 +159,12 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 			$fileUrl = $this->__fileDlUrl($content, $colNo);
 			$result = '<span class="glyphicon glyphicon-file text-primary"></span>&nbsp;';
 			$result .= '<a href="' . $fileUrl . '" target="_blank">';
-			$result .= __d('multidatabases', 'Download');
+			// 表示が全てダウンロードとなる。ファイル名を表示する
+			//$result .= __d('multidatabases', 'Download');
+			$result .= $fileInfo['UploadFile']['original_name'];
 			$result .= '</a>';
 		} else {
-			$result = $this->__renderViewElementFileReqAuth($content, $colNo);
+			$result = $this->__renderViewElementFileReqAuth($content, $colNo, $fileInfo);
 			if ((int)$showCounter === 1) {
 				$result .= '&nbsp;<span class="badge">';
 				$result .= $fileInfo['UploadFile']['download_count'];
@@ -178,13 +180,16 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
  *
  * @param array $content コンテンツ配列
  * @param int $colNo カラムNo
+ * @param array $fileInfo ダウンロードファイル
  * @return string HTML
  */
-	private function __renderViewElementFileReqAuth($content, $colNo) {
+	private function __renderViewElementFileReqAuth($content, $colNo, $fileInfo) {
 		// 認証キー必要
 		$result = '<span class="glyphicon glyphicon-file text-primary"></span>&nbsp;';
 		$result .= $this->NetCommonsHtml->link(
-			__d('multidatabases', 'Download'),
+			// 表示が全てダウンロードとなる。ファイル名を表示する
+			//__d('multidatabases', 'Download'),
+			$fileInfo['UploadFile']['original_name'],
 			'#',
 			[
 				'authorization-keys-popup-link',
@@ -311,7 +316,7 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
  *
  * @param array $content コンテンツ配列
  * @param int $colNo カラムNo
- * @return bool
+ * @return bool|array
  */
 	private function __getFileInfo($content, $colNo) {
 		if (
