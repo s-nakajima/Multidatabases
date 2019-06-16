@@ -508,8 +508,14 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		$mailXData = '';
 		foreach ($metadataGroups as $metadataGroup) {
 			foreach ($metadataGroup as $metadataItem) {
-				$mailXData .= $metadataItem['name'] . ':' .
+				if ($metadataItem['type'] == 'file' || $metadataItem['type'] == 'image') {
+					// 添付ファイル、画像
+					$mailXData .= $metadataItem['name'] . ':' .
+						$data['MultidatabaseContent']['value' . $metadataItem['col_no'] . '_attach']['name'] . "\n";
+				} else {
+					$mailXData .= $metadataItem['name'] . ':' .
 						$data['MultidatabaseContent']['value' . $metadataItem['col_no']] . "\n";
+				}
 			}
 		}
 		// 末尾の不要な改行削除
