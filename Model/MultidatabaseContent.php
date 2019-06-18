@@ -509,9 +509,14 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		foreach ($metadataGroups as $metadataGroup) {
 			foreach ($metadataGroup as $metadataItem) {
 				if ($metadataItem['type'] == 'file' || $metadataItem['type'] == 'image') {
+					$attachName = '';
+					$attachColNoKey = 'value' . $metadataItem['col_no'] . '_attach';
+					// デバッグ出力レベル=2の時の Undefined index対応
+					if (isset($data['MultidatabaseContent'][$attachColNoKey]['name'])) {
+						$attachName = $data['MultidatabaseContent'][$attachColNoKey]['name'];
+					}
 					// 添付ファイル、画像
-					$mailXData .= $metadataItem['name'] . ':' .
-						$data['MultidatabaseContent']['value' . $metadataItem['col_no'] . '_attach']['name'] . "\n";
+					$mailXData .= $metadataItem['name'] . ':' . $attachName . "\n";
 				} else {
 					$mailXData .= $metadataItem['name'] . ':' .
 						$data['MultidatabaseContent']['value' . $metadataItem['col_no']] . "\n";

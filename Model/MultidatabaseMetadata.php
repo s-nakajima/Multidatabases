@@ -272,7 +272,9 @@ class MultidatabaseMetadata extends MultidatabasesAppModel {
  * @return array
  */
 	public function mergeGroupToMetadatas($data) {
-		for ($i = 1; $i <= 3; $i++) {
+		// 1段目も項目なしがありえるため、0番目からループスタート
+		//for ($i = 1; $i <= 3; $i++) {
+		for ($i = 0; $i <= 3; $i++) {
 			if (!isset($data[$i])) {
 				$data[$i] = [];
 			}
