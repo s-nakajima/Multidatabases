@@ -160,7 +160,10 @@ class MultidatabaseContentSearch extends MultidatabasesAppModel {
 			!is_null($sortCol) &&
 			(
 				strstr($sortCol, 'value') <> false ||
-				in_array($sortCol, ['created', 'modified'])
+				// ソート順は created_desc, modified_descがありえるため、valueと同様にstrstrで比較する
+				//in_array($sortCol, ['created', 'modified'])
+				strstr($sortCol, 'created') <> false ||
+				strstr($sortCol, 'modified') <> false
 			)
 		) {
 			if (strstr($sortCol, '_desc')) {
