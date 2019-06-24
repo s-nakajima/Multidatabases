@@ -480,7 +480,11 @@ class MultidatabaseContentsController extends MultidatabasesAppController {
 				$sortCol = $this->_frameSetting['MultidatabaseFrameSetting']['default_sort_type'];
 			} else {
 				// ソートする項目はDBにあるか
-				if ($this->MultidatabaseContent->hasField($pagerNamed['sort_col'])) {
+				// ソート順は created_desc, modified_desc等、DB項目名＋_descがありえるため、strstrで比較する
+				//if ($this->MultidatabaseContent->hasField($pagerNamed['sort_col'])) {
+				if (strstr($pagerNamed['sort_col'], 'value') <> false ||
+						strstr($pagerNamed['sort_col'], 'created') <> false ||
+						strstr($pagerNamed['sort_col'], 'modified') <> false) {
 					$sortCol = $pagerNamed['sort_col'];
 				} else {
 					// 項目ないと内部エラーになるため空にする
