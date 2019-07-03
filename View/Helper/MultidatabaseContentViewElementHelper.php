@@ -194,6 +194,7 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 			[
 				'authorization-keys-popup-link',
 				'url' => NetCommonsUrl::actionUrl($this->__fileDlArrayReqAuth($content, $colNo)),
+				'frame-id' => Current::read('Frame.id'),
 				'popup-title' => __d('authorization_keys', 'Authorization key confirm dialog'),
 				'popup-label' => __d('authorization_keys', 'Authorization key'),
 				'popup-placeholder' =>
