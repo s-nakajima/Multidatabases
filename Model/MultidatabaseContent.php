@@ -272,7 +272,6 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		}
 
 		$result = $this->MultidatabaseContentEdit->makeSaveData($data, $metadatas, $isUpdate);
-\CakeLog::debug(__METHOD__ . '(' . __LINE__ . ') ' . var_export($result, true));
 
 		return $this->__saveContent($result);
 	}
