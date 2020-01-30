@@ -272,6 +272,7 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 		}
 
 		$result = $this->MultidatabaseContentEdit->makeSaveData($data, $metadatas, $isUpdate);
+\CakeLog::debug(__METHOD__ . '(' . __LINE__ . ') ' . var_export($result, true));
 
 		return $this->__saveContent($result);
 	}
@@ -405,8 +406,8 @@ class MultidatabaseContent extends MultidatabasesAppModel {
 			//		Current::read('Language.id'),
 			//		'1'
 			//	);
-			$metadata = $this->MultidatabaseMetadata->findByKeyAndIsTitle(
-					$data['Multidatabase']['key'],
+			$metadata = $this->MultidatabaseMetadata->findByMultidatabaseIdAndIsTitle(
+					$data['Multidatabase']['id'],
 					'1'
 				);
 			if (! $metadata) {
