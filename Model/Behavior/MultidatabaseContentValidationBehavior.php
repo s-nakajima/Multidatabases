@@ -115,20 +115,6 @@ class MultidatabaseContentValidationBehavior extends ModelBehavior {
  */
 	private function __setupUploadFileValidation(Model $model, $field) {
 		$model->uploadSettings($field);
-		//$model->validate[$field]['size'] =
-		//	[
-		//		'rule' => ['validateRoomFileSizeLimit']
-		//	];
-		//
-		//// 元モデルに拡張子バリデータをセットする
-		//$uploadFile = ClassRegistry::init('Files.UploadFile');
-		//
-		//$uploadAllowExtension = $uploadFile->getAllowExtension();
-		//$model->validate[$field]['extension'] = [
-		//	// システム設定の値をとってくる。trimすること
-		//	'rule' => ['isValidExtension', $uploadAllowExtension, false],
-		//	'message' => __d('files', 'It is upload disabled file format')
-		//];
 	}
 
 /**
@@ -176,8 +162,6 @@ class MultidatabaseContentValidationBehavior extends ModelBehavior {
  */
 	private function __removeUploadFileValidation(Model $model, $field) {
 		$model->removeUploadSettings($field);
-		//unset($model->validate[$field]['size']);
-		//unset($model->validate[$field]['extension']);
 	}
 
 /**
