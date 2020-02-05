@@ -165,11 +165,11 @@ class MultidatabaseContentViewElementHelper extends AppHelper {
 			$result .= '</a>';
 		} else {
 			$result = $this->__renderViewElementFileReqAuth($content, $colNo, $fileInfo);
-			if ((int)$showCounter === 1) {
-				$result .= '&nbsp;<span class="badge">';
-				$result .= $fileInfo['UploadFile']['download_count'];
-				$result .= '</span>';
-			}
+		}
+		if ((int)$showCounter === 1) {
+			$result .= '&nbsp;<span class="badge">';
+			$result .= $fileInfo['UploadFile']['download_count'];
+			$result .= '</span>';
 		}
 
 		return $result;
